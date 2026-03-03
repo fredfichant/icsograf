@@ -1,0 +1,131 @@
+classDiagram
+    direction TB
+
+    %% Base Classes
+    class QGraphicsItem {
+        <<Qt>>
+    }
+    class Graph_Item {
+        #bool visible
+        #bool highlighted
+        +set_highlighted(bool)
+    }
+
+    %% Core Graph Structure
+    class Graph {
+        -QList~Node*~ m_nodes
+        -QList~Edge*~ m_edges
+        -Node_Style m_default_node_style
+        -Edge_Style m_default_edge_style
+        -Graph_Properties m_properties
+        +render_knot()
+        +traverse(Path_Builder)
+        +update_properties()
+    }
+
+    class Node {
+        -QPointF m_pos
+        -Node_Style m_style
+        +edges() QList~Edge*~
+    }
+
+    class Edge {
+        -Node* v1
+        -Node* v2
+        -Edge_Style m_style
+        -bool traversed_strands[4][3]
+        -QColor m_marking_color
+        +to_line() QLineF
+        +vertex_for(Handle) Node*
+    }
+
+    %% Styles and Polymorphism
+    class Node_Style {
+        +double cusp_angle
+        +double handle_length
+        +Cusp_Shape* cusp_shape
+        +build(Traversal_Info, Path_Builder)
+    }
+
+    class Edge_Style {
+        +double crossing_distance
+        +double edge_slide
+        +int strand_count
+        +double strand_offset
+        +Edge_Type* edge_type
+    }
+
+    class Cusp_Shape {
+        <<Abstract>>
+        +draw_joint(Path_Builder, Traversal_Info)*
+    }
+    class Cusp_Rounded
+    class Cusp_Pointed
+
+    class Edge_Type {
+        <<Abstract>>
+        +traverse(Edge, Handle, Path_Builder, int& strand)*
+        +handle(Edge, Handle, int strand)*
+    }
+    class Edge_Normal
+    class Edge_Inverted
+
+    %% Properties and Analysis
+    class Graph_Properties {
+        -int m_node_count
+        -int m_edge_count
+        -int m_face_count
+        -int m_wa, m_w0, m_p0, m_pa
+        +delta_t() int
+    }
+
+    class GraphMarker {
+        +mark_graph(Graph, faces) map
+    }
+
+    %% UI Components
+    class Main_Window {
+        -Knot_View* view
+        -KnotFileManager* m_fileManager
+        -Dock_Properties* dock_properties
+        +connect_view(Knot_View)
+    }
+
+    class Knot_View {
+        -Graph m_graph
+        -QUndoStack undo_stack
+        +update_knot()
+    }
+
+    class Properties_View {
+        -Graph_Properties& m_properties
+        +update_view()
+    }
+
+    %% Relationships
+    QGraphicsItem <|-- Graph
+    QGraphicsItem <|-- Graph_Item
+    Graph_Item <|-- Node
+    Graph_Item <|-- Edge
+
+    Graph "1" *-- "*" Node
+    Graph "1" *-- "*" Edge
+    Graph "1" *-- "1" Graph_Properties
+
+    Node "1" *-- "1" Node_Style
+    Edge "1" *-- "1" Edge_Style
+
+    Node_Style "1" o-- "1" Cusp_Shape
+    Edge_Style "1" o-- "1" Edge_Type
+
+    Cusp_Shape <|-- Cusp_Rounded
+    Cusp_Shape <|-- Cusp_Pointed
+    Edge_Type <|-- Edge_Normal
+    Edge_Normal <|-- Edge_Inverted
+
+    Main_Window "1" *-- "1" Knot_View
+    Main_Window "1" *-- "1" Dock_Properties
+    Knot_View "1" *-- "1" Graph
+    Dock_Properties "1" *-- "1" Properties_View
+    Properties_View "1" --> "1" Graph_Properties
+    Graph ..> GraphMarker : uses

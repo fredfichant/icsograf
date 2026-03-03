@@ -1,0 +1,34 @@
+# Configuration clang-format pour Qt Widgets / C++
+BasedOnStyle: Google
+Language: Cpp
+
+# Indentation officielle Qt
+IndentWidth: 4
+ColumnLimit: 100
+UseTab: Never
+
+# Accolades : Toujours sur une nouvelle ligne pour les fonctions (Style Allman/Qt)
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: false
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: false
+  AfterStruct: true
+  AfterUnion: true
+  BeforeElse: false
+
+# Alignement et espaces
+AlignAfterOpenBracket: Align
+AlignOperands: true
+SpaceAfterCStyleCast: true
+SpaceBeforeParens: ControlStatements
+
+# Spécificités Qt (Macros à ignorer lors du formatage)
+StatementMacros:
+  - Q_OBJECT
+  - Q_PROPERTY
+  - Q_INTERFACES
+  - Q_SIGNAL
+  - Q_SLOT

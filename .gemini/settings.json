@@ -1,0 +1,46 @@
+{
+  "ui.inlineThinkingMode": "full",
+  "fileFiltering.respectGitIgnore": true,
+  "fileFiltering.enableRecursiveFileSearch": true,
+  "fileFiltering.excludePatterns": [
+    "**/build*/**", // Dossiers de build CMake/QtCreator
+    "**/debug/**", // Sorties de debug
+    "**/release/**", // Sorties de release
+    "**/.pytest_cache/**", // Cache de tests
+    "**/__pycache__/**", // Cache Python
+    "**/.venv/**", // Environnement virtuel Python
+    "**/ui_*.h", // Fichiers headers générés par uic
+    "**/moc_*.cpp", // Fichiers Meta-Object Compiler générés
+    "**/qrc_*.cpp" // Fichiers de ressources générés
+  ],
+  "coreTools": [
+    "ReadFileTool",
+    "SearchText",
+    "ListDirectoryTool"
+  ],
+  "security.environmentVariableRedaction.enabled": true,
+  "skills": {
+    "format_qt_code": {
+      "description": "Reformate les fichiers source Qt (C++, H, PY) selon les standards de l'industrie.",
+      "command": "sh /Users/fredfichant/DEV/scriptQTskill/qt_format.sh {file_path}",
+      "arguments": {
+        "file_path": {
+          "type": "string",
+          "description": "Le chemin relatif vers le fichier à nettoyer."
+        }
+      }
+    },
+    "check_qt_build": {
+      "description": "Lance la compilation CMake pour vérifier les erreurs de syntaxe ou de signaux/slots.",
+      "command": "sh /Users/fredfichant/DEV/scriptQTskill/qt_build.sh"
+    },
+    "run_and_debug_qt": {
+      "description": "Lance l'application et analyse les messages qDebug() en temps réel.",
+      "command": "sh /Users/fredfichant/DEV/scriptQTskill/qt_run.sh"
+    },
+    "generate_documentation": {
+      "description": "Génère la documentation HTML du projet Qt à partir des commentaires Doxygen.",
+      "command": "sh /Users/fredfichant/DEV/scriptQTskill/gen_doc.sh"
+    }
+  }
+}

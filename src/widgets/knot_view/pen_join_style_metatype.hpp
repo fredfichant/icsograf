@@ -1,0 +1,9 @@
+#ifndef PEN_JOIN_STYLE_METATYPE_HPP
+#define PEN_JOIN_STYLE_METATYPE_HPP
+
+#include <QMetaType>
+
+Q_DECLARE_METATYPE(Qt::PenJoinStyle)
+Q_DECLARE_METATYPE(Qt::BrushStyle)
+
+#endif  // PEN_JOIN_STYLE_METATYPE_HPP

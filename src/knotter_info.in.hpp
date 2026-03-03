@@ -1,0 +1,7 @@
+#define VERSION "${PROJECT_VERSION}"
+#define TARGET "${PROJECT_SLUG}"
+#define DOMAIN_NAME "${PROJECT_DOMAIN}"
+#define BUG_URL "${BUG_URL}"
+#define DOC_URL "${DOC_URL}"
+#define PLUGIN_REPO "${PLUGIN_REPO}"
+#define KNOTTER_ICON "@ICON_RELPATH@"

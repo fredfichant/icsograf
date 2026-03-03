@@ -1,0 +1,82 @@
+<state_snapshot>
+    <overall_goal>
+        Successfully refactor the Knotter project by completing Phase 0 (Demolition), Phase 1 (Sanitation), Phase 2 (Modernization), and Phase 3 (Business Logic &amp; Simplification) as outlined in GEMINI.md. This involves removing obsolete features, improving C++ structure and modernizing CMake and Qt usage, extracting complex logic, and resolving all compilation and runtime errors encountered during the process.
+        Additionally, implement new features as part of Phase 4 and 5, including the polygon plugin, multi-strand rendering, and graph topological analysis.
+    </overall_goal>
+
+    <active_constraints>
+        - Maintain project conventions (Qt coding style, CMake build system).
+        - Ensure proper encapsulation and modularity.
+        - Resolve all compilation and linker errors.
+        - Fix runtime crashes and visual bugs.
+        - Suppress verbose rendering warnings from Oxygen SVG icons.
+        - Correctly implement ribbon topology for multi-strand edges.
+    </active_constraints>
+
+    <key_knowledge>
+        - CWD: `/Users/fredfichant/DEV/knotterSRC/Knotter`
+        - Build commands: `rm -rf build && mkdir build && cd build && cmake .. && make -j$(sysctl -n hw.ncpu)`.
+        - **Multi-Strand Logic:** Ribbon topology is maintained by flipping the strand index only at nodes (during turns) and keeping it consistent across crossing diagonals.
+        - **SVG Export:** Requires `QIODevice::Text` flag and a minimum 1x1 size check for empty graphs to prevent `QSvgGenerator` errors.
+        - **Icon Theme:** Missing Oxygen icons were restored by updating `index.theme` to include Oxygen directories. Verbose rendering warnings were suppressed using `QLoggingCategory` and by favoring PNGs for Oxygen action icons.
+        - **Graph Analysis:** Integrated a Gauss-Jordan elimination solver (BinaryLinearSystem) in `GraphMarker` to determine edge markings ('a'/'0') based on vertex and face constraints.
+        - **Face Detection:** Uses a rotation-system based algorithm to find planar faces and calculate their degree.
+    </key_knowledge>
+
+    <artifact_trail>
+        <file path="src/graph/edge_style.hpp">
+            <change>Added `strand_count` and `strand_offset` properties.</change>
+            <change>Updated `Enabled_Styles_Enum` with `STRAND_COUNT` and `STRAND_OFFSET` flags.</change>
+        </file>
+        <file path="src/graph/edge.hpp">
+            <change>Added `traversed_strands[4][3]` to track multi-strand traversal.</change>
+            <change>Added `m_marking_color` and corresponding accessor.</change>
+            <change>Fixed `-Wreorder-ctor` warning by correcting initializer list order.</change>
+            <change>Included `point_math.hpp` to fix missing `project` identifier.</change>
+        </file>
+        <file path="src/graph/graph.cpp">
+            <change>Updated `traverse()` to support multi-strand logic with strand index flipping at nodes.</change>
+            <change>Implemented `update_properties()` to calculate node/edge/face counts and degree distributions.</change>
+            <change>Integrated `GraphMarker` for edge coloring (Red for 'a', Green for '0') based on unique solutions.</change>
+        </file>
+        <file path="src/graph/edge_type.cpp">
+            <change>Updated `paint()` to use pen width 4 for 2 strands and 8 for 3 strands.</change>
+            <change>Updated `handle()` to support multi-strand offsets using consistent normal angles.</change>
+            <change>Updated `traverse()` to pass strand index through crossings without flipping.</change>
+            <change>Removed `Edge_Wall` and `Edge_Hole` implementations.</change>
+        </file>
+        <file path="src/io/image_exporter.cpp">
+            <change>Fixed SVG export bug by ensuring `QIODevice::Text` is used.</change>
+            <change>Added 1x1 minimum size check for empty graphs.</change>
+            <change>Implemented property summary inclusion in SVG description metadata.</change>
+        </file>
+        <file path="src/library/edges_mark.cpp">
+            <change>Implemented `GraphMarker` using `BinaryLinearSystem` for mod 2 marking resolution.</change>
+        </file>
+        <file path="src/library/properties_view.cpp">
+            <change>Implemented UI for displaying graph metrics, degree distributions, and edge distribution table (wa, w0, p0, pa).</change>
+        </file>
+        <file path="data/img/icons/knotter-icons/index.theme">
+            <change>Added Oxygen directories to the search path.</change>
+            <change>Removed `oxygen/scalable` to avoid buggy SVG rendering warnings.</change>
+        </file>
+        <file path="src/main.cpp">
+            <change>Added `QLoggingCategory::setFilterRules("qt.svg.warning=false");` to suppress verbose output.</change>
+            <change>Removed `Edge_Wall` and `Edge_Hole` registrations.</change>
+        </file>
+        <file path="ulm.mmd">
+            <change>Created Mermaid UML class diagram for the project architecture.</change>
+        </file>
+    </artifact_trail>
+
+    <task_state>
+        <todo description="Phase 4 Step 1: Logic descriptions" status="completed" />
+        <todo description="Phase 4 Step 2: Fix SVG export and icons" status="completed" />
+        <todo description="Phase 4 Step 3: Fix warnings" status="completed" />
+        <todo description="Phase 5 Step 2: Remove edge_hole and edge_wall" status="completed" />
+        <todo description="Phase 5 Step 4: Multi-strand rendering and traversal" status="completed" />
+        <todo description="Phase 5 Step 5: Graph properties display" status="completed" />
+        <todo description="Phase 5 Step 6: Edge distribution marking and coloring" status="completed" />
+        <todo description="Phase 5 Step 7: Include properties in Image_Exporter" status="completed" />
+    </task_state>
+</state_snapshot>

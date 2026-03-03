@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=${PROJECT_NAME}
+Comment=${PROJECT_DESCRIPTION}
+Exec=${PROJECT_SLUG}
+TryExec=${PROJECT_SLUG}
+Icon=${PROJECT_SLUG}
+Terminal=false
+Categories=Graphics;VectorGraphics;Qt;

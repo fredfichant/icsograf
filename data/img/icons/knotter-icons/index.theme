@@ -1,0 +1,61 @@
+[Icon Theme]
+Name=Knotter Icons
+Comment=Icons used in Knotter
+DisplayDepth=32
+
+# Pas d'héritage externe sur macOS
+Inherits=
+
+Example=configure-grid
+Directories=custom/16x16,custom/22x22,custom/32x32,custom/48x48,custom/scalable,oxygen/16x16,oxygen/22x22,oxygen/48x48,oxygen/64x64
+
+# ---- Custom icons ----
+
+[custom/16x16]
+Size=16
+Type=Fixed
+Context=Actions
+
+[custom/22x22]
+Size=22
+Type=Fixed
+Context=Actions
+
+[custom/32x32]
+Size=32
+Type=Fixed
+Context=Actions
+
+[custom/48x48]
+Size=48
+Type=Fixed
+Context=Actions
+
+[custom/scalable]
+Size=64
+Type=Scalable
+Context=Actions
+
+# ---- Oxygen icons ----
+
+[oxygen/16x16]
+Size=16
+Type=Fixed
+Context=Actions
+
+[oxygen/22x22]
+Size=22
+Type=Fixed
+Context=Actions
+
+[oxygen/48x48]
+Size=48
+Type=Fixed
+Context=Actions
+
+[oxygen/64x64]
+Size=64
+Type=Fixed
+Context=Actions
+
+

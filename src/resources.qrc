@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="/">
+    <file>img/handle_scale_rest.svg</file>
+    <file>img/handle_scale_active.svg</file>
+    <file>img/handle_rotate_rest.svg</file>
+    <file>img/handle_rotate_active.svg</file>
+  </qresource>
+</RCC>
