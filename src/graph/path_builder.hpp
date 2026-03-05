@@ -2,6 +2,7 @@
 #define PATH_BUILDER_HPP
 
 #include <QPainterPath>
+#include <QList>
 
 #include "path_item.hpp"
 
@@ -18,12 +19,15 @@ class Path_Builder
     /**
      *  \brief Contains the path data
      *
-     *  The data is stored in groups, hence the nested list
+     *  The data is stored in groups, hence the nested list. container strokes;: 
+     * This variable holds the geometric data. It is a "list of lists" (QList<QList<path_item::Line*>>).
+     * add_line methods: These are the public methods to populate the builder. The overload void add_line(path_item::Line* l); 
+     * implies that the Path_Builder takes ownership of the passed pointer
      */
     container strokes;
 
-    Path_Builder(const Path_Builder&);
-    Path_Builder& operator=(const Path_Builder&);
+    Path_Builder(const Path_Builder&) = delete;
+    Path_Builder& operator=(const Path_Builder&) = delete;
 
    public:
     Path_Builder();

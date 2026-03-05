@@ -1,6 +1,7 @@
 #ifndef EDGE_TYPE_WIDGET_HPP
 #define EDGE_TYPE_WIDGET_HPP
 
+#include <QtWidgets/qwidget.h>
 #include <QSignalMapper>
 
 #include "edge_style.hpp"

@@ -43,6 +43,8 @@ set(SOURCES
   graph/edge.cpp
   graph/edge_type.cpp
   graph/edge_type_utils.cpp
+  graph/edge_handle_calculator.cpp
+  graph/edge_inverted_logic.cpp
   graph/edge_normal.cpp
   graph/edge_2strand.cpp
   graph/edge_3strand.cpp
@@ -77,9 +79,11 @@ set(SOURCES
 
   widgets/other_widgets/cusp_style_widget.cpp
   widgets/other_widgets/crossing_style_widget.cpp
+  widgets/other_widgets/edge_type_widget.cpp
 
   widgets/other_widgets/cusp_style_widget.ui
   widgets/other_widgets/crossing_style_widget.ui
+  widgets/other_widgets/edge_type_widget.ui
 
   main.cpp
   resource_manager.cpp

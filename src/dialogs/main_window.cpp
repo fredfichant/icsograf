@@ -335,16 +335,10 @@ void Main_Window::connect_view(Knot_View* v)
             SLOT(set_selection_handle_lenght_edges(double)));
     connect(widget_edge_style, SIGNAL(crossing_distance_changed(double)), v,
             SLOT(set_selection_crossing_distance(double)));
-    connect(widget_edge_style, SIGNAL(edge_type_changed(Edge_Type*)), v,
-            SLOT(set_selection_edge_type(Edge_Type*)));
     connect(widget_edge_style, SIGNAL(enabled_styles_changed(Edge_Style::Enabled_Styles)), v,
             SLOT(set_selection_enabled_styles_edges(Edge_Style::Enabled_Styles)));
     connect(widget_edge_style, SIGNAL(edge_slide_changed(double)), v,
             SLOT(set_selection_edge_slide(double)));
-    connect(widget_edge_style, SIGNAL(spacing_changed(double)), v,
-            SLOT(set_selection_spacing(double)));
-    connect(widget_edge_style, SIGNAL(strand_count_changed(int)), v,
-            SLOT(set_selection_strand_count(int)));
 
     // export
     dialog_export_image->set_view(v);
@@ -534,16 +528,14 @@ void Main_Window::handleRefreshPathTriggered() { view->update_knot(); }
 
 void Main_Window::handleOpenTriggered()
 {
-    // qDebug() << "Main_Window: handleOpenTriggered called.";
 
     QString initialPath = QDir::homePath();  // Always start in a known good path
 
     QStringList files =
         QFileDialog::getOpenFileNames(this, tr("Open Knot"), initialPath,
-                                      "Knot files (*.knot);;XML files (*.xml);;All files (*)");
+        "Knot files (*.knot);;XML files (*.xml);;All files (*)");
 
     for (QString file : files) {
-        // qDebug() << "Main_Window: Opening file:" << file;
         m_fileManager->create_tab(file);
     }
 }

@@ -18,6 +18,9 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="Edge_Type_Widget" name="edge_type_widget" native="true"/>
+   </item>
+   <item>
     <widget class="Crossing_Style_Widget" name="crossing_style_widget" native="true"/>
    </item>
    <item>
@@ -37,6 +40,12 @@
    <class>Crossing_Style_Widget</class>
    <extends>QWidget</extends>
    <header>crossing_style_widget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Edge_Type_Widget</class>
+   <extends>QWidget</extends>
+   <header>edge_type_widget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

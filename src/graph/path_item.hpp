@@ -5,7 +5,6 @@
  *  \brief Classes that can be stored inside a Path_Builder and related functions
  */
 namespace path_item {
-
 /**
  *  \brief Straight line
  */
@@ -13,23 +12,20 @@ struct Line
 {
     QPointF begin;
     QPointF end;
-
     Line(QPointF begin, QPointF end);
 
     /**
-        \brief Add the line to the painterpath
-
-        if move==false, it will assume that the painter path cursor is already
-        at begin
-
-        \param      move Whether to start with moveTo(begin)
-        \param[out] ppth Output painter path
-    */
+     *  \brief Add the line to the painterpath
+     *  if move==false, it will assume that the painter path cursor is already
+     *  at begin
+     * \param      move Whether to start with moveTo(begin)
+     *  \param[out] ppth Output painter path
+     */
     virtual void add_to(bool move, QPainterPath& ppth) const;
 
     /**
-        \brief reverse direction of the line
-    */
+     *   \brief reverse direction of the line
+     */
     virtual void reverse();
 
     virtual ~Line();
@@ -61,9 +57,9 @@ struct Cubic_Curve : public Line
 };
 
 /**
-    \brief sequence of adjacent lines
-    \note takes ownership of passed line pointers
-*/
+ *    \brief sequence of adjacent lines
+ *   \note takes ownership of passed line pointers
+ */
 struct Compound : public Line
 {
    private:
@@ -88,15 +84,14 @@ struct Compound : public Line
 
 /**
  *  \brief Merge two lines
- *
- *  If any of them is already a coumpoind object, it will take ownership of the other one
+ *  If any of them is already a coumpound object, it will take ownership of the other one
  */
 Compound* merge(Line* a, Line* b);
 
 /**
-    \brief Check if two lines have an endpoint in common
-    \return \c true  \f$\iff\f$ \c a and \c b can be merged in a continuous line
-*/
+ *   \brief Check if two lines have an endpoint in common
+ *  \return \c true  \f$\iff\f$ \c a and \c b can be merged in a continuous line
+ */
 bool adjacent(const Line* a, const Line* b);
 
 }  // namespace path_item

@@ -1,3 +1,8 @@
+/**
+ * \file properties_view.hpp
+ * \brief A widget for displaying graph properties.
+ */
+
 #ifndef PROPERTIES_VIEW_HPP
 #define PROPERTIES_VIEW_HPP
 
@@ -9,26 +14,44 @@ class QFormLayout;
 class QVBoxLayout;
 class QTableWidget;
 
+/**
+ * \brief A widget that displays the properties of a Graph.
+ *
+ * This view listens to a Graph_Properties object and updates its display
+ * whenever the properties change. It shows information like node/edge counts,
+ * degree distributions, and edge distribution statistics.
+ */
 class Properties_View : public QWidget
 {
     Q_OBJECT
    public:
+    /**
+     * \brief Constructs a Properties_View.
+     * \param properties The Graph_Properties object to display.
+     * \param parent The parent widget.
+     */
     explicit Properties_View(const Graph_Properties& properties, QWidget* parent = nullptr);
 
    public slots:
+    /**
+     * \brief Updates the view with the latest data from the Graph_Properties object.
+     *
+     * This slot is connected to the `properties_changed` signal of the
+     * Graph_Properties object.
+     */
     void update_view();
 
    private:
-    const Graph_Properties& m_properties;
-    QLabel* m_node_count_label;
-    QLabel* m_edge_count_label;
-    QLabel* m_group_count_label;
-    QLabel* m_face_count_label;
-    QTableWidget* m_degree_table;
-    QTableWidget* m_edge_distribution_table;
-    QLabel* m_delta_t_label;
-    QVBoxLayout* m_main_layout;
-    QFormLayout* m_form_layout;
+    const Graph_Properties& m_properties;      ///< Reference to the properties data model.
+    QLabel* m_node_count_label;                ///< Label to display the number of nodes.
+    QLabel* m_edge_count_label;                ///< Label to display the number of edges.
+    QLabel* m_group_count_label;               ///< Label to display the number of disconnected groups (strands).
+    QLabel* m_face_count_label;                ///< Label to display the number of faces.
+    QTableWidget* m_degree_table;              ///< Table to display vertex and face degree distributions.
+    QTableWidget* m_edge_distribution_table;   ///< Table for edge distribution parameters (wa, w0, p0, pa).
+    QLabel* m_delta_t_label;                   ///< Label to display the Delta T value.
+    QVBoxLayout* m_main_layout;                ///< Main vertical layout for the widget.
+    QFormLayout* m_form_layout;                ///< Form layout for simple key-value properties.
 };
 
 #endif  // PROPERTIES_VIEW_HPP

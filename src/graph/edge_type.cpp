@@ -28,9 +28,9 @@ void Edge_Type::paint_highlighted(QPainter* painter, const Edge& edge)
     int strands = edge.strand_count();
     double width = 4;
     if (strands == 2)
-        width = 6;
+        width = 8;
     else if (strands == 3)
-        width = 10;
+        width = 12;
 
     QPen pen(Edge::color_highlighted, width);
     pen.setCosmetic(true);

@@ -43,13 +43,17 @@ The executable will be located in the `build/bin` directory.
 *   The application supports plugins, which can be written in C++ or a scripting language.
 *   Internationalization is supported through Qt's translation system.
 
-## PROJECT REFACTORING
-### phase 0 : code formatting
-- [ ] apply qt_format.sh scriptQTskill on every .hpp and .cpp file of /src directory
+## phase 1 :
 
-### phase 2: Documentation
-*Objective: Document the classes, functions, parameters, return values, errors, and members if exposed *
-- [ ] apply documentation for further Doxygen process
+*at each step, give assesment to the user  and then build to check for errors*
+
+- [x] assess refactoring edge_normal, edge_2strand and edge_3strand ; for example :
+ - create a class for 'QLineF Edge_2Strand::handle' logic
+ - create a class for inverted logic
+
+
+
+
 
 
 

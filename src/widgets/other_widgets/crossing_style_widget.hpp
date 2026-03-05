@@ -27,27 +27,20 @@ class Crossing_Style_Widget : public QWidget, private Ui::Crossing_Style_Widget
    signals:
     void handle_length_changed(double);
     void crossing_distance_changed(double);
-    void edge_type_changed(Edge_Type*);
     void enabled_styles_changed(Edge_Style::Enabled_Styles);
     void edge_slide_changed(double);
-    void spacing_changed(double);
-    void strand_count_changed(int);
 
    private slots:
     void checkbox_toggled(int style);
     void emit_edge_slide(int percent);
-    void reload_edge_types();
-    void on_combo_edge_type_activated(int index);
 
    private:
     /// Copy tooltip from buddy to label
     void label_tooltip();
 
-    /// Edge type associated with combo box index
-    Edge_Type* edge_type(int index) const;
-    Edge_Type* edge_type() const;
-
-    void set_edge_type(Edge_Type* type);
+    Edge_Type* m_edge_type;
+    double m_spacing;
+    int m_strand_count;
 };
 
 #endif  // CROSSING_STYLE_WIDGET_HPP

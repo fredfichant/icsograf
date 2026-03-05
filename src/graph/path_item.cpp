@@ -9,12 +9,10 @@ Line::Line(QPointF begin, QPointF end) : begin(begin), end(end) {}
 void Line::add_to(bool move, QPainterPath& ppth) const
 {
     if (move) ppth.moveTo(begin);
-
     ppth.lineTo(end);
 }
 
 void Line::reverse() { qSwap(begin, end); }
-
 Line::~Line() {}
 
 Cubic_Curve::Cubic_Curve(QPointF begin, QPointF control1, QPointF control2, QPointF end)
@@ -31,7 +29,6 @@ void Cubic_Curve::reverse()
 void Cubic_Curve::add_to(bool move, QPainterPath& ppth) const
 {
     if (move) ppth.moveTo(begin);
-
     ppth.cubicTo(control1, control2, end);
 }
 
@@ -43,7 +40,6 @@ Quad_Curve::Quad_Curve(QPointF begin, QPointF control, QPointF end)
 void Quad_Curve::add_to(bool move, QPainterPath& ppth) const
 {
     if (move) ppth.moveTo(begin);
-
     ppth.quadTo(control, end);
 }
 
@@ -52,9 +48,7 @@ Compound::Compound(Line* l) : Line(*l) { append(l); }
 void Compound::append(Line* l)
 {
     end = l->end;
-
     Compound* c = dynamic_cast<Compound*>(l);
-
     if (c) {
         elements += c->elements;
         c->elements.clear();
@@ -66,7 +60,6 @@ void Compound::append(Line* l)
 void Compound::add_to(bool move, QPainterPath& ppth) const
 {
     if (move) ppth.moveTo(begin);
-
     foreach (Line* l, elements) {
         l->add_to(false, ppth);
     }
@@ -92,17 +85,12 @@ Compound::~Compound()
 Compound* merge(Line* a, Line* b)
 {
     if (qFuzzyCompare(a->begin, b->begin) || qFuzzyCompare(a->end, b->end)) b->reverse();
-
     if (qFuzzyCompare(a->begin, b->end)) qSwap(a, b);
-
     Compound* c = dynamic_cast<Compound*>(a);
-
     if (!c) {
         c = new Compound(a);
     }
-
     c->append(b);
-
     return c;
 }
 
@@ -113,7 +101,6 @@ bool adjacent(const Line* a, const Line* b)
     } else if (qFuzzyCompare(a->begin, b->begin) || qFuzzyCompare(a->end, b->end)) {
         return true;
     }
-
     return false;
 }
 

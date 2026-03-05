@@ -19,7 +19,7 @@ Edge_Type_Widget::Edge_Type_Widget(QWidget* parent) : QWidget(parent)
 void Edge_Type_Widget::set_style(const Edge_Style& st)
 {
     spin_strand_count->setValue(st.strand_count);
-    spin_strand_offset->setValue(st.strand_offset);
+    spin_strand_offset->setValue(st.spacing);
 
     if (st.enabled_style & Edge_Style::EDGE_TYPE) {
         set_edge_type(st.edge_type);
@@ -29,15 +29,15 @@ void Edge_Type_Widget::set_style(const Edge_Style& st)
 Edge_Style Edge_Type_Widget::get_style() const
 {
     return Edge_Style(24, 10, 0.5,  // Defaults for other fields
-                      edge_type(), enabled_styles(), spin_strand_count->value(),
-                      spin_strand_offset->value());
+                      edge_type(), enabled_styles(), spin_strand_offset->value(),
+                      spin_strand_count->value());
 }
 
 Edge_Style::Enabled_Styles Edge_Type_Widget::enabled_styles() const
 {
     Edge_Style::Enabled_Styles es = Edge_Style::NOTHING;
     es |= Edge_Style::STRAND_COUNT;
-    es |= Edge_Style::STRAND_OFFSET;
+    es |= Edge_Style::SPACING;
     es |= Edge_Style::EDGE_TYPE;
     return es;
 }

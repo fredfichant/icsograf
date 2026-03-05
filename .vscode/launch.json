@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "C/C++: clang Générer et déboguer le fichier actif",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "preLaunchTask": "C/C++: clang générer le fichier actif",
+            "visualizerFile": "/Users/fredfichant/Library/Application Support/Code/User/workspaceStorage/57eea197d7a32e0522b0756c6ea02a47/tonka3000.qtvsctools/qt.natvis.xml"
+        }
+    ],
+    "version": "2.0.0"
+}
