@@ -12,40 +12,40 @@ QString handleToString(Edge_Handle handle)
     QString name;
     switch (pure) {
         case Edge_Handle_Namespace::TOP_LEFT:
-            name = "TOP_LEFT";
+            name = "tl";
             break;
         case Edge_Handle_Namespace::TOP_RIGHT:
-            name = "TOP_RIGHT";
+            name = "tr";
             break;
         case Edge_Handle_Namespace::BOTTOM_LEFT:
-            name = "BOTTOM_LEFT";
+            name = "bl";
             break;
         case Edge_Handle_Namespace::BOTTOM_RIGHT:
-            name = "BOTTOM_RIGHT";
+            name = "br";
             break;
         case Edge_Handle_Namespace::MID_TOP_LEFT:
-            name = "MID_TOP_LEFT";
+            name = "mtl";
             break;
         case Edge_Handle_Namespace::MID_TOP_RIGHT:
-            name = "MID_TOP_RIGHT";
+            name = "mtr";
             break;
         case Edge_Handle_Namespace::MID_BOTTOM_LEFT:
-            name = "MID_BOTTOM_LEFT";
+            name = "mbl";
             break;
         case Edge_Handle_Namespace::MID_BOTTOM_RIGHT:
-            name = "MID_BOTTOM_RIGHT";
+            name = "mbr";
             break;
         case Edge_Handle_Namespace::CENTER_TOP_LEFT:
-            name = "CENTER_TOP_LEFT";
+            name = "ctl";
             break;
         case Edge_Handle_Namespace::CENTER_TOP_RIGHT:
-            name = "CENTER_TOP_RIGHT";
+            name = "ctr";
             break;
         case Edge_Handle_Namespace::CENTER_BOTTOM_LEFT:
-            name = "CENTER_BOTTOM_LEFT";
+            name = "cbl";
             break;
         case Edge_Handle_Namespace::CENTER_BOTTOM_RIGHT:
-            name = "CENTER_BOTTOM_RIGHT";
+            name = "cbr";
             break;
         default:
             name = QString("UNKNOWN(0x%1)").arg(pure, 4, 16, QChar('0'));

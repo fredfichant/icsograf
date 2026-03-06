@@ -11,11 +11,11 @@ Edge_Type::Edge_Type() {}
 void Edge_Type::paint_regular(QPainter* painter, const Edge& edge)
 {
     int strands = edge.strand_count();
-    double width = 2;
+    double width = 4;
     if (strands == 2)
-        width = 4;
-    else if (strands == 3)
         width = 8;
+    else if (strands == 3)
+        width = 12;
 
     QPen pen(Edge::color_resting, width);
     pen.setCosmetic(true);
@@ -40,6 +40,7 @@ void Edge_Type::paint_highlighted(QPainter* painter, const Edge& edge)
 }
 void Edge_Type::paint(QPainter* painter, const Edge& edge) { painter->drawLine(edge.to_line()); }
 
+//debug
 void Edge_Type::debug_draw_handles(QPainter* painter, const Edge& edge) const
 {
     painter->save();
@@ -52,6 +53,7 @@ void Edge_Type::debug_draw_handles(QPainter* painter, const Edge& edge) const
         Edge_Handle_Namespace::CENTER_TOP_LEFT,    Edge_Handle_Namespace::CENTER_TOP_RIGHT,
         Edge_Handle_Namespace::CENTER_BOTTOM_LEFT, Edge_Handle_Namespace::CENTER_BOTTOM_RIGHT};
 
+    
     for (int s = 0; s < edge.strand_count(); ++s) {
         Edge_Handle strand_bit = (Edge_Handle) ((s & 0xF) << 12);
 
@@ -68,9 +70,8 @@ void Edge_Type::debug_draw_handles(QPainter* painter, const Edge& edge) const
                 painter->setBrush(QColor(0, 0, 255, 100));
 
             painter->drawEllipse(pos, 5, 5);
-
             painter->setPen(Qt::black);
-            painter->drawText(pos + QPointF(8, -8), handleToString(handle));
+            painter->drawText(pos + QPointF(8, -8), handleToString((Edge_Handle)handle));
         }
     }
 

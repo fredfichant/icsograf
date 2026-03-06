@@ -5,10 +5,12 @@
 
 #include <QLineF>
 #include <QPointF>
+#include <cmath>
 
 inline bool qFuzzyCompare(QPointF p1, QPointF p2)
 {
-    return qFuzzyCompare(p1.x(), p2.x()) && qFuzzyCompare(p1.y(), p2.y());
+    const double epsilon = 0.0001;
+    return std::abs(p1.x() - p2.x()) <= epsilon && std::abs(p1.y() - p2.y()) <= epsilon;
 }
 
 inline double point_distance_squared(const QPointF& p1, const QPointF& p2)

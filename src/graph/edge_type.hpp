@@ -29,7 +29,6 @@ class Edge_Type
     virtual Edge::Handle traverse(Edge* edge, Edge::Handle handle, Path_Builder& path) const = 0;
     /**
      *  \brief Get handle geometry
-     *
      *  p1 is the point where the path line should pass, p2 the control point
      */
     virtual QLineF handle(const Edge* edge, Edge::Handle handle) const = 0;
