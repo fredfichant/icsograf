@@ -7,7 +7,7 @@
 #include "graph.hpp"
 #include "resource_manager.hpp"
 
-QColor Edge::color_resting(Qt::darkCyan);
+QColor Edge::color_resting(Qt:: gray);
 QColor Edge::color_highlighted(Qt::cyan);
 QColor Edge::color_selected(128, 128, 128, 128);
 

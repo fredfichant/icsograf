@@ -194,19 +194,13 @@ class Edge : public Graph_Item
 
             available_handles |= (Edge_Handle) (Edge_Handle_Namespace::MID_TOP_LEFT | strand_bit);
             available_handles |= (Edge_Handle) (Edge_Handle_Namespace::MID_TOP_RIGHT | strand_bit);
-            available_handles |=
-                (Edge_Handle) (Edge_Handle_Namespace::MID_BOTTOM_LEFT | strand_bit);
-            available_handles |=
-                (Edge_Handle) (Edge_Handle_Namespace::MID_BOTTOM_RIGHT | strand_bit);
+            available_handles |= (Edge_Handle) (Edge_Handle_Namespace::MID_BOTTOM_LEFT | strand_bit);
+            available_handles |= (Edge_Handle) (Edge_Handle_Namespace::MID_BOTTOM_RIGHT | strand_bit);
 
-            available_handles |=
-                (Edge_Handle) (Edge_Handle_Namespace::CENTER_TOP_LEFT | strand_bit);
-            available_handles |=
-                (Edge_Handle) (Edge_Handle_Namespace::CENTER_TOP_RIGHT | strand_bit);
-            available_handles |=
-                (Edge_Handle) (Edge_Handle_Namespace::CENTER_BOTTOM_LEFT | strand_bit);
-            available_handles |=
-                (Edge_Handle) (Edge_Handle_Namespace::CENTER_BOTTOM_RIGHT | strand_bit);
+            available_handles |= (Edge_Handle) (Edge_Handle_Namespace::CENTER_TOP_LEFT | strand_bit);
+            available_handles |= (Edge_Handle) (Edge_Handle_Namespace::CENTER_TOP_RIGHT | strand_bit);
+            available_handles |= (Edge_Handle) (Edge_Handle_Namespace::CENTER_BOTTOM_LEFT | strand_bit);
+            available_handles |= (Edge_Handle) (Edge_Handle_Namespace::CENTER_BOTTOM_RIGHT | strand_bit);
         }
     }
 
@@ -238,8 +232,7 @@ class Edge : public Graph_Item
                 return (Edge_Handle) (Edge_Handle_Namespace::TOP_RIGHT | strand_bit);
             if (available_handles & (Edge_Handle) (Edge_Handle_Namespace::BOTTOM_LEFT | strand_bit))
                 return (Edge_Handle) (Edge_Handle_Namespace::BOTTOM_LEFT | strand_bit);
-            if (available_handles &
-                (Edge_Handle) (Edge_Handle_Namespace::BOTTOM_RIGHT | strand_bit))
+            if (available_handles & (Edge_Handle) (Edge_Handle_Namespace::BOTTOM_RIGHT | strand_bit))
                 return (Edge_Handle) (Edge_Handle_Namespace::BOTTOM_RIGHT | strand_bit);
         }
         return Edge_Handle_Namespace::NO_HANDLE;

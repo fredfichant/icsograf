@@ -1,8 +1,10 @@
 #include "graph.hpp"
 
 #include <QPaintEngine>
+#include <QDebug>
 
 #include "edge_type.hpp"
+#include "edge_type_utils.hpp"
 #include "edges_mark.hpp"
 #include "faces.hpp"
 #include "resource_manager.hpp"
@@ -222,9 +224,17 @@ void Graph::traverse(Path_Builder& path)
 
         // begin new knot thread
         path.new_group();
+        qDebug() << "--- START NEW STRAND ---";
 
         // loop around a knotline loop item
+        int safety = 0;
         while (!edge->traversed(handle)) {
+            if (++safety > 1000) {
+                qWarning() << "Infinite loop detected in traverse!";
+                break;
+            }
+            qDebug() << "Current Pos: Edge" << edge << "Handle" << handleToString(handle);
+
             Edge_Handle pure_handle = (Edge_Handle) (handle & Edge_Handle_Namespace::HANDLE_MASK);
             bool is_internal = (pure_handle & 0x0FF0);
 
@@ -233,10 +243,14 @@ void Graph::traverse(Path_Builder& path)
                 edge->mark_traversed(handle);
 
                 Traversal_Info ti = traverse(edge, handle, path);
-                if (!ti.success || !ti.out.edge) break;
+                if (!ti.success || !ti.out.edge) {
+                    qDebug() << "  -> Node traversal failed (End of line or Error)";
+                    break;
+                }
 
                 edge = ti.out.edge;
                 handle = ti.out.handle;
+                qDebug() << "  -> Jumped Node to: Edge" << edge << "Handle" << handleToString(handle);
                 edge->mark_traversed(handle);
             } else {
                 // internal handle : just mark traversed
@@ -244,7 +258,14 @@ void Graph::traverse(Path_Builder& path)
             }
 
             // draw + get next handle on the same edge (keeps STRAND bits)
-            handle = edge->style().edge_type->traverse(edge, handle, path);
+            Edge::Handle next_handle = edge->style().edge_type->traverse(edge, handle, path);
+
+            if (next_handle == Edge_Handle_Namespace::NO_HANDLE) {
+                // Fallback : si le type spécifique échoue (ex: bug sur BL->BR), on force le passage via l'implémentation de base
+                next_handle = edge->style().edge_type->Edge_Type::traverse(edge, handle, path);
+            }
+            handle = next_handle;
+            qDebug() << "  -> Internal Traverse to:" << handleToString(handle);
         }
     }
 
