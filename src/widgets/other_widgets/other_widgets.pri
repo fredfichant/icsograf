@@ -17,13 +17,10 @@
 INCLUDEPATH += $$PWD
 
 HEADERS += \
-    $$PWD/cusp_style_widget.hpp \
-    $$PWD/crossing_style_widget.hpp
+    $$PWD/cusp_style_widget.hpp
 
 SOURCES += \
-    $$PWD/cusp_style_widget.cpp \
-    $$PWD/crossing_style_widget.cpp
+    $$PWD/cusp_style_widget.cpp
 
 FORMS += \
-    $$PWD/cusp_style_widget.ui \
-    $$PWD/crossing_style_widget.ui
+    $$PWD/cusp_style_widget.ui

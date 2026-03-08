@@ -26,8 +26,6 @@ class Edge_Type_Widget : public QWidget, private Ui::Edge_Type_Widget
    signals:
     void edge_type_changed(Edge_Type*);
     void enabled_styles_changed(Edge_Style::Enabled_Styles);
-    void strand_count_changed(int);
-    void strand_offset_changed(double);
 
    private slots:
     void reload_edge_types();

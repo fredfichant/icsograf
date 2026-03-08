@@ -99,6 +99,8 @@ class Graph_Properties : public QObject
     void set_vertex_degree_distribution(const QMap<int, int>& dist);
     /** \brief Updates face degree distribution and emits properties_changed() if changed */
     void set_face_degree_distribution(const QMap<int, int>& dist);
+    /** \brief Sets the extra faces induced by multi-strand edge styles */
+    void set_face_adjustment(int count);
     /** \brief Updates edge distribution parameters and emits properties_changed() if changed */
     void set_edge_distribution(int wa, int w0, int p0, int pa);
 
@@ -108,6 +110,7 @@ class Graph_Properties : public QObject
     int m_face_count;                             ///< Current number of faces
     QMap<int, int> m_vertex_degree_distribution;  ///< Vertex degree -> count
     QMap<int, int> m_face_degree_distribution;    ///< Face degree -> count
+    int m_face_adjustment;                        ///< Extra faces induced by multi-strand edges
 
     int m_wa, m_w0, m_p0, m_pa;  ///< Edge distribution parameters
 };

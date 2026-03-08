@@ -61,6 +61,8 @@ message(STATUS "${CMAKE_BUILD_TYPE} build")
 
 # Targets
 add_subdirectory(src bin)
+enable_testing()
+add_subdirectory(tests)
 add_custom_target(copy_data ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/data
@@ -73,4 +75,3 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/knotter.desktop.in ${CMAKE_CURRENT_BI
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/knotter.desktop DESTINATION "share/applications")
 install(FILES data/img/${PROJECT_SLUG}.png DESTINATION share/icons/hicolor/64x64/apps/ )
 install(FILES data/img/${PROJECT_SLUG}.svg DESTINATION share/icons/hicolor/scalable/apps/ )
-

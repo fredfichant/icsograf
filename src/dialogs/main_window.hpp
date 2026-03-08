@@ -5,7 +5,6 @@
 #include <QUndoGroup>
 #include <memory>  // Added for std::unique_ptr
 
-#include "dock/dock_knot_style.hpp"
 #include "export_image_dialog.hpp"
 #include "knot_file_manager.hpp"
 #include "ui_main_window.h"
@@ -14,7 +13,7 @@
 class QDoubleSpinBox;
 class Knot_View;
 class Dock_Grid;
-class Crossing_Style_Widget;
+class Edge_Type_Widget;
 
 // Q_DECLARE_METATYPE(Color_Preview::Display_Mode)
 
@@ -28,13 +27,12 @@ class Main_Window : public QMainWindow, private Ui::Main_Window
     QUndoGroup undo_group;  ///< Groups undo stacks
     std::unique_ptr<Export_Image_Dialog> dialog_export_image;
     Dock_Grid* dock_grid;                    ///< Grid conf dock
-    Dock_Knot_Style* dock_knot_style;        ///< Knot Style dock
     class Dock_Properties* dock_properties;  ///< Properties dock
     std::unique_ptr<KnotFileManager> m_fileManager;
 
     QPrinter printer;
 
-    Crossing_Style_Widget* widget_edge_style;
+    Edge_Type_Widget* widget_edge_style;
 
    public:
     explicit Main_Window(QWidget* parent = 0);

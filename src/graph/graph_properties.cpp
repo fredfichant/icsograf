@@ -6,6 +6,7 @@ Graph_Properties::Graph_Properties(QObject* parent)
       m_edge_count(0),
       m_group_count(0),
       m_face_count(0),
+      m_face_adjustment(0),
       m_wa(0),
       m_w0(0),
       m_p0(0),
@@ -41,8 +42,9 @@ void Graph_Properties::set_group_count(int count)
 
 void Graph_Properties::set_face_count(int count)
 {
-    if (m_face_count != count) {
-        m_face_count = count;
+    const int adjusted = count + m_face_adjustment;
+    if (m_face_count != adjusted) {
+        m_face_count = adjusted;
         emit properties_changed();
     }
 }
@@ -57,10 +59,21 @@ void Graph_Properties::set_vertex_degree_distribution(const QMap<int, int>& dist
 
 void Graph_Properties::set_face_degree_distribution(const QMap<int, int>& dist)
 {
-    if (m_face_degree_distribution != dist) {
-        m_face_degree_distribution = dist;
+    QMap<int, int> adjusted = dist;
+    if (m_face_adjustment > 0) {
+        adjusted[2] = adjusted.value(2, 0) + m_face_adjustment;
+    }
+
+    if (m_face_degree_distribution != adjusted) {
+        m_face_degree_distribution = adjusted;
         emit properties_changed();
     }
+}
+
+void Graph_Properties::set_face_adjustment(int count)
+{
+    if (count < 0) count = 0;
+    m_face_adjustment = count;
 }
 
 void Graph_Properties::set_edge_distribution(int wa, int w0, int p0, int pa)

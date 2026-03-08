@@ -4,7 +4,6 @@
 #include <QInputDialog>
 
 #include "commands.hpp"
-#include "dialog_edge_properties.hpp"
 #include "point_math.hpp"
 #include "resource_manager.hpp"
 
@@ -21,7 +20,6 @@ Context_Menu_Edge::Context_Menu_Edge(Knot_View* parent)
     addAction(tr("Break on intersections"), this, SLOT(break_intersections()));
     addAction(tr("Subdivide..."), this, SLOT(subdivide()));
 
-    addAction(QIcon::fromTheme("edge-crossing"), tr("Properties..."), this, SLOT(properties()));
     action_reset_style = addAction(tr("Reset custom style"), this, SLOT(reset_custom_style()));
 
     connect(&mapper, SIGNAL(mapped(QString)), SLOT(change_edge_type(QString)));
@@ -166,15 +164,6 @@ void Context_Menu_Edge::subdivide()
         view->remove_edge(edge);
 
         view->end_macro();
-    }
-}
-
-void Context_Menu_Edge::properties()
-{
-    Dialog_Edge_Properties dialog;
-    dialog.set_style(edge->style());
-    if (dialog.exec()) {
-        view->push_command(new Edge_Style_All(edge, edge->style(), dialog.edge_style(), view));
     }
 }
 

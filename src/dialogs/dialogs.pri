@@ -20,24 +20,18 @@ HEADERS += \
     $$PWD/dialog_preferences.hpp \
     $$PWD/export_image_dialog.hpp \
     $$PWD/icon_dock_style.hpp \
-    $$PWD/dock/dock_grid.hpp \
-    $$PWD/dialog_edge_properties.hpp \
-    $$PWD/dock/dock_knot_style.hpp
+    $$PWD/dock/dock_grid.hpp
 
 SOURCES += \
     $$PWD/main_window.cpp \
     $$PWD/dialog_preferences.cpp \
     $$PWD/export_image_dialog.cpp \
     $$PWD/dock/dock_grid.cpp \
-    $$PWD/dialog_confirm_close.cpp \
-    $$PWD/dialog_edge_properties.cpp \
-    $$PWD/dock/dock_knot_style.cpp
+    $$PWD/dialog_confirm_close.cpp
 
 FORMS += \
     $$PWD/main_window.ui \
     $$PWD/dialog_preferences.ui \
     $$PWD/export_image_dialog.ui \
     $$PWD/dock/dock_grid.ui \
-    $$PWD/dialog_confirm_close.ui \
-    $$PWD/dialog_edge_properties.ui \
-    $$PWD/dock/dock_knot_style.ui
+    $$PWD/dialog_confirm_close.ui

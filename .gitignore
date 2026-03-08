@@ -12,6 +12,7 @@ package/*
 Makefile
 Doxyfile
 build/
+build_clean/
 bin/
 docs/
 misc/

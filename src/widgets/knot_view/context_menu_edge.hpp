@@ -29,7 +29,6 @@ class Context_Menu_Edge : public QMenu
     void remove();
     void break_intersections();
     void subdivide();
-    void properties();
     void reset_custom_style();
 };
 

@@ -25,8 +25,6 @@ set(SOURCES
   dialogs/dock/dock_properties.cpp
   dialogs/cusp_style_dialog.cpp
   dialogs/dialog_confirm_close.cpp
-  dialogs/dialog_edge_properties.cpp
-  dialogs/dock/dock_knot_style.cpp
   dialogs/icon_dock_style.cpp
 
   dialogs/main_window.ui
@@ -35,8 +33,6 @@ set(SOURCES
   dialogs/dock/dock_grid.ui
   dialogs/cusp_style_dialog.ui
   dialogs/dialog_confirm_close.ui
-  dialogs/dialog_edge_properties.ui
-  dialogs/dock/dock_knot_style.ui
 
   graph/node.cpp
   graph/graph.cpp
@@ -78,11 +74,9 @@ set(SOURCES
   widgets/status_bar.cpp
 
   widgets/other_widgets/cusp_style_widget.cpp
-  widgets/other_widgets/crossing_style_widget.cpp
   widgets/other_widgets/edge_type_widget.cpp
 
   widgets/other_widgets/cusp_style_widget.ui
-  widgets/other_widgets/crossing_style_widget.ui
   widgets/other_widgets/edge_type_widget.ui
 
   main.cpp

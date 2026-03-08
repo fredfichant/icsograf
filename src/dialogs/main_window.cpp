@@ -31,8 +31,7 @@
 // Newly added includes for forward-declared classes
 #include <QDoubleSpinBox>
 
-#include "crossing_style_widget.hpp"
-#include "dock/dock_knot_style.hpp"  // REMOVED -> #include "dock/dock_knot_style.hpp"
+#include "edge_type_widget.hpp"
 #include "dock/dock_properties.hpp"
 #include "dock_grid.hpp"
 #include "knot_view.hpp"
@@ -41,7 +40,6 @@ Main_Window::Main_Window(QWidget* parent)
     : QMainWindow(parent),
       m_statusBar(nullptr),
       view(nullptr),
-      dock_knot_style(nullptr),
       dock_properties(nullptr),
       m_fileManager(std::make_unique<KnotFileManager>(this, this))  // Initialize here
 {
@@ -200,7 +198,7 @@ void Main_Window::init_toolbars()
 void Main_Window::init_docks()
 {
     // Edge style
-    widget_edge_style = new Crossing_Style_Widget;
+    widget_edge_style = new Edge_Type_Widget;
     QDockWidget* edge_style_dock = new QDockWidget;
     edge_style_dock->setWidget(widget_edge_style);
     edge_style_dock->setObjectName("edge_style_dock");
@@ -212,15 +210,10 @@ void Main_Window::init_docks()
     addDockWidget(Qt::RightDockWidgetArea, dock_grid);
     menu_Grid->insertAction(0, dock_grid->toggleViewAction());
 
-    // Knot Style
-    dock_knot_style = new Dock_Knot_Style(this);
-    addDockWidget(Qt::RightDockWidgetArea, dock_knot_style);
-    tabifyDockWidget(dock_grid, dock_knot_style);
-
     // Graph Properties
     dock_properties = new Dock_Properties(view ? view->graph().properties() : nullptr, this);
     addDockWidget(Qt::RightDockWidgetArea, dock_properties);
-    tabifyDockWidget(dock_knot_style, dock_properties);
+    tabifyDockWidget(dock_grid, dock_properties);
 
     connect(&undo_group, SIGNAL(cleanChanged(bool)), SLOT(set_clean_icon(bool)));
     connect(&undo_group, SIGNAL(undoTextChanged(QString)), SLOT(set_undo_text(QString)));
@@ -242,7 +235,6 @@ void Main_Window::init_docks()
 
     edge_style_dock->setWindowTitle(tr("Selected Edges"));
 
-    dock_knot_style->setWindowTitle(tr("Knot Style"));
     dock_properties->setWindowTitle(tr("Graph Properties"));
 }
 
@@ -307,23 +299,6 @@ void Main_Window::connect_view(Knot_View* v)
     connect(&v->grid(), SIGNAL(enabled(bool)), action_Enable_Grid, SLOT(setChecked(bool)));
     connect(&v->grid(), SIGNAL(shape_changed(int)), SLOT(update_grid_icon(int)));
 
-    // knot style dock
-    connect(dock_knot_style, SIGNAL(cusp_angle_changed(double)), v,
-            SLOT(set_selection_cusp_angle(double)));
-    connect(dock_knot_style, SIGNAL(handle_length_changed(double)), v,
-            SLOT(set_selection_handle_lenght_nodes(double)));
-    connect(dock_knot_style, SIGNAL(cusp_distance_changed(double)), v,
-            SLOT(set_selection_cusp_distance(double)));
-    connect(dock_knot_style, SIGNAL(cusp_shape_changed(Cusp_Shape*)), v,
-            SLOT(set_selection_cusp_shape(Cusp_Shape*)));
-    connect(dock_knot_style, SIGNAL(crossing_distance_changed(double)), v,
-            SLOT(set_selection_crossing_distance(double)));
-    connect(dock_knot_style, SIGNAL(edge_slide_changed(double)), v,
-            SLOT(set_selection_edge_slide(double)));
-    connect(dock_knot_style, SIGNAL(spacing_changed(double)), v,
-            SLOT(set_selection_spacing(double)));
-    connect(dock_knot_style, SIGNAL(strand_count_changed(int)), v,
-            SLOT(set_selection_strand_count(int)));
     connect(v, SIGNAL(selection_changed(QList<Node*>, QList<Edge*>)), this,
             SLOT(update_selection(QList<Node*>, QList<Edge*>)));
 
@@ -331,14 +306,10 @@ void Main_Window::connect_view(Knot_View* v)
     dock_properties->set_properties(*v->graph().properties());
 
     // selected edge style
-    connect(widget_edge_style, SIGNAL(handle_length_changed(double)), v,
-            SLOT(set_selection_handle_lenght_edges(double)));
-    connect(widget_edge_style, SIGNAL(crossing_distance_changed(double)), v,
-            SLOT(set_selection_crossing_distance(double)));
+    connect(widget_edge_style, SIGNAL(edge_type_changed(Edge_Type*)), v,
+            SLOT(set_selection_edge_type(Edge_Type*)));
     connect(widget_edge_style, SIGNAL(enabled_styles_changed(Edge_Style::Enabled_Styles)), v,
             SLOT(set_selection_enabled_styles_edges(Edge_Style::Enabled_Styles)));
-    connect(widget_edge_style, SIGNAL(edge_slide_changed(double)), v,
-            SLOT(set_selection_edge_slide(double)));
 
     // export
     dialog_export_image->set_view(v);
@@ -358,7 +329,6 @@ void Main_Window::update_style()
 {
     if (view) {
         update_selection(view->selected_nodes(), view->selected_edges());
-        dock_knot_style->refresh_data();  // Call the public slot
     }
 }
 
@@ -380,8 +350,6 @@ void Main_Window::disconnect_view(Knot_View* v)
         widget_edge_style->disconnect(v);
         update_selection(QList<Node*>(), QList<Edge*>());
 
-        // Disconnect dock_knot_style signals from view
-        dock_knot_style->disconnect(v);
         disconnect(v, SIGNAL(selection_changed(QList<Node*>, QList<Edge*>)), this,
                    SLOT(update_selection(QList<Node*>, QList<Edge*>)));
     }
@@ -420,6 +388,7 @@ void Main_Window::set_tool_button_style(Qt::ToolButtonStyle tbs) { setToolButton
 
 void Main_Window::update_selection(QList<Node*> nodes, QList<Edge*> edges)
 {
+    Q_UNUSED(nodes);
     widget_edge_style->setEnabled(!edges.isEmpty());
 
     widget_edge_style->blockSignals(true);
@@ -437,21 +406,6 @@ void Main_Window::update_selection(QList<Node*> nodes, QList<Edge*> edges)
 
     widget_edge_style->blockSignals(false);
 
-    // Update dock_knot_style
-    dock_knot_style->setEnabled(!nodes.isEmpty() || !edges.isEmpty());
-    dock_knot_style->blockSignals(true);
-
-    Node_Style ns = view->graph().default_node_style();
-    Edge_Style es_knot = view->graph().default_edge_style();
-
-    if (!nodes.isEmpty()) {
-        ns = nodes[0]->style();
-    }
-    if (!edges.isEmpty()) {
-        es_knot = edges[0]->style();
-    }
-    dock_knot_style->set_style(ns, es_knot);
-    dock_knot_style->blockSignals(false);
 }
 
 void Main_Window::handlePreferencesTriggered()

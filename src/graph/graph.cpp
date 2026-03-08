@@ -1,5 +1,6 @@
 #include "graph.hpp"
 
+#include <cctype>
 #include <QPaintEngine>
 #include <QDebug>
 
@@ -376,6 +377,19 @@ QRectF Graph::full_image_bounding_rect() const
 
 void Graph::update_properties() const
 {
+    const auto edge_weight = [](const Edge* e) {
+        const Edge_Type* type = e->style().edge_type;
+        if (!type) return 1;
+        const QString name = type->machine_name();
+        if (name.startsWith("2strand")) return 2;
+        if (name.startsWith("3strand")) return 3;
+        return 1;
+    };
+    const auto edge_is_inverted = [](const Edge* e) {
+        const Edge_Type* type = e->style().edge_type;
+        return type && type->machine_name().contains("inverted");
+    };
+
     m_properties->set_node_count(m_nodes.size());
     m_properties->set_edge_count(m_edges.size());
     m_properties->set_group_count(paths.size());
@@ -383,13 +397,21 @@ void Graph::update_properties() const
     // Calculate vertex degree distribution
     QMap<int, int> vertex_dist;
     for (Node* n : m_nodes) {
-        int deg = n->edges().size();
+        int deg = 0;
+        for (const Edge* e : n->edges()) {
+            deg += edge_weight(e);
+        }
         vertex_dist[deg] = vertex_dist.value(deg, 0) + 1;
     }
     m_properties->set_vertex_degree_distribution(vertex_dist);
 
     // Calculate faces and face degree distribution
     std::vector<std::vector<std::size_t>> faces = find_faces(*this);
+    int face_adjustment = 0;
+    for (Edge* e : m_edges) {
+        face_adjustment += edge_weight(e) - 1;
+    }
+    m_properties->set_face_adjustment(face_adjustment);
     m_properties->set_face_count(faces.size());
 
     QMap<int, int> face_dist;
@@ -405,15 +427,53 @@ void Graph::update_properties() const
 
     int wa = 0, w0 = 0, p0 = 0, pa = 0;
     for (auto const& [edge, mark] : markings) {
-        (void) edge;
-        if (mark.marking == "wa")
-            wa++;
-        else if (mark.marking == "w0")
-            w0++;
-        else if (mark.marking == "p0")
-            p0++;
-        else if (mark.marking == "pa")
-            pa++;
+        const int weight = edge_weight(edge);
+        const bool inverted = edge_is_inverted(edge);
+        const std::string& m = mark.marking;
+
+        if (m == "wa") {
+            wa += weight;
+            continue;
+        }
+        if (m == "w0") {
+            w0 += weight;
+            continue;
+        }
+        if (m == "pa") {
+            pa += weight;
+            continue;
+        }
+        if (m == "p0") {
+            p0 += weight;
+            continue;
+        }
+
+        // Current GraphMarker output uses "a"/"0" (possibly comma-separated).
+        std::size_t start = 0;
+        while (start <= m.size()) {
+            const std::size_t comma = m.find(',', start);
+            const std::string token =
+                m.substr(start, comma == std::string::npos ? std::string::npos : comma - start);
+            if (!token.empty()) {
+                const unsigned char c = static_cast<unsigned char>(token[0]);
+                const bool is_a = std::isalpha(c) != 0;
+                const bool is_0 = std::isdigit(c) != 0;
+                if (is_a) {
+                    if (inverted)
+                        pa += weight;
+                    else
+                        wa += weight;
+                } else if (is_0) {
+                    if (inverted)
+                        p0 += weight;
+                    else
+                        w0 += weight;
+                }
+            }
+
+            if (comma == std::string::npos) break;
+            start = comma + 1;
+        }
     }
     m_properties->set_edge_distribution(wa, w0, p0, pa);
 }

@@ -1,0 +1,39 @@
+#include <cassert>
+
+#include "edge_2strand.hpp"
+#include "edge_normal.hpp"
+#include "graph.hpp"
+
+int main()
+{
+    Node n1(QPointF(-100, 0));
+    Node n2(QPointF(0, 0));
+    Node n3(QPointF(100, 0));
+
+    Edge_Normal regular_type;
+    Edge_2Strand two_strand_type;
+
+    Graph g;
+    g.add_node(&n1);
+    g.add_node(&n2);
+    g.add_node(&n3);
+
+    Edge e1(&n1, &n2, &regular_type);
+    Edge e2(&n2, &n3, &regular_type);
+    g.add_edge(&e1);
+    g.add_edge(&e2);
+
+    e1.set_style(Edge_Style(24, 10, 0.5, &regular_type, Edge_Style::EVERYTHING, 10, 1));
+    e2.set_style(Edge_Style(24, 10, 0.5, &regular_type, Edge_Style::EVERYTHING, 10, 1));
+
+    g.render_knot();
+    const int baseline_groups = g.properties()->group_count();
+
+    e2.set_style(Edge_Style(24, 10, 0.5, &two_strand_type, Edge_Style::EVERYTHING, 10, 1));
+    g.render_knot();
+
+    assert(e1.style().edge_type->machine_name() == "regular");
+    assert(g.properties()->group_count() == baseline_groups + 1);
+
+    return 0;
+}
