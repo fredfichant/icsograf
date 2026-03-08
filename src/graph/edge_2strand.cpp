@@ -1,11 +1,9 @@
 #include "edge_2strand.hpp"
-#include <qmath.h>
-#include <QDebug>
+
 #include "edge.hpp"
 #include "edge_handle_calculator.hpp"
 #include "edge_inverted_logic.hpp"
 #include "edge_type_utils.hpp"
-#include "point_math.hpp"
 
 /**
  * \brief Implements the traversal logic for a 2-strand edge.
@@ -29,70 +27,114 @@
  * \return The next handle in the traversal sequence, or Edge_Handle_Namespace::NO_HANDLE
  *         if the end of the edge is reached.
  */
+static bool is_connector_segment(Edge_Handle a, Edge_Handle b)
+{
+    return (a == Edge_Handle_Namespace::MID_TOP_LEFT &&
+            b == Edge_Handle_Namespace::MID_BOTTOM_LEFT) ||
+           (a == Edge_Handle_Namespace::MID_BOTTOM_LEFT &&
+            b == Edge_Handle_Namespace::MID_TOP_LEFT) ||
+           (a == Edge_Handle_Namespace::MID_TOP_RIGHT &&
+            b == Edge_Handle_Namespace::MID_BOTTOM_RIGHT) ||
+           (a == Edge_Handle_Namespace::MID_BOTTOM_RIGHT &&
+            b == Edge_Handle_Namespace::MID_TOP_RIGHT);
+}
+
+static bool is_top_square_over(Edge_Handle a, Edge_Handle b, bool inverted)
+{
+    if (!inverted)
+        return (a == Edge_Handle_Namespace::TOP_LEFT &&
+                b == Edge_Handle_Namespace::MID_TOP_RIGHT) ||
+               (a == Edge_Handle_Namespace::MID_TOP_RIGHT &&
+                b == Edge_Handle_Namespace::TOP_LEFT);
+    return (a == Edge_Handle_Namespace::TOP_RIGHT && b == Edge_Handle_Namespace::MID_TOP_LEFT) ||
+           (a == Edge_Handle_Namespace::MID_TOP_LEFT && b == Edge_Handle_Namespace::TOP_RIGHT);
+}
+
+static bool is_bottom_square_over(Edge_Handle a, Edge_Handle b, bool inverted)
+{
+    if (!inverted) {
+        return (a == Edge_Handle_Namespace::MID_BOTTOM_LEFT &&
+                b == Edge_Handle_Namespace::BOTTOM_RIGHT) ||
+               (a == Edge_Handle_Namespace::BOTTOM_RIGHT &&
+                b == Edge_Handle_Namespace::MID_BOTTOM_LEFT);
+    }
+    return (a == Edge_Handle_Namespace::MID_BOTTOM_RIGHT &&
+            b == Edge_Handle_Namespace::BOTTOM_LEFT) ||
+           (a == Edge_Handle_Namespace::BOTTOM_LEFT &&
+            b == Edge_Handle_Namespace::MID_BOTTOM_RIGHT);
+}
+
 static Edge::Handle traverse_2strand_impl(Edge* edge, Edge::Handle hand, Path_Builder& path,
                                           bool inverted)
 {
     Edge_Handle strand_bit = (Edge_Handle) (hand & Edge_Handle_Namespace::STRAND_MASK);
     Edge_Handle pure_hand = (Edge_Handle) (hand & Edge_Handle_Namespace::HANDLE_MASK);
-    int strand = (int) (strand_bit >> 12);
-
     Edge_Handle next_pure = Edge_Handle_Namespace::NO_HANDLE;
-    int next_strand = strand;
+    const auto h_traversed = [&](Edge_Handle pure) {
+        return edge->traversed((Edge_Handle) (pure | strand_bit));
+    };
+    const auto ext_traversed = [&](Edge_Handle pure_external) {
+        return edge->traversed((Edge_Handle) (pure_external | strand_bit));
+    };
 
-    if (strand == 0) {
-        if (pure_hand == Edge_Handle_Namespace::TOP_LEFT) {
-            next_pure = Edge_Handle_Namespace::CENTER_TOP_RIGHT;
-        } else if (pure_hand == Edge_Handle_Namespace::CENTER_TOP_RIGHT) {
-            next_pure = Edge_Handle_Namespace::CENTER_BOTTOM_RIGHT;
-            next_strand = inverted ? 1 : 0;
-        } else if (pure_hand == Edge_Handle_Namespace::CENTER_BOTTOM_RIGHT) {
-            next_pure = Edge_Handle_Namespace::BOTTOM_LEFT;
-        } else if (pure_hand == Edge_Handle_Namespace::TOP_RIGHT) {
-            next_pure = Edge_Handle_Namespace::CENTER_TOP_LEFT;
-             next_strand = inverted ? 1 : 0;
-        } else if (pure_hand == Edge_Handle_Namespace::CENTER_TOP_LEFT) {
-            next_pure = Edge_Handle_Namespace::CENTER_BOTTOM_LEFT;
-        } else if (pure_hand == Edge_Handle_Namespace::CENTER_BOTTOM_LEFT) {
-            next_pure = Edge_Handle_Namespace::BOTTOM_RIGHT;
-        }
-    } else {
-        if (pure_hand == Edge_Handle_Namespace::TOP_LEFT) {
-            next_pure = Edge_Handle_Namespace::CENTER_TOP_RIGHT;
-        } else if (pure_hand == Edge_Handle_Namespace::CENTER_TOP_RIGHT) {
-            next_pure = Edge_Handle_Namespace::CENTER_BOTTOM_RIGHT;
-            next_strand = inverted ? 0 : 1;
-        } else if (pure_hand == Edge_Handle_Namespace::CENTER_BOTTOM_RIGHT) {
-            next_pure = Edge_Handle_Namespace::BOTTOM_LEFT;
-        } else if (pure_hand == Edge_Handle_Namespace::TOP_RIGHT) {
-            next_pure = Edge_Handle_Namespace::CENTER_TOP_LEFT;
-             next_strand = inverted ? 0 : 1;
-        } else if (pure_hand == Edge_Handle_Namespace::CENTER_TOP_LEFT) {
-            next_pure = Edge_Handle_Namespace::CENTER_BOTTOM_LEFT; 
-        } else if (pure_hand == Edge_Handle_Namespace::CENTER_BOTTOM_LEFT) {
-            next_pure = Edge_Handle_Namespace::BOTTOM_RIGHT;
-        }
+    switch (pure_hand) {
+        case Edge_Handle_Namespace::TOP_LEFT:
+            next_pure = Edge_Handle_Namespace::MID_TOP_RIGHT;
+            break;
+        case Edge_Handle_Namespace::MID_TOP_RIGHT:
+            if (!ext_traversed(Edge_Handle_Namespace::TOP_LEFT))
+                next_pure = Edge_Handle_Namespace::TOP_LEFT;
+            else if (!h_traversed(Edge_Handle_Namespace::MID_BOTTOM_RIGHT))
+                next_pure = Edge_Handle_Namespace::MID_BOTTOM_RIGHT;
+            else
+                next_pure = Edge_Handle_Namespace::TOP_LEFT;
+            break;
+        case Edge_Handle_Namespace::MID_BOTTOM_RIGHT:
+            if (!ext_traversed(Edge_Handle_Namespace::BOTTOM_LEFT))
+                next_pure = Edge_Handle_Namespace::BOTTOM_LEFT;
+            else if (!h_traversed(Edge_Handle_Namespace::MID_TOP_RIGHT))
+                next_pure = Edge_Handle_Namespace::MID_TOP_RIGHT;
+            else
+                next_pure = Edge_Handle_Namespace::BOTTOM_LEFT;
+            break;
+        case Edge_Handle_Namespace::BOTTOM_LEFT:
+            next_pure = Edge_Handle_Namespace::MID_BOTTOM_RIGHT;
+            break;
+        case Edge_Handle_Namespace::TOP_RIGHT:
+            next_pure = Edge_Handle_Namespace::MID_TOP_LEFT;
+            break;
+        case Edge_Handle_Namespace::MID_TOP_LEFT:
+            if (!ext_traversed(Edge_Handle_Namespace::TOP_RIGHT))
+                next_pure = Edge_Handle_Namespace::TOP_RIGHT;
+            else if (!h_traversed(Edge_Handle_Namespace::MID_BOTTOM_LEFT))
+                next_pure = Edge_Handle_Namespace::MID_BOTTOM_LEFT;
+            else
+                next_pure = Edge_Handle_Namespace::TOP_RIGHT;
+            break;
+        case Edge_Handle_Namespace::MID_BOTTOM_LEFT:
+            if (!ext_traversed(Edge_Handle_Namespace::BOTTOM_RIGHT))
+                next_pure = Edge_Handle_Namespace::BOTTOM_RIGHT;
+            else if (!h_traversed(Edge_Handle_Namespace::MID_TOP_LEFT))
+                next_pure = Edge_Handle_Namespace::MID_TOP_LEFT;
+            else
+                next_pure = Edge_Handle_Namespace::BOTTOM_RIGHT;
+            break;
+        case Edge_Handle_Namespace::BOTTOM_RIGHT:
+            next_pure = Edge_Handle_Namespace::MID_BOTTOM_LEFT;
+            break;
+        default:
+            break;
     }
 
-    if (next_pure != Edge_Handle_Namespace::NO_HANDLE) {
-        Edge_Handle next_strand_bit =
-            (next_strand == strand) ? strand_bit : (Edge_Handle) (next_strand << 12);
-        Edge_Handle next = (Edge_Handle) (next_pure | next_strand_bit);
+    if (next_pure == Edge_Handle_Namespace::NO_HANDLE) return Edge_Handle_Namespace::NO_HANDLE;
 
-        bool is_gap = (pure_hand == Edge_Handle_Namespace::CENTER_BOTTOM_RIGHT &&
-                       next_pure == Edge_Handle_Namespace::BOTTOM_LEFT) ||
-                      (pure_hand == Edge_Handle_Namespace::CENTER_TOP_LEFT &&
-                       next_pure == Edge_Handle_Namespace::TOP_RIGHT);
-
-        bool is_under = (inverted) ? (strand == 0) : (strand == 1);
-
-        if (!(is_under && is_gap)) {
-            path.add_line(get_handle_pos(edge, hand), get_handle_pos(edge, next));
-        }
-
-        return (Edge::Handle) next;
+    Edge_Handle next = (Edge_Handle) (next_pure | strand_bit);
+    if (is_connector_segment(pure_hand, next_pure) || is_top_square_over(pure_hand, next_pure, inverted) ||
+        is_bottom_square_over(pure_hand, next_pure, inverted)) {
+        path.add_line(get_handle_pos(edge, hand), get_handle_pos(edge, next));
     }
 
-    return Edge_Handle_Namespace::NO_HANDLE;
+    return (Edge::Handle) next;
 }
 
 /**

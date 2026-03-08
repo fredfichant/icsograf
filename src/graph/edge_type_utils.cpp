@@ -3,6 +3,7 @@
 #include <qmath.h>
 
 #include "edge.hpp"
+#include "edge_type.hpp"
 #include "point_math.hpp"
 
 QString handleToString(Edge_Handle handle)
@@ -61,44 +62,95 @@ QPointF get_handle_pos(const Edge* edge, Edge_Handle handle)
     int strand = (int) ((handle & Edge_Handle_Namespace::STRAND_MASK) >> 12);
 
     const long double edge_angle = deg2rad(edge->to_line().angle());
-    const double base_distance = style.crossing_distance / 2.0;
+    const double h = style.crossing_distance / 2.0;
+    const double spacing = style.spacing;
+    const QString edge_type_name = style.edge_type ? style.edge_type->machine_name() : QString();
+    const bool is_2strand = edge_type_name.startsWith("2strand");
+    const bool is_3strand = edge_type_name.startsWith("3strand");
 
-    // Déterminer le quadrant (signes en coordonnées mathématiques)
-    double sx = 0.0, sy = 0.0;
+    double sx = 0.0;
     if (pure_handle & (Edge_Handle_Namespace::TOP_RIGHT | Edge_Handle_Namespace::MID_TOP_RIGHT |
-                       Edge_Handle_Namespace::CENTER_TOP_RIGHT)) {
+                       Edge_Handle_Namespace::CENTER_TOP_RIGHT |
+                       Edge_Handle_Namespace::BOTTOM_RIGHT | Edge_Handle_Namespace::MID_BOTTOM_RIGHT |
+                       Edge_Handle_Namespace::CENTER_BOTTOM_RIGHT))
         sx = +1.0;
-        sy = +1.0;
-    } else if (pure_handle &
-               (Edge_Handle_Namespace::TOP_LEFT | Edge_Handle_Namespace::MID_TOP_LEFT |
-                Edge_Handle_Namespace::CENTER_TOP_LEFT)) {
+    else if (pure_handle & (Edge_Handle_Namespace::TOP_LEFT | Edge_Handle_Namespace::MID_TOP_LEFT |
+                            Edge_Handle_Namespace::CENTER_TOP_LEFT |
+                            Edge_Handle_Namespace::BOTTOM_LEFT | Edge_Handle_Namespace::MID_BOTTOM_LEFT |
+                            Edge_Handle_Namespace::CENTER_BOTTOM_LEFT))
         sx = -1.0;
-        sy = +1.0;
-    } else if (pure_handle &
-               (Edge_Handle_Namespace::BOTTOM_LEFT | Edge_Handle_Namespace::MID_BOTTOM_LEFT |
-                Edge_Handle_Namespace::CENTER_BOTTOM_LEFT)) {
-        sx = -1.0;
-        sy = -1.0;
-    } else if (pure_handle &
-               (Edge_Handle_Namespace::BOTTOM_RIGHT | Edge_Handle_Namespace::MID_BOTTOM_RIGHT |
-                Edge_Handle_Namespace::CENTER_BOTTOM_RIGHT)) {
-        sx = +1.0;
-        sy = -1.0;
+
+    double row_y = 0.0;
+    if (is_3strand) {
+        const double top = 2.0 * h + spacing;
+        const double mid_top = h + spacing;
+        const double center_top = h;
+        const double center_bottom = -h;
+        const double mid_bottom = -h - spacing;
+        const double bottom = -2.0 * h - spacing;
+
+        if (pure_handle & (Edge_Handle_Namespace::TOP_LEFT | Edge_Handle_Namespace::TOP_RIGHT))
+            row_y = top;
+        else if (pure_handle &
+                 (Edge_Handle_Namespace::MID_TOP_LEFT | Edge_Handle_Namespace::MID_TOP_RIGHT))
+            row_y = mid_top;
+        else if (pure_handle &
+                 (Edge_Handle_Namespace::CENTER_TOP_LEFT | Edge_Handle_Namespace::CENTER_TOP_RIGHT))
+            row_y = center_top;
+        else if (pure_handle & (Edge_Handle_Namespace::CENTER_BOTTOM_LEFT |
+                                Edge_Handle_Namespace::CENTER_BOTTOM_RIGHT))
+            row_y = center_bottom;
+        else if (pure_handle &
+                 (Edge_Handle_Namespace::MID_BOTTOM_LEFT | Edge_Handle_Namespace::MID_BOTTOM_RIGHT))
+            row_y = mid_bottom;
+        else if (pure_handle &
+                 (Edge_Handle_Namespace::BOTTOM_LEFT | Edge_Handle_Namespace::BOTTOM_RIGHT))
+            row_y = bottom;
+    } else if (is_2strand) {
+        const double top = h + spacing / 2.0;
+        const double mid_top = spacing / 2.0;
+        const double mid_bottom = -spacing / 2.0;
+        const double bottom = -h - spacing / 2.0;
+
+        if (pure_handle & (Edge_Handle_Namespace::TOP_LEFT | Edge_Handle_Namespace::TOP_RIGHT))
+            row_y = top;
+        else if (pure_handle &
+                 (Edge_Handle_Namespace::MID_TOP_LEFT | Edge_Handle_Namespace::MID_TOP_RIGHT))
+            row_y = mid_top;
+        else if (pure_handle &
+                 (Edge_Handle_Namespace::MID_BOTTOM_LEFT | Edge_Handle_Namespace::MID_BOTTOM_RIGHT))
+            row_y = mid_bottom;
+        else if (pure_handle &
+                 (Edge_Handle_Namespace::BOTTOM_LEFT | Edge_Handle_Namespace::BOTTOM_RIGHT))
+            row_y = bottom;
+        else if (pure_handle &
+                 (Edge_Handle_Namespace::CENTER_TOP_LEFT | Edge_Handle_Namespace::CENTER_TOP_RIGHT))
+            row_y = mid_top;
+        else if (pure_handle & (Edge_Handle_Namespace::CENTER_BOTTOM_LEFT |
+                                Edge_Handle_Namespace::CENTER_BOTTOM_RIGHT))
+            row_y = mid_bottom;
+    } else {
+        if (pure_handle & (Edge_Handle_Namespace::TOP_LEFT | Edge_Handle_Namespace::TOP_RIGHT))
+            row_y = h;
+        else if (pure_handle &
+                 (Edge_Handle_Namespace::BOTTOM_LEFT | Edge_Handle_Namespace::BOTTOM_RIGHT))
+            row_y = -h;
+        else if (pure_handle &
+                 (Edge_Handle_Namespace::MID_TOP_LEFT | Edge_Handle_Namespace::MID_TOP_RIGHT))
+            row_y = h;
+        else if (pure_handle &
+                 (Edge_Handle_Namespace::MID_BOTTOM_LEFT | Edge_Handle_Namespace::MID_BOTTOM_RIGHT))
+            row_y = -h;
+        else if (pure_handle &
+                 (Edge_Handle_Namespace::CENTER_TOP_LEFT | Edge_Handle_Namespace::CENTER_TOP_RIGHT))
+            row_y = h / 2.0;
+        else if (pure_handle & (Edge_Handle_Namespace::CENTER_BOTTOM_LEFT |
+                                Edge_Handle_Namespace::CENTER_BOTTOM_RIGHT))
+            row_y = -h / 2.0;
     }
 
-    // Déterminer le niveau et calculer les distances
-    double dx = 0, dy = 0;
-
-    if (pure_handle & 0x000F) {  // Level 0 (OUTER)
-        dx = sx * base_distance;
-        dy = sy * (base_distance * 3.0);  // Plus éloigné sur l'axe Y
-    } else if (pure_handle & 0x00F0) {    // Level 1 (MID)
-        dx = sx * base_distance;
-        dy = sy * (base_distance * 2.0);
-    } else if (pure_handle & 0x0F00) {  // Level 2 (CENTER)
-        dx = sx * base_distance;
-        dy = sy * base_distance;
-    }
+    const double dx = sx * h;
+    const double dy = row_y;
 
     // Rotation selon l'angle de l'arête
     const double rx = dx * qCos(edge_angle) - dy * qSin(edge_angle);

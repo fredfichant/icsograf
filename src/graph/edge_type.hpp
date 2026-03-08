@@ -26,7 +26,7 @@ class Edge_Type
     /**
      *  \brief Perform any rendering to path and return the next handle
      */
-    virtual Edge::Handle traverse(Edge* edge, Edge::Handle handle, Path_Builder& path) const = 0;
+    virtual Edge::Handle traverse(Edge* edge, Edge::Handle handle, Path_Builder& path) const;
     /**
      *  \brief Get handle geometry
      *  p1 is the point where the path line should pass, p2 the control point

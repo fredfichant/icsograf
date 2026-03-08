@@ -9,7 +9,7 @@
 
 inline bool qFuzzyCompare(QPointF p1, QPointF p2)
 {
-    const double epsilon = 0.0001;
+    const double epsilon = 0.001;
     return std::abs(p1.x() - p2.x()) <= epsilon && std::abs(p1.y() - p2.y()) <= epsilon;
 }
 
