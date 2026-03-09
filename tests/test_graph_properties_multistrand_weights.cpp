@@ -29,17 +29,20 @@ int main()
 
     e.set_style(Edge_Style(24, 10, 0.5, &regular_type, Edge_Style::EVERYTHING, 10, 1));
     g.render_knot();
+    assert(g.properties()->edge_count() == 1);
     assert(g.properties()->vertex_degree_distribution().value(1, 0) == 2);
     assert(edge_distribution_total(g.properties()) == 1);
 
     e.set_style(Edge_Style(24, 10, 0.5, &two_strand_type, Edge_Style::EVERYTHING, 10, 1));
     g.render_knot();
+    assert(g.properties()->edge_count() == 2);
     assert(g.properties()->vertex_degree_distribution().value(2, 0) == 2);
     assert(edge_distribution_total(g.properties()) == 2);
     assert(g.properties()->p0() + g.properties()->pa() == 0);
 
     e.set_style(Edge_Style(24, 10, 0.5, &three_strand_type, Edge_Style::EVERYTHING, 10, 1));
     g.render_knot();
+    assert(g.properties()->edge_count() == 3);
     assert(g.properties()->vertex_degree_distribution().value(3, 0) == 2);
     assert(edge_distribution_total(g.properties()) == 3);
     assert(g.properties()->p0() + g.properties()->pa() == 0);
@@ -47,6 +50,7 @@ int main()
     e.set_style(
         Edge_Style(24, 10, 0.5, &two_strand_inverted_type, Edge_Style::EVERYTHING, 10, 1));
     g.render_knot();
+    assert(g.properties()->edge_count() == 2);
     assert(g.properties()->vertex_degree_distribution().value(2, 0) == 2);
     assert(edge_distribution_total(g.properties()) == 2);
     assert(g.properties()->wa() + g.properties()->w0() == 0);

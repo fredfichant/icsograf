@@ -226,7 +226,7 @@ void Graph::traverse(Path_Builder& path)
 
         // begin new knot thread
         path.new_group();
-        qDebug() << "--- START NEW STRAND ---";
+        // qDebug() << "--- START NEW STRAND ---";
 
         // loop around a knotline loop item
         int safety = 0;
@@ -235,7 +235,7 @@ void Graph::traverse(Path_Builder& path)
                 qWarning() << "Infinite loop detected in traverse!";
                 break;
             }
-            qDebug() << "Current Pos: Edge" << edge << "Handle" << handleToString(handle);
+            // qDebug() << "Current Pos: Edge" << edge << "Handle" << handleToString(handle);
 
             Edge_Handle pure_handle = (Edge_Handle) (handle & Edge_Handle_Namespace::HANDLE_MASK);
             bool is_internal = (pure_handle & 0x0FF0);
@@ -246,13 +246,13 @@ void Graph::traverse(Path_Builder& path)
 
                 Traversal_Info ti = traverse(edge, handle, path);
                 if (!ti.success || !ti.out.edge) {
-                    qDebug() << "  -> Node traversal failed (End of line or Error)";
+                    // qDebug() << "  -> Node traversal failed (End of line or Error)";
                     break;
                 }
 
                 edge = ti.out.edge;
                 handle = ti.out.handle;
-                qDebug() << "  -> Jumped Node to: Edge" << edge << "Handle" << handleToString(handle);
+                // qDebug() << "  -> Jumped Node to: Edge" << edge << "Handle" << handleToString(handle);
                 edge->mark_traversed(handle);
             } else {
                 // internal handle : just mark traversed
@@ -267,7 +267,7 @@ void Graph::traverse(Path_Builder& path)
                 next_handle = edge->style().edge_type->Edge_Type::traverse(edge, handle, path);
             }
             handle = next_handle;
-            qDebug() << "  -> Internal Traverse to:" << handleToString(handle);
+            // qDebug() << "  -> Internal Traverse to:" << handleToString(handle);
         }
     }
 
@@ -392,7 +392,9 @@ void Graph::update_properties() const
     };
 
     m_properties->set_node_count(m_nodes.size());
-    m_properties->set_edge_count(m_edges.size());
+    int weighted_edge_count = 0;
+    for (Edge* e : m_edges) weighted_edge_count += edge_weight(e);
+    m_properties->set_edge_count(weighted_edge_count);
     m_properties->set_group_count(paths.size());
 
     // Calculate vertex degree distribution

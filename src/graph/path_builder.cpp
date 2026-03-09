@@ -1,5 +1,4 @@
 #include "path_builder.hpp"
-#include <QDebug>
 
 Path_Builder::Path_Builder() {}
 
@@ -12,7 +11,7 @@ Path_Builder::~Path_Builder()
 
 void Path_Builder::add_line(path_item::Line* current)
 {
-    qDebug() << "Path_Builder::add_line: Ajout segment" << current->begin << "->" << current->end;
+    // qDebug() << "Path_Builder::add_line: Ajout segment" << current->begin << "->" << current->end;
 
     if (strokes.empty()) {
         new_group();
@@ -23,13 +22,13 @@ void Path_Builder::add_line(path_item::Line* current)
     // check adjacent strokes to merge them
     for (iterator i = last_group.begin(); i != last_group.end(); ++i) {
         if (path_item::adjacent(*i, current)) {
-            qDebug() << "  -> Fusion avec segment existant (adjacent)";
+            // qDebug() << "  -> Fusion avec segment existant (adjacent)";
             path_item::Line* merged = path_item::merge(*i, current);
             last_group.erase(i);
             // check adjacent on the other end
             for (iterator j = last_group.begin(); j != last_group.end();) {
                 if (*j != merged && path_item::adjacent(merged, *j)) {
-                    qDebug() << "  -> Fusion secondaire (pont entre deux segments)";
+                    // qDebug() << "  -> Fusion secondaire (pont entre deux segments)";
                     merged = path_item::merge(merged, *j);
                     strokes.back().erase(j);
                     // j = strokes.back().begin();
@@ -41,7 +40,7 @@ void Path_Builder::add_line(path_item::Line* current)
             return;
         }
     }
-    qDebug() << "  -> Pas d'adjacence, ajout comme nouveau segment dans le groupe";
+    // qDebug() << "  -> Pas d'adjacence, ajout comme nouveau segment dans le groupe";
     strokes.back().push_back(current);
 }
 
@@ -61,7 +60,7 @@ void Path_Builder::add_quad(QPointF begin, QPointF control, QPointF end)
 }
 
 void Path_Builder::new_group() { 
-    qDebug() << "Path_Builder::new_group: Nouveau groupe de traits";
+    // qDebug() << "Path_Builder::new_group: Nouveau groupe de traits";
     strokes.push_back(group()); 
 }
 

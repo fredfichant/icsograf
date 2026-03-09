@@ -8,6 +8,7 @@
 #include <QUrl>
 
 #include "dialog_confirm_close.hpp"
+#include "graph_validation.hpp"
 #include "knot_view.hpp"         // For Knot_View::load_file, save_file
 #include "main_window.hpp"       // For access to tabWidget and other MainWindow elements
 #include "resource_manager.hpp"  // For settings, etc.
@@ -113,6 +114,14 @@ void KnotFileManager::save(bool force_select, int tab_index)
             file += ".knot";
     }
     if (!file.isEmpty()) {
+        const Graph_Validation_Result validation = validate_graph(v->graph());
+        if (!validation.valid) {
+            QMessageBox::warning(m_mainWindow, tr("Invalid Graph"),
+                                 tr("Cannot save the graph because it is not valid:\n- %1")
+                                     .arg(validation.reason));
+            return;
+        }
+
         if (v->save_file(file)) {
             emit updateWindowTitle();
             mw->tabWidgetInstance()->setTabText(tab_index, v->windowFilePath());

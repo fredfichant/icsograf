@@ -112,25 +112,43 @@ bool contains_simple_sequence_longer_than_three(const Graph& graph)
 
     if (simple_edges.isEmpty()) return false;
 
-    std::function<bool(Node*, int, QSet<const Edge*>&)> dfs =
-        [&](Node* at, int length, QSet<const Edge*>& used) {
-            if (length > 3) return true;
-            for (const Edge* next_edge : simple_adj.value(at)) {
-                if (used.contains(next_edge)) continue;
-                Node* next_node = next_edge->other(at);
-                if (!next_node) continue;
-                used.insert(next_edge);
-                if (dfs(next_node, length + 1, used)) return true;
-                used.remove(next_edge);
-            }
-            return false;
-        };
+    auto simple_degree = [&](Node* n) { return simple_adj.value(n).size(); };
+    auto is_breakpoint = [&](Node* n) { return simple_degree(n) != 2; };
 
-    for (const Edge* e : simple_edges) {
-        QSet<const Edge*> used;
-        used.insert(e);
-        if (dfs(e->vertex2(), 1, used)) return true;
-        if (dfs(e->vertex1(), 1, used)) return true;
+    QSet<const Edge*> visited;
+
+    // Walk open simple chains from breakpoints. Pure cycles (all deg=2) are ignored.
+    for (Node* start : simple_adj.keys()) {
+        if (!is_breakpoint(start)) continue;
+        for (const Edge* first : simple_adj.value(start)) {
+            if (visited.contains(first)) continue;
+
+            int length = 1;
+            visited.insert(first);
+            Node* prev = start;
+            Node* cur = first->other(start);
+
+            while (cur && !is_breakpoint(cur)) {
+                const QList<const Edge*>& inc = simple_adj.value(cur);
+                const Edge* next = nullptr;
+                for (const Edge* cand : inc) {
+                    if (cand->other(cur) == prev) continue;
+                    next = cand;
+                    break;
+                }
+
+                if (!next || visited.contains(next)) break;
+                visited.insert(next);
+                ++length;
+                prev = cur;
+                cur = next->other(cur);
+            }
+
+            if (length > 3) {
+                // qDebug() << "Validation: simple chain too long, length =" << length;
+                return true;
+            }
+        }
     }
 
     return false;
