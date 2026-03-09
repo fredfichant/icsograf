@@ -8,6 +8,7 @@
 
 #include <QMap>
 #include <QObject>
+#include <QString>
 
 /**
  * \brief Holds various statistics and calculated properties of a Graph
@@ -49,7 +50,7 @@ class Graph_Properties : public QObject
     /** \brief Returns the distribution of face degrees */
     const QMap<int, int>& face_degree_distribution() const { return m_face_degree_distribution; }
 
-    // Edge distribution (Step 6)
+    // Edge distribution
     /** \brief Weighted average of edge distribution parameter wa */
     int wa() const { return m_wa; }
     /** \brief Weighted average of edge distribution parameter w0 */
@@ -64,6 +65,10 @@ class Graph_Properties : public QObject
      * \return Absolute difference between strand crossing types
      */
     int delta_t() const { return qAbs((m_wa + m_p0) - (m_w0 + m_pa)); }
+    /** \brief Returns the span formula (portance P) */
+    const QString& span_formula() const { return m_span_formula; }
+    /** \brief Returns whether the knot is non-reducible according to the current bounds */
+    bool is_non_reducible() const { return m_is_non_reducible; }
 
     /**
      * \brief Generates a localized summary string of the graph properties
@@ -103,6 +108,10 @@ class Graph_Properties : public QObject
     void set_face_adjustment(int count);
     /** \brief Updates edge distribution parameters and emits properties_changed() if changed */
     void set_edge_distribution(int wa, int w0, int p0, int pa);
+    /** \brief Updates span_formula and emits properties_changed() if changed */
+    void set_span_formula(const QString& formula);
+    /** \brief Updates the non-reducible flag and emits properties_changed() if changed */
+    void set_is_non_reducible(bool value);
 
     int m_node_count;                             ///< Current number of nodes
     int m_edge_count;                             ///< Current number of edges
@@ -113,6 +122,8 @@ class Graph_Properties : public QObject
     int m_face_adjustment;                        ///< Extra faces induced by multi-strand edges
 
     int m_wa, m_w0, m_p0, m_pa;  ///< Edge distribution parameters
+    QString m_span_formula;      ///< Circular lexicographic span formula (portance P)
+    bool m_is_non_reducible;     ///< True if the knot satisfies the non-reducibility inequality
 };
 
 #endif  // GRAPH_PROPERTIES_HPP

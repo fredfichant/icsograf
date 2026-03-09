@@ -7,12 +7,14 @@
 #include <QMimeData>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QMessageBox>
 #include <QPrinter>
 #include <QScrollBar>
 
 #include "commands.hpp"
 #include "context_menu_edge.hpp"
 #include "context_menu_node.hpp"
+#include "graph_validation.hpp"
 #include "resource_manager.hpp"
 #include "undo_manager.hpp"
 #include "xml_exporter.hpp"
@@ -24,6 +26,7 @@ Knot_View::Knot_View(QString file)
       m_file_name(file),
       paint_graph(true),
       m_fluid_refresh(true),
+      m_last_validation_reason(),
       context_menu_node(new Context_Menu_Node(this)),
       context_menu_edge(new Context_Menu_Edge(this)),
       active_tool(nullptr),
@@ -104,7 +107,6 @@ bool Knot_View::load_file(QIODevice& device, QString action_name)
 
     push_command(new Knot_Width(m_graph.width(), loaded.width(), this));
     push_command(new Change_Colors(m_graph.colors(), loaded.colors(), this));
-    // push_command(new Change_Borders(m_graph.borders(),loaded.borders(),this)); // REMOVED
     push_command(new Custom_Colors(m_graph.custom_colors(), loaded.custom_colors(), this));
     push_command(new Pen_Join_Style(m_graph.join_style(), loaded.join_style(), this));
     push_command(new Brush_Style(m_graph.brush_style(), loaded.brush_style(), this));
@@ -523,7 +525,23 @@ void Knot_View::set_mode_move_grid() { set_mouse_mode(mouse_mode | MOVE_GRID); }
 void Knot_View::update_knot()
 {
     m_graph.render_knot();
+    warn_if_invalid_graph();
     scene()->invalidate();
+}
+
+void Knot_View::warn_if_invalid_graph()
+{
+    const Graph_Validation_Result result = validate_graph(m_graph);
+    if (result.valid) {
+        m_last_validation_reason.clear();
+        return;
+    }
+
+    if (result.reason == m_last_validation_reason) return;
+    m_last_validation_reason = result.reason;
+
+    QMessageBox::warning(this, tr("Invalid Graph"),
+                         tr("The graph is not valid:\n- %1").arg(result.reason));
 }
 
 void Knot_View::set_knot_colors(const QList<QColor>& l)

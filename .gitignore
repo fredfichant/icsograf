@@ -21,3 +21,4 @@ configured_directories.sh
 push.sh
 snapcraft.yaml
 knotter_*.snap
+src/library

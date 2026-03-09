@@ -50,6 +50,8 @@ class Properties_View : public QWidget
     QTableWidget* m_degree_table;              ///< Table to display vertex and face degree distributions.
     QTableWidget* m_edge_distribution_table;   ///< Table for edge distribution parameters (wa, w0, p0, pa).
     QLabel* m_delta_t_label;                   ///< Label to display the Delta T value.
+    QLabel* m_span_formula_label;              ///< Label to display the span formula (portance P).
+    QLabel* m_non_reducible_label;             ///< Label to display reducibility status.
     QVBoxLayout* m_main_layout;                ///< Main vertical layout for the widget.
     QFormLayout* m_form_layout;                ///< Form layout for simple key-value properties.
 };

@@ -20,6 +20,7 @@ set(TEST_CORE_SOURCES
   ${CMAKE_SOURCE_DIR}/src/graph/path_item.cpp
   ${CMAKE_SOURCE_DIR}/src/graph/edge_style.cpp
   ${CMAKE_SOURCE_DIR}/src/graph/graph_properties.cpp
+  ${CMAKE_SOURCE_DIR}/src/graph/graph_validation.cpp
   ${CMAKE_SOURCE_DIR}/src/graph/edges_mark.cpp
   ${CMAKE_SOURCE_DIR}/src/graph/faces.cpp
   ${CMAKE_SOURCE_DIR}/src/resource_manager.cpp
@@ -84,3 +85,6 @@ add_icsograf_test(test_graph_properties_2strand_faces ${CMAKE_CURRENT_SOURCE_DIR
 add_icsograf_test(test_graph_properties_3strand_faces ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_properties_3strand_faces.cpp)
 add_icsograf_test(test_graph_properties_edge_distribution ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_properties_edge_distribution.cpp)
 add_icsograf_test(test_graph_properties_multistrand_weights ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_properties_multistrand_weights.cpp)
+add_icsograf_test(test_graph_span_formula ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_span_formula.cpp)
+add_icsograf_test(test_graph_non_reducible ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_non_reducible.cpp)
+add_icsograf_test(test_graph_validation ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_validation.cpp)

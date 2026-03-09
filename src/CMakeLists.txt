@@ -52,6 +52,7 @@ set(SOURCES
   graph/edge_style.cpp
   graph/edges_mark.cpp
   graph/graph_properties.cpp
+  graph/graph_validation.cpp
   graph/properties_view.cpp
   graph/faces.cpp
   graph/polygon_generator.cpp

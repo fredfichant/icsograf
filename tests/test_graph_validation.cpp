@@ -1,0 +1,118 @@
+#include <cassert>
+
+#include "edge_2strand.hpp"
+#include "edge_normal.hpp"
+#include "graph.hpp"
+#include "graph_validation.hpp"
+
+static Edge_Style style_for(Edge_Type* type)
+{
+    return Edge_Style(24, 10, 0.5, type, Edge_Style::EVERYTHING, 10, 1);
+}
+
+int main()
+{
+    Edge_Normal normal;
+    Edge_2Strand two_strand;
+
+    {
+        // Disconnected graph
+        Node a(QPointF(0, 0));
+        Node b(QPointF(100, 0));
+        Node c(QPointF(300, 0));
+        Node d(QPointF(400, 0));
+        Edge e1(&a, &b, &normal);
+        Edge e2(&c, &d, &normal);
+        Graph g;
+        g.add_node(&a);
+        g.add_node(&b);
+        g.add_node(&c);
+        g.add_node(&d);
+        g.add_edge(&e1);
+        g.add_edge(&e2);
+        g.render_knot();
+
+        const Graph_Validation_Result r = validate_graph(g);
+        assert(!r.valid);
+        assert(r.reason.contains("connected"));
+    }
+
+    {
+        // Connected but not biconnected: chain of 4 nodes
+        Node a(QPointF(0, 0));
+        Node b(QPointF(100, 0));
+        Node c(QPointF(200, 0));
+        Node d(QPointF(300, 0));
+        Edge e1(&a, &b, &normal);
+        Edge e2(&b, &c, &normal);
+        Edge e3(&c, &d, &normal);
+        Graph g;
+        g.add_node(&a);
+        g.add_node(&b);
+        g.add_node(&c);
+        g.add_node(&d);
+        g.add_edge(&e1);
+        g.add_edge(&e2);
+        g.add_edge(&e3);
+        g.render_knot();
+
+        const Graph_Validation_Result r = validate_graph(g);
+        assert(!r.valid);
+        assert(r.reason.contains("biconnected"));
+    }
+
+    {
+        // Biconnected but contains a simple-edge sequence longer than 3: 5-cycle
+        Node a(QPointF(0, 0));
+        Node b(QPointF(100, 0));
+        Node c(QPointF(140, 80));
+        Node d(QPointF(50, 140));
+        Node e(QPointF(-40, 80));
+        Edge e1(&a, &b, &normal);
+        Edge e2(&b, &c, &normal);
+        Edge e3(&c, &d, &normal);
+        Edge e4(&d, &e, &normal);
+        Edge e5(&e, &a, &normal);
+        Graph g;
+        g.add_node(&a);
+        g.add_node(&b);
+        g.add_node(&c);
+        g.add_node(&d);
+        g.add_node(&e);
+        g.add_edge(&e1);
+        g.add_edge(&e2);
+        g.add_edge(&e3);
+        g.add_edge(&e4);
+        g.add_edge(&e5);
+        g.render_knot();
+
+        const Graph_Validation_Result r = validate_graph(g);
+        assert(!r.valid);
+        assert(r.reason.contains("simple edges"));
+    }
+
+    {
+        // Valid: triangle with one non-simple edge breaks long simple sequence rule
+        Node a(QPointF(0, 0));
+        Node b(QPointF(100, 0));
+        Node c(QPointF(50, 80));
+        Edge e1(&a, &b, &normal);
+        Edge e2(&b, &c, &normal);
+        Edge e3(&c, &a, &normal);
+        Graph g;
+        g.add_node(&a);
+        g.add_node(&b);
+        g.add_node(&c);
+        g.add_edge(&e1);
+        g.add_edge(&e2);
+        g.add_edge(&e3);
+        e3.set_style(style_for(&two_strand));
+        g.render_knot();
+
+        const Graph_Validation_Result r = validate_graph(g);
+        assert(r.valid);
+        assert(r.reason.isEmpty());
+    }
+
+    return 0;
+}

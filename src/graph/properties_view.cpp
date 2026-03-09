@@ -47,6 +47,10 @@ Properties_View::Properties_View(const Graph_Properties& properties, QWidget* pa
 
     m_delta_t_label = new QLabel(this);
     m_form_layout->addRow(tr("∆T:"), m_delta_t_label);
+    m_span_formula_label = new QLabel(this);
+    m_form_layout->addRow(tr("Portance P:"), m_span_formula_label);
+    m_non_reducible_label = new QLabel(this);
+    m_form_layout->addRow(tr("Nœud:"), m_non_reducible_label);
 
     connect(&m_properties, &Graph_Properties::properties_changed, this,
             &Properties_View::update_view);
@@ -125,4 +129,7 @@ void Properties_View::update_view()
             m_edge_distribution_table->item(r, c)->setTextAlignment(Qt::AlignCenter);
 
     m_delta_t_label->setText(QString::number(m_properties.delta_t()));
+    m_span_formula_label->setText(m_properties.span_formula());
+    m_non_reducible_label->setText(m_properties.is_non_reducible() ? tr("non-réductible")
+                                                                    : tr("réductible"));
 }

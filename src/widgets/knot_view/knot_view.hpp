@@ -57,6 +57,7 @@ class Knot_View : public QGraphicsView
     QString m_file_name;           ///< Full name of the open file
     bool paint_graph;              ///< Whether to paint the graph
     bool m_fluid_refresh;          ///< Whether to update the graph while moving nodes
+    QString m_last_validation_reason;  ///< Last shown graph validation warning reason
     Context_Menu_Node* context_menu_node;
     Context_Menu_Edge* context_menu_edge;
 
@@ -416,6 +417,8 @@ class Knot_View : public QGraphicsView
      */
 
    private:
+    void warn_if_invalid_graph();
+
     /**
      *  \brief Get node at location
      *  \return The found node or NULL

@@ -10,7 +10,9 @@ Graph_Properties::Graph_Properties(QObject* parent)
       m_wa(0),
       m_w0(0),
       m_p0(0),
-      m_pa(0)
+      m_pa(0),
+      m_span_formula("0"),
+      m_is_non_reducible(false)
 {
     m_vertex_degree_distribution = QMap<int, int>();
     m_face_degree_distribution = QMap<int, int>();
@@ -87,13 +89,32 @@ void Graph_Properties::set_edge_distribution(int wa, int w0, int p0, int pa)
     }
 }
 
+void Graph_Properties::set_span_formula(const QString& formula)
+{
+    const QString normalized = formula.isEmpty() ? QString("0") : formula;
+    if (m_span_formula != normalized) {
+        m_span_formula = normalized;
+        emit properties_changed();
+    }
+}
+
+void Graph_Properties::set_is_non_reducible(bool value)
+{
+    if (m_is_non_reducible != value) {
+        m_is_non_reducible = value;
+        emit properties_changed();
+    }
+}
+
 QString Graph_Properties::summary_text() const
 {
-    return QString("sommets: %1, arêtes: %2, faces: %3, Delta T: %4")
+    return QString("sommets: %1, arêtes: %2, faces: %3, Delta T: %4, Portance P: %5, nœud: %6")
         .arg(node_count())
         .arg(edge_count())
         .arg(face_count())
-        .arg(delta_t());
+        .arg(delta_t())
+        .arg(span_formula())
+        .arg(is_non_reducible() ? "non-réductible" : "réductible");
 }
 
 QString Graph_Properties::vertex_distribution_text() const
