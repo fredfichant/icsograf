@@ -1,0 +1,124 @@
+name: Build with CPack
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          # Configuration macOS
+          - os: macos-latest
+            cmake-preset: default
+            cpack-generator: "DragDrop"
+            artifact-name: "app-macos"
+            
+          # Configuration Windows
+          - os: windows-latest
+            cmake-preset: default
+            cpack-generator: "WIX"
+            artifact-name: "app-windows"
+            
+          # Configuration Linux
+          - os: ubuntu-latest
+            cmake-preset: default
+            cpack-generator: "DEB;RPM;TGZ"
+            artifact-name: "app-linux"
+
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Installation des dépendances
+      - name: Install dependencies (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          choco install cmake ninja -y
+          
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install cmake ninja
+          
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build build-essential
+
+      - name: Install Qt 5 (Linux)
+        if: runner.os == 'Linux'
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '5.15.2'
+          arch: gcc_64
+          modules: 'qttools'
+          cache: true
+
+      - name: Install Qt 5 (macOS)
+        if: runner.os == 'macOS'
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '5.15.2'
+          arch: clang_64
+          modules: 'qttools'
+          cache: true
+
+      - name: Install Qt 5 (Windows)
+        if: runner.os == 'Windows'
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '5.15.2'
+          arch: win64_msvc2019_64
+          modules: 'qttools'
+          cache: true
+
+      # Configuration CMake
+      - name: Configure CMake
+        run: |
+          cmake --preset ${{ matrix.cmake-preset }} -B build -S .
+
+      # Compilation
+      - name: Build
+        run: |
+          cmake --build build --config Release
+
+      # Création des packages avec CPack
+      - name: Create packages with CPack
+        working-directory: build
+        run: |
+          cpack -G "${{ matrix.cpack-generator }}" -C Release
+
+      # Upload des artefacts
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: build/_CPack_Packages/
+          retention-days: 30
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifacts/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

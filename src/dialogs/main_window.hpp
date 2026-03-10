@@ -13,7 +13,7 @@
 class QDoubleSpinBox;
 class Knot_View;
 class Dock_Grid;
-class Edge_Type_Widget;
+class QAction;
 
 // Q_DECLARE_METATYPE(Color_Preview::Display_Mode)
 
@@ -29,10 +29,10 @@ class Main_Window : public QMainWindow, private Ui::Main_Window
     Dock_Grid* dock_grid;                    ///< Grid conf dock
     class Dock_Properties* dock_properties;  ///< Properties dock
     std::unique_ptr<KnotFileManager> m_fileManager;
+    QAction* m_action_save_graph_library = nullptr;
+    QAction* m_action_open_graph_library = nullptr;
 
     QPrinter printer;
-
-    Edge_Type_Widget* widget_edge_style;
 
    public:
     explicit Main_Window(QWidget* parent = 0);
@@ -129,10 +129,9 @@ class Main_Window : public QMainWindow, private Ui::Main_Window
      *  \brief Update selected style dialog
      */
     void update_selection(QList<Node*> nodes, QList<Edge*> edges);
-
     void update_grid_icon(int shape);
-
     void update_recent_files();
+    
     void click_recent_file();
 
     void handlePreferencesTriggered();
@@ -157,6 +156,8 @@ class Main_Window : public QMainWindow, private Ui::Main_Window
     void handleCloseTriggered();
     void handleCloseAllTriggered();
     void handleSaveAllTriggered();
+    void handleSaveToLibraryTriggered();
+    void handleOpenFromLibraryTriggered();
 };
 
 #endif  // MAIN_WINDOW_HPP

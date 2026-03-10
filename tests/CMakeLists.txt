@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Svg PrintSupport Xml UiTools Network)
+find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Svg PrintSupport Xml UiTools Network Sql)
 
 set(TEST_CORE_SOURCES
   ${CMAKE_SOURCE_DIR}/src/graph/graph_item.cpp
@@ -67,6 +67,36 @@ function(add_icsograf_test test_name test_file)
       Qt5::Xml
       Qt5::Network
       Qt5::UiTools
+      Qt5::Sql
+  )
+
+  add_test(NAME ${test_name} COMMAND ${test_name})
+endfunction()
+
+function(add_icsograf_db_test test_name test_file)
+  add_executable(${test_name}
+    ${test_file}
+    ${TEST_CORE_SOURCES}
+    ${CMAKE_SOURCE_DIR}/src/database/graph_repository.cpp
+    ${CMAKE_SOURCE_DIR}/src/database/graph_repository_codec.cpp
+  )
+
+  target_include_directories(${test_name}
+    PRIVATE
+      ${TEST_INCLUDE_DIRS}
+  )
+
+  target_link_libraries(${test_name}
+    PRIVATE
+      Qt5::Core
+      Qt5::Gui
+      Qt5::Widgets
+      Qt5::Svg
+      Qt5::PrintSupport
+      Qt5::Xml
+      Qt5::Network
+      Qt5::UiTools
+      Qt5::Sql
   )
 
   add_test(NAME ${test_name} COMMAND ${test_name})
@@ -88,3 +118,4 @@ add_icsograf_test(test_graph_properties_multistrand_weights ${CMAKE_CURRENT_SOUR
 add_icsograf_test(test_graph_span_formula ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_span_formula.cpp)
 add_icsograf_test(test_graph_non_reducible ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_non_reducible.cpp)
 add_icsograf_test(test_graph_validation ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_validation.cpp)
+add_icsograf_db_test(test_graph_repository ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_repository.cpp)

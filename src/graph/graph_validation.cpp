@@ -4,6 +4,7 @@
 #include <functional>
 
 #include <QHash>
+#include <QDebug>
 #include <QObject>
 #include <QSet>
 #include <QVector>
@@ -15,6 +16,20 @@
 
 namespace
 {
+bool validation_debug_enabled()
+{
+    // Enable with compile definition `ICSOGRAF_GRAPH_VALIDATION_DEBUG`.
+    // Example (CMake configure):
+    //   cmake -S . -B build -DCMAKE_CXX_FLAGS="-DICSOGRAF_GRAPH_VALIDATION_DEBUG"
+    // Or target-level:
+    //   target_compile_definitions(<target> PRIVATE ICSOGRAF_GRAPH_VALIDATION_DEBUG)
+#ifdef ICSOGRAF_GRAPH_VALIDATION_DEBUG
+    return true;
+#else
+    return false;
+#endif
+}
+
 bool is_simple_edge(const Edge* edge)
 {
     const Edge_Type* type = edge->style().edge_type;
@@ -145,7 +160,10 @@ bool contains_simple_sequence_longer_than_three(const Graph& graph)
             }
 
             if (length > 3) {
-                // qDebug() << "Validation: simple chain too long, length =" << length;
+                if (validation_debug_enabled()) {
+                    qDebug() << "Graph validation: simple chain too long"
+                             << "length =" << length << "start =" << start << "end =" << cur;
+                }
                 return true;
             }
         }

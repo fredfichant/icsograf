@@ -158,7 +158,7 @@ class Settings : public QObject
    signals:
     void icon_size_changed(int);
     void tool_button_style_changed(Qt::ToolButtonStyle);
-    void language_changed(/*todo*/);
+    void language_changed();
 
    private:
     void read_color(class QSettings& settings, QString name, QColor& value);

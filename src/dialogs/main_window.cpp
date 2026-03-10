@@ -22,6 +22,8 @@
 #include "resource_manager.hpp"
 #include "status_bar.hpp"
 #include "xml_exporter.hpp"
+#include "database/graph_browser_dialog.hpp"
+#include "database/graph_save_dialog.hpp"
 // #include <QUiLoader> // Removed
 #include <QCheckBox>  // Added
 #include <QSpinBox>   // Added
@@ -31,9 +33,9 @@
 // Newly added includes for forward-declared classes
 #include <QDoubleSpinBox>
 
-#include "edge_type_widget.hpp"
 #include "dock/dock_properties.hpp"
 #include "dock_grid.hpp"
+#include "commands.hpp"
 #include "knot_view.hpp"
 
 Main_Window::Main_Window(QWidget* parent)
@@ -144,6 +146,14 @@ void Main_Window::connectActions()
             &Main_Window::handlePrintPreviewTriggered);
     connect(action_Insert_Polygon, &QAction::triggered, this,
             &Main_Window::handleInsertPolygonTriggered);  // New connection
+    if (m_action_save_graph_library) {
+        connect(m_action_save_graph_library, &QAction::triggered, this,
+                &Main_Window::handleSaveToLibraryTriggered);
+    }
+    if (m_action_open_graph_library) {
+        connect(m_action_open_graph_library, &QAction::triggered, this,
+                &Main_Window::handleOpenFromLibraryTriggered);
+    }
 }
 
 void Main_Window::init_menus()
@@ -157,6 +167,27 @@ void Main_Window::init_menus()
     action_Print->setShortcut(QKeySequence::Print);
     action_Exit->setShortcut(QKeySequence::Quit);
     update_recent_files();
+
+    if (!m_action_save_graph_library) {
+        m_action_save_graph_library =
+            new QAction(QIcon::fromTheme("document-save"), tr("Save Graph to Library"), this);
+        m_action_save_graph_library->setObjectName("action_Save_Graph_To_Library");
+    }
+    if (!m_action_open_graph_library) {
+        m_action_open_graph_library =
+            new QAction(QIcon::fromTheme("repository"), tr("Open Graph from Library"), this);
+        m_action_open_graph_library->setObjectName("action_Open_Graph_From_Library");
+    }
+    if (!menu_File->actions().contains(m_action_save_graph_library)) {
+        menu_File->insertAction(action_Export, m_action_save_graph_library);
+        menu_File->insertAction(action_Export, m_action_open_graph_library);
+        menu_File->insertSeparator(action_Export);
+    }
+    if (toolbar_main && !toolbar_main->actions().contains(m_action_save_graph_library)) {
+        toolbar_main->addSeparator();
+        toolbar_main->addAction(m_action_save_graph_library);
+        toolbar_main->addAction(m_action_open_graph_library);
+    }
 
     // Menu Edit
     action_Undo->setShortcut(QKeySequence::Undo);
@@ -197,14 +228,6 @@ void Main_Window::init_toolbars()
 
 void Main_Window::init_docks()
 {
-    // Edge style
-    widget_edge_style = new Edge_Type_Widget;
-    QDockWidget* edge_style_dock = new QDockWidget;
-    edge_style_dock->setWidget(widget_edge_style);
-    edge_style_dock->setObjectName("edge_style_dock");
-    edge_style_dock->setWindowIcon(QIcon::fromTheme("edge-crossing"));
-    addDockWidget(Qt::RightDockWidgetArea, edge_style_dock);
-
     // Grid config
     dock_grid = new Dock_Grid(this);
     addDockWidget(Qt::RightDockWidgetArea, dock_grid);
@@ -232,8 +255,6 @@ void Main_Window::init_docks()
         menu_Docks->insertAction(0, a);
         dw->setStyle(new Icon_Dock_Style(dw));
     }
-
-    edge_style_dock->setWindowTitle(tr("Selected Edges"));
 
     dock_properties->setWindowTitle(tr("Graph Properties"));
 }
@@ -305,12 +326,6 @@ void Main_Window::connect_view(Knot_View* v)
     // graph properties dock
     dock_properties->set_properties(*v->graph().properties());
 
-    // selected edge style
-    connect(widget_edge_style, SIGNAL(edge_type_changed(Edge_Type*)), v,
-            SLOT(set_selection_edge_type(Edge_Type*)));
-    connect(widget_edge_style, SIGNAL(enabled_styles_changed(Edge_Style::Enabled_Styles)), v,
-            SLOT(set_selection_enabled_styles_edges(Edge_Style::Enabled_Styles)));
-
     // export
     dialog_export_image->set_view(v);
 
@@ -347,7 +362,6 @@ void Main_Window::disconnect_view(Knot_View* v)
         v->grid().disconnect(action_Enable_Grid);
         action_Enable_Grid->disconnect(&v->grid());
 
-        widget_edge_style->disconnect(v);
         update_selection(QList<Node*>(), QList<Edge*>());
 
         disconnect(v, SIGNAL(selection_changed(QList<Node*>, QList<Edge*>)), this,
@@ -389,23 +403,7 @@ void Main_Window::set_tool_button_style(Qt::ToolButtonStyle tbs) { setToolButton
 void Main_Window::update_selection(QList<Node*> nodes, QList<Edge*> edges)
 {
     Q_UNUSED(nodes);
-    widget_edge_style->setEnabled(!edges.isEmpty());
-
-    widget_edge_style->blockSignals(true);
-
-    Edge_Style es = view->graph().default_edge_style();
-    widget_edge_style->set_style(es);  // set defaults
-
-    if (edges.isEmpty())
-        es.enabled_style = Edge_Style::NOTHING;
-    else {
-        es = edges[0]->style();
-    }
-
-    widget_edge_style->set_style(es);  // set actual style
-
-    widget_edge_style->blockSignals(false);
-
+    Q_UNUSED(edges);
 }
 
 void Main_Window::handlePreferencesTriggered()
@@ -662,3 +660,60 @@ void Main_Window::handleAboutTriggered()
 }
 
 void Main_Window::handleInsertPolygonTriggered() { Polygon_Dialog(view, this).exec(); }
+
+void Main_Window::handleSaveToLibraryTriggered()
+{
+    if (!view) {
+        QMessageBox::warning(this, tr("Graph Library"), tr("No active graph to save."));
+        return;
+    }
+
+    Graph_Save_Dialog dialog(view->graph(), this);
+    dialog.exec();
+}
+
+void Main_Window::handleOpenFromLibraryTriggered()
+{
+    if (!view) {
+        QMessageBox::warning(this, tr("Graph Library"), tr("No active view to load into."));
+        return;
+    }
+
+    Graph_Browser_Dialog dialog(this);
+    if (dialog.exec() != QDialog::Accepted)
+        return;
+
+    Graph loaded;
+    QList<Node*> loaded_nodes;
+    QList<Edge*> loaded_edges;
+    QString error_message;
+    if (!dialog.load_selected_graph(loaded, loaded_nodes, loaded_edges, &error_message)) {
+        QMessageBox::warning(this, tr("Graph Library"),
+                             tr("Failed to load the selected graph:\n%1").arg(error_message));
+        return;
+    }
+
+    view->begin_macro(tr("Load Graph From Library"));
+
+    for (Node* n : view->graph().nodes()) {
+        view->push_command(new Remove_Node(n, view));
+    }
+    for (Edge* e : view->graph().edges()) {
+        view->push_command(new Remove_Edge(e, view));
+    }
+
+    for (Node* n : loaded_nodes) {
+        view->push_command(new Create_Node(n, view));
+    }
+    for (Edge* e : loaded_edges) {
+        view->push_command(new Create_Edge(e, view));
+    }
+
+    view->end_macro();
+    view->undo_stack_pointer()->setClean();
+    view->set_file_name(QString());
+    view->setWindowFilePath(QString());
+    tabWidget->setTabText(tabWidget->currentIndex(), tr("Library Graph"));
+    set_clean_icon_for_tab(tabWidget->currentIndex(), true);
+    update_title();
+}

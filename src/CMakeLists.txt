@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.10)
 # --- Qt (portable) ---
 # Normalement déjà fait au niveau racine, mais le répéter ici ne casse rien.
 find_package(Qt5 REQUIRED COMPONENTS
-  Core Gui Widgets Svg PrintSupport Xml UiTools Network
+  Core Gui Widgets Svg PrintSupport Xml UiTools Network Sql
 )
 
 # --- Fichier généré (version/infos appli) ---
@@ -17,6 +17,14 @@ configure_file(
 
 # --- Sources ---
 set(SOURCES
+
+  database/graph_repository.cpp
+  database/graph_repository_codec.cpp
+  database/graph_browser_dialog.cpp
+  database/graph_browser_dialog_ui.cpp
+  database/graph_browser_dialog_data.cpp
+  database/graph_save_dialog.cpp
+
   dialogs/main_window.cpp
   dialogs/polygon_dialog.cpp
   dialogs/dialog_preferences.cpp
@@ -75,10 +83,7 @@ set(SOURCES
   widgets/status_bar.cpp
 
   widgets/other_widgets/cusp_style_widget.cpp
-  widgets/other_widgets/edge_type_widget.cpp
-
   widgets/other_widgets/cusp_style_widget.ui
-  widgets/other_widgets/edge_type_widget.ui
 
   main.cpp
   resource_manager.cpp
@@ -103,6 +108,7 @@ add_executable(${PROJECT_SLUG}
 target_include_directories(${PROJECT_SLUG}
   PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}            # knotter_info.hpp
+    ${CMAKE_CURRENT_BINARY_DIR}/database
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogs/dock
     ${CMAKE_CURRENT_SOURCE_DIR}/graph
@@ -123,6 +129,7 @@ target_link_libraries(${PROJECT_SLUG}
     Qt5::Xml
     Qt5::Network
     Qt5::UiTools
+    Qt5::Sql
 )
 
 # --- Warnings ---

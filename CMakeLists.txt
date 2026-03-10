@@ -6,15 +6,13 @@ set(PROJECT_DESCRIPTION "Interactive Knotian Editor")
 set(PROJECT_MANINTAINER_NAME "frédéric fichant")
 set(PROJECT_MANINTAINER_EMAIL "fredfichant@gmail.com")
 set(PROJECT_MANINTAINER "${PROJECT_MANINTAINER_NAME} <${PROJECT_MANINTAINER_EMAIL}>")
-set(PROJECT_DESCRIPTION_LONG "icsograf is an editor for interlace patterns. \
+set(PROJECT_DESCRIPTION_LONG "icsograf est l'éditeur d'états nœudiens. \
 Knots drawn with icsograf can be exported as SVG.")
 set(PROJECT_DOMAIN "vertex-924b0.web.app")
 set(PROJECT_HOMEPAGE_URL "https://vertex-924b0.web.app/")
-set(REPO "https://gitlab.com/mattbas/Knotter")
-set(REPO_GIT "git://gitlab.com/mattbas/Knotter.git")
-set(BUG_URL "https://gitlab.com/mattbas/Knotter/issues")
-set(PLUGIN_REPO "https://plugins.knotter.mattbas.org/")
-set(DOC_URL "https://knotter.mattbas.org/manual")
+set(REPO "https://github.com/fredfichant/icsograf")
+set(REPO_GIT "https://github.com/fredfichant/icsograf.git")
+set(BUG_URL "")
 set(ICON_RELPATH "img/icon-big.svg")
 set(COPY_YEARS "2026-2036")
 set(DATA_INSTALL "share/${PROJECT_SLUG}/${PROJECT_SLUG}")
@@ -34,20 +32,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
 set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fsanitize=address")
 
-
-# Snapcraft stuff here because we don't care if cmake fails on CI
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/package/snapcraft.in.yaml"
-    "${CMAKE_CURRENT_SOURCE_DIR}/snapcraft.yaml"
-)
-option(SNAP_IS_SUCH_A_PAIN "" OFF)
-if ( SNAP_IS_SUCH_A_PAIN  )
-    return()
-endif()
-
 # Qt
 set (QT_SUPPORTED_VERSIONS 5)
-find_package(Qt5 COMPONENTS Widgets Xml Svg Network UiTools PrintSupport REQUIRED)
+# Help CMake find Qt5 from Homebrew on macOS when no prefix is provided.
+if(APPLE AND NOT Qt5_DIR)
+    if(EXISTS "/usr/local/opt/qt@5/lib/cmake/Qt5")
+        list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/qt@5")
+    elseif(EXISTS "/opt/homebrew/opt/qt@5/lib/cmake/Qt5")
+        list(APPEND CMAKE_PREFIX_PATH "/opt/homebrew/opt/qt@5")
+    endif()
+endif()
+find_package(Qt5 COMPONENTS Widgets Xml Svg Network UiTools PrintSupport Sql REQUIRED)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
@@ -73,5 +68,54 @@ add_custom_target(copy_data ALL
 install(DIRECTORY data/ DESTINATION ${DATA_INSTALL})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/knotter.desktop.in ${CMAKE_CURRENT_BINARY_DIR}/knotter.desktop)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/knotter.desktop DESTINATION "share/applications")
-install(FILES data/img/${PROJECT_SLUG}.png DESTINATION share/icons/hicolor/64x64/apps/ )
-install(FILES data/img/${PROJECT_SLUG}.svg DESTINATION share/icons/hicolor/scalable/apps/ )
+install(FILES data/img/icon2.png DESTINATION share/icons/hicolor/64x64/apps/ )
+install(FILES data/img/icon2.svg DESTINATION share/icons/hicolor/scalable/apps/ )
+
+# ==================== Configuration CPack ====================
+set(CPACK_PACKAGE_NAME "icsograf")
+set(CPACK_PACKAGE_VENDOR "web-knotters")
+set(CPACK_PACKAGE_DESCRIPTION "icsograf est l'éditeur d'états nœudiens")
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+
+# Configuration globale
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+
+# ========== Configuration spécifique par plateforme ==========
+
+# macOS (DragDrop)
+if(APPLE)
+    set(CPACK_GENERATOR "DragDrop")
+    set(CPACK_DMG_VOLUME_NAME "${CPACK_PACKAGE_NAME}")
+    set(CPACK_DMG_DS_STORE_SETUP_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/.DS_Store")
+endif()
+
+# Windows (WIX Installer)
+if(WIN32)
+    set(CPACK_GENERATOR "WIX")
+    set(CPACK_WIX_UPGRADE_GUID "PUT-YOUR-GUID-HERE")
+    set(CPACK_WIX_PRODUCT_ICON "${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.ico")
+endif()
+
+# Linux (DEB, RPM, TGZ)
+if(UNIX AND NOT APPLE)
+    set(CPACK_GENERATOR "DEB;RPM;TGZ")
+    
+    # Configuration DEB
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "frédéric fichant <fredfichant@gmail.com>")
+    set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/fredfichant/icsograf")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
+    
+    # Configuration RPM
+    set(CPACK_RPM_PACKAGE_RELEASE "1")
+    set(CPACK_RPM_PACKAGE_LICENSE "MIT")
+endif()
+
+# Configuration commune
+set(CPACK_PACKAGE_CHECKSUM SHA256)
+set(CPACK_STRIP_FILES TRUE)
+
+include(CPack)
