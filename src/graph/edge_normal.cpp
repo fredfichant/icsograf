@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/edge_normal.cpp
+ * \brief Implementation of edge normal graph logic.
+ */
+
 #include "edge_normal.hpp"
 #include <qmath.h>
 #include "edge.hpp"

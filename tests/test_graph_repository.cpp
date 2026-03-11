@@ -1,3 +1,8 @@
+/**
+ * \file tests/test_graph_repository.cpp
+ * \brief Unit tests for graph repository.
+ */
+
 #include <cassert>
 
 #include <QCoreApplication>

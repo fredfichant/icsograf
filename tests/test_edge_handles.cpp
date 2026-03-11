@@ -1,3 +1,8 @@
+/**
+ * \file tests/test_edge_handles.cpp
+ * \brief Unit tests for edge handles.
+ */
+
 #include <cassert>
 #include <cmath>
 

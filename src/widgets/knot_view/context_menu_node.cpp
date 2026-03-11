@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/context_menu_node.cpp
+ * \brief Implementation of context menu node interactions in the knot view.
+ */
+
 #include "context_menu_node.hpp"
 
 #include "commands.hpp"

@@ -1,3 +1,8 @@
+/**
+ * \file src/string_toolbar.hpp
+ * \brief API declarations for the string toolbar application module.
+ */
+
 #ifndef STRING_TOOLBAR_HPP
 #define STRING_TOOLBAR_HPP
 #include <QString>

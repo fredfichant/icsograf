@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/edge_type_utils.cpp
+ * \brief Implementation of edge type utils graph logic.
+ */
+
 #include "edge_type_utils.hpp"
 
 #include <qmath.h>

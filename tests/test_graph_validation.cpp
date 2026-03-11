@@ -1,3 +1,8 @@
+/**
+ * \file tests/test_graph_validation.cpp
+ * \brief Unit tests for graph validation.
+ */
+
 #include <cassert>
 
 #include "edge_2strand.hpp"

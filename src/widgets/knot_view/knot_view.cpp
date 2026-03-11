@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/knot_view.cpp
+ * \brief Implementation of knot view interactions in the knot view.
+ */
+
 #include "knot_view.hpp"
 
 #include <QApplication>

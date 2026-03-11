@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/edge_handle_calculator.cpp
+ * \brief Implementation of edge handle calculator graph logic.
+ */
+
 #include "edge_handle_calculator.hpp"
 
 #include <qmath.h>

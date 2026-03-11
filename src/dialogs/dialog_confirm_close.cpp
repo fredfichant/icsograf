@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/dialog_confirm_close.cpp
+ * \brief Implementation of dialog confirm close dialog and window components.
+ */
+
 #include "dialog_confirm_close.hpp"
 
 #include <QCheckBox>

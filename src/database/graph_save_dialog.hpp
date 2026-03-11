@@ -1,3 +1,8 @@
+/**
+ * \file src/database/graph_save_dialog.hpp
+ * \brief Dialog declarations for saving the current graph into the SQLite library.
+ */
+
 #ifndef GRAPH_SAVE_DIALOG_HPP
 #define GRAPH_SAVE_DIALOG_HPP
 

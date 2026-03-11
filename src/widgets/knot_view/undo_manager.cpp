@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/undo_manager.cpp
+ * \brief Implementation of undo manager interactions in the knot view.
+ */
+
 #include "undo_manager.hpp"
 
 #include "commands.hpp"

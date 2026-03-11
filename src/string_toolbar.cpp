@@ -1,3 +1,8 @@
+/**
+ * \file src/string_toolbar.cpp
+ * \brief Implementation of string toolbar application module.
+ */
+
 #include "string_toolbar.hpp"
 
 #include <QMainWindow>

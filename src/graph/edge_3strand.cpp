@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/edge_3strand.cpp
+ * \brief Implementation of edge 3-strand graph logic.
+ */
+
 #include "edge_3strand.hpp"
 
 #include "edge.hpp"

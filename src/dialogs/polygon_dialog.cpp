@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/polygon_dialog.cpp
+ * \brief Implementation of polygon dialog dialog and window components.
+ */
+
 #include "polygon_dialog.hpp"
 
 #include <QCheckBox>

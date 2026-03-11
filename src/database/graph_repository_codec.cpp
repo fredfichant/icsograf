@@ -1,3 +1,8 @@
+/**
+ * \file src/database/graph_repository_codec.cpp
+ * \brief Serialization, hashing, and deserialization routines for graph repository records.
+ */
+
 #include "graph_repository.hpp"
 
 #include <QCryptographicHash>

@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/path_item.cpp
+ * \brief Implementation of path item graph logic.
+ */
+
 #include "path_item.hpp"
 
 #include "point_math.hpp"

@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/edge_inverted_logic.hpp
+ * \brief API declarations for edge inverted logic graph data structures and operations.
+ */
+
 #ifndef EDGE_INVERTED_LOGIC_HPP
 #define EDGE_INVERTED_LOGIC_HPP
 

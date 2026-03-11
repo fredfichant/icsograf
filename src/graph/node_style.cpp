@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/node_style.cpp
+ * \brief Implementation of node style graph logic.
+ */
+
 #include "node_style.hpp"
 
 Node_Style Node_Style::default_to(const Node_Style& other) const

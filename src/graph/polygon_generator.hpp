@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/polygon_generator.hpp
+ * \brief API declarations for polygon generator graph data structures and operations.
+ */
+
 #ifndef POLYGON_GENERATOR_HPP
 #define POLYGON_GENERATOR_HPP
 

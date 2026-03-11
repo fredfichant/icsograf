@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/other_widgets/cusp_style_widget.cpp
+ * \brief Implementation of reusable cusp style widget widget components.
+ */
+
 #include "cusp_style_widget.hpp"
 
 #include "resource_manager.hpp"

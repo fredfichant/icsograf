@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/transform_handle.cpp
+ * \brief Implementation of transform handle interactions in the knot view.
+ */
+
 #include "transform_handle.hpp"
 
 QSvgRenderer Transform_Handle::scale_rest;

@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/path_builder.hpp
+ * \brief API declarations for path builder graph data structures and operations.
+ */
+
 #ifndef PATH_BUILDER_HPP
 #define PATH_BUILDER_HPP
 

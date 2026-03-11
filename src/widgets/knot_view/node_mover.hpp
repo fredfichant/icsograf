@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/node_mover.hpp
+ * \brief API declarations for node mover interactions in the knot editor view.
+ */
+
 #ifndef NODE_MOVER_HPP
 #define NODE_MOVER_HPP
 

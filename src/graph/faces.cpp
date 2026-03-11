@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/faces.cpp
+ * \brief Implementation of faces graph logic.
+ */
+
 #include "faces.hpp"
 
 #include <algorithm>

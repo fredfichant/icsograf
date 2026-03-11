@@ -1,3 +1,8 @@
+/**
+ * \file tests/test_graph_properties_edge_distribution.cpp
+ * \brief Unit tests for graph properties edge distribution.
+ */
+
 #include <cassert>
 
 #include "edge_normal.hpp"

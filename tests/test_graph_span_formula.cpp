@@ -1,3 +1,8 @@
+/**
+ * \file tests/test_graph_span_formula.cpp
+ * \brief Unit tests for graph span formula.
+ */
+
 #include <cassert>
 
 #include "edge_2strand.hpp"

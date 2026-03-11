@@ -1,3 +1,8 @@
+/**
+ * \file src/io/xml_loader_v2.hpp
+ * \brief Public API for XML loader v2 import and export routines.
+ */
+
 #ifndef XML_LOADER_V2_HPP
 #define XML_LOADER_V2_HPP
 

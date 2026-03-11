@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/context_menu_edge.cpp
+ * \brief Implementation of context menu edge interactions in the knot view.
+ */
+
 
 #include "context_menu_edge.hpp"
 

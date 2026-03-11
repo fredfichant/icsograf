@@ -1,3 +1,8 @@
+/**
+ * \file src/knot_file_manager.hpp
+ * \brief API declarations for the knot file manager application module.
+ */
+
 #ifndef KNOT_FILE_MANAGER_HPP
 #define KNOT_FILE_MANAGER_HPP
 

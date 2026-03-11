@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/graph_properties.cpp
+ * \brief Implementation of graph properties graph logic.
+ */
+
 #include "graph_properties.hpp"
 
 Graph_Properties::Graph_Properties(QObject* parent)

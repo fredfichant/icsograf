@@ -1,3 +1,8 @@
+/**
+ * \file src/settings.cpp
+ * \brief Implementation of settings application module.
+ */
+
 #include "settings.hpp"
 
 #include <QAction>

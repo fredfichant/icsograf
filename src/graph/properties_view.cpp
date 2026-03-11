@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/properties_view.cpp
+ * \brief Implementation of properties view graph logic.
+ */
+
 #include "properties_view.hpp"
 
 #include <QFormLayout>

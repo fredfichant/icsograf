@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/graph_item.hpp
+ * \brief API declarations for graph item graph data structures and operations.
+ */
+
 #ifndef GRAPH_ITEM_HPP
 #define GRAPH_ITEM_HPP
 #include <QGraphicsObject>

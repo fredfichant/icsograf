@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/edge_inverted_logic.cpp
+ * \brief Implementation of edge inverted logic graph logic.
+ */
+
 #include "edge_inverted_logic.hpp"
 #include <QPen>
 

@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/traversal_info.hpp
+ * \brief API declarations for traversal info graph data structures and operations.
+ */
+
 #ifndef TRAVERSAL_INFO_HPP
 #define TRAVERSAL_INFO_HPP
 

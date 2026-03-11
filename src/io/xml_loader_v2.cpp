@@ -1,3 +1,8 @@
+/**
+ * \file src/io/xml_loader_v2.cpp
+ * \brief Implementation of xml loader v2 import and export routines.
+ */
+
 #include "xml_loader_v2.hpp"
 
 #include "edge_style.hpp"

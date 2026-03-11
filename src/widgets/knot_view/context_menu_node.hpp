@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/context_menu_node.hpp
+ * \brief API declarations for context menu node interactions in the knot editor view.
+ */
+
 #ifndef CONTEXT_MENU_NODE_HPP
 #define CONTEXT_MENU_NODE_HPP
 

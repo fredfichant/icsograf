@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/knot_tool.hpp
+ * \brief API declarations for knot tool interactions in the knot editor view.
+ */
+
 #ifndef KNOT_TOOL_HPP
 #define KNOT_TOOL_HPP
 

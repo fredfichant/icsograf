@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/path_item.hpp
+ * \brief API declarations for path item graph data structures and operations.
+ */
+
 #include <QPainterPath>
 #include <QPointF>
 

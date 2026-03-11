@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/icon_dock_style.hpp
+ * \brief API declarations for the icon dock style dialog or window.
+ */
+
 #ifndef ICON_DOCK_STYLE_HPP
 #define ICON_DOCK_STYLE_HPP
 

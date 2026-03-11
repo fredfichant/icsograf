@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/context_menu_edge.hpp
+ * \brief API declarations for context menu edge interactions in the knot editor view.
+ */
+
 #ifndef CONTEXT_MENU_EDGE_HPP
 #define CONTEXT_MENU_EDGE_HPP
 

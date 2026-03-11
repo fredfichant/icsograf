@@ -1,3 +1,8 @@
+/**
+ * \file src/database/graph_save_dialog.cpp
+ * \brief Behavior of the save dialog used for graph library persistence.
+ */
+
 #include "graph_save_dialog.hpp"
 
 #include <QHBoxLayout>

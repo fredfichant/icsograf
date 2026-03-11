@@ -102,6 +102,38 @@ function(add_icsograf_db_test test_name test_file)
   add_test(NAME ${test_name} COMMAND ${test_name})
 endfunction()
 
+function(add_icsograf_db_ui_test test_name test_file)
+  add_executable(${test_name}
+    ${test_file}
+    ${TEST_CORE_SOURCES}
+    ${CMAKE_SOURCE_DIR}/src/database/graph_repository.cpp
+    ${CMAKE_SOURCE_DIR}/src/database/graph_repository_codec.cpp
+    ${CMAKE_SOURCE_DIR}/src/database/graph_browser_dialog.cpp
+    ${CMAKE_SOURCE_DIR}/src/database/graph_browser_dialog_ui.cpp
+    ${CMAKE_SOURCE_DIR}/src/database/graph_browser_dialog_data.cpp
+  )
+
+  target_include_directories(${test_name}
+    PRIVATE
+      ${TEST_INCLUDE_DIRS}
+  )
+
+  target_link_libraries(${test_name}
+    PRIVATE
+      Qt5::Core
+      Qt5::Gui
+      Qt5::Widgets
+      Qt5::Svg
+      Qt5::PrintSupport
+      Qt5::Xml
+      Qt5::Network
+      Qt5::UiTools
+      Qt5::Sql
+  )
+
+  add_test(NAME ${test_name} COMMAND ${test_name})
+endfunction()
+
 add_icsograf_test(test_edge_handles ${CMAKE_CURRENT_SOURCE_DIR}/test_edge_handles.cpp)
 add_icsograf_test(test_edge_2strand ${CMAKE_CURRENT_SOURCE_DIR}/test_edge_2strand.cpp)
 add_icsograf_test(test_edge_3strand ${CMAKE_CURRENT_SOURCE_DIR}/test_edge_3strand.cpp)
@@ -119,3 +151,4 @@ add_icsograf_test(test_graph_span_formula ${CMAKE_CURRENT_SOURCE_DIR}/test_graph
 add_icsograf_test(test_graph_non_reducible ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_non_reducible.cpp)
 add_icsograf_test(test_graph_validation ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_validation.cpp)
 add_icsograf_db_test(test_graph_repository ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_repository.cpp)
+add_icsograf_db_ui_test(test_graph_browser_dialog_details ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_browser_dialog_details.cpp)

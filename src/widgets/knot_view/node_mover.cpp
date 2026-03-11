@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/node_mover.cpp
+ * \brief Implementation of node mover interactions in the knot view.
+ */
+
 #include "node_mover.hpp"
 
 #include "commands.hpp"

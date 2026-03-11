@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/dock/dock_properties.hpp
+ * \brief API declarations for the dock properties dock widget.
+ */
+
 #ifndef DOCK_PROPERTIES_HPP
 #define DOCK_PROPERTIES_HPP
 #include <QDockWidget>

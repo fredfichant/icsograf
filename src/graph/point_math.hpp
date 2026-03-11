@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/point_math.hpp
+ * \brief API declarations for point math graph data structures and operations.
+ */
+
 #ifndef POINT_MATH_HPP
 #define POINT_MATH_HPP
 

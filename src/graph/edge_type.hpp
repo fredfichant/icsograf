@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/edge_type.hpp
+ * \brief API declarations for edge type graph data structures and operations.
+ */
+
 #ifndef EDGE_TYPE_HPP
 #define EDGE_TYPE_HPP
 

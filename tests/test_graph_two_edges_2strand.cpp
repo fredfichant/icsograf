@@ -1,3 +1,8 @@
+/**
+ * \file tests/test_graph_two_edges_2strand.cpp
+ * \brief Unit tests for graph two edges 2-strand.
+ */
+
 #include <cassert>
 
 #include "edge_2strand.hpp"

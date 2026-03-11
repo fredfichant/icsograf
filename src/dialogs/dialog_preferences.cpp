@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/dialog_preferences.cpp
+ * \brief Implementation of dialog preferences dialog and window components.
+ */
+
 #include "dialog_preferences.hpp"
 
 #include <QColorDialog>

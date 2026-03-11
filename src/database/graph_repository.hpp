@@ -1,3 +1,8 @@
+/**
+ * \file src/database/graph_repository.hpp
+ * \brief SQLite repository API for saving, querying, loading, and deleting graph records.
+ */
+
 #ifndef GRAPH_REPOSITORY_HPP
 #define GRAPH_REPOSITORY_HPP
 

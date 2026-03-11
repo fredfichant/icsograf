@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/other_widgets/edge_type_widget.cpp
+ * \brief Implementation of reusable edge type widget widget components.
+ */
+
 #include "edge_type_widget.hpp"
 
 #include "resource_manager.hpp"

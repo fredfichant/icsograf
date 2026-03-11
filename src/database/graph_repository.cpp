@@ -1,3 +1,8 @@
+/**
+ * \file src/database/graph_repository.cpp
+ * \brief SQLite repository implementation for graph persistence, filtering, and deletion.
+ */
+
 #include "graph_repository.hpp"
 
 #include <QDir>

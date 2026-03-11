@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/graph_validation.cpp
+ * \brief Implementation of graph validation graph logic.
+ */
+
 #include "graph_validation.hpp"
 
 #include <algorithm>

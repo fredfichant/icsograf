@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/status_bar.hpp
+ * \brief API declarations for status bar widgets.
+ */
+
 #ifndef STATUS_BAR_HPP
 #define STATUS_BAR_HPP
 

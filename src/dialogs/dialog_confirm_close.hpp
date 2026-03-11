@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/dialog_confirm_close.hpp
+ * \brief API declarations for the dialog confirm close dialog or window.
+ */
+
 #ifndef DIALOG_CONFIRM_CLOSE_HPP
 #define DIALOG_CONFIRM_CLOSE_HPP
 

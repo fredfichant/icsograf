@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/edge_normal.hpp
+ * \brief API declarations for edge normal graph data structures and operations.
+ */
+
 #ifndef EDGE_NORMAL_HPP
 #define EDGE_NORMAL_HPP
 

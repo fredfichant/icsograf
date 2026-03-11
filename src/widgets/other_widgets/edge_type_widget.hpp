@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/other_widgets/edge_type_widget.hpp
+ * \brief API declarations for reusable edge type widget widgets.
+ */
+
 #ifndef EDGE_TYPE_WIDGET_HPP
 #define EDGE_TYPE_WIDGET_HPP
 

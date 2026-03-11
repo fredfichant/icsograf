@@ -1,14 +1,79 @@
+/**
+ * \file src/database/graph_browser_dialog_data.cpp
+ * \brief Data loading, detail rendering, and actions for the graph browser dialog.
+ */
+
 #include "graph_browser_dialog.hpp"
 
+#include <algorithm>
+
+#include <QBuffer>
 #include <QLabel>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QSet>
 #include <QTableWidgetItem>
 #include <QTextEdit>
 
 #include "edge.hpp"
 #include "graph.hpp"
+#include "image_exporter.hpp"
 #include "node.hpp"
+
+namespace
+{
+QString svg_data_uri(const QByteArray& svg_bytes)
+{
+    return QStringLiteral("data:image/svg+xml;base64,%1")
+        .arg(QString::fromLatin1(svg_bytes.toBase64()));
+}
+
+bool export_graph_svg_data_uri(const Graph& graph, bool draw_graph, QString* out_data_uri,
+                               QString* error_message)
+{
+    if (!out_data_uri) {
+        if (error_message)
+            *error_message = QStringLiteral("out_data_uri is nullptr");
+        return false;
+    }
+
+    QByteArray bytes;
+    QBuffer buffer(&bytes);
+    if (!buffer.open(QIODevice::WriteOnly)) {
+        if (error_message)
+            *error_message = QStringLiteral("failed to open SVG buffer");
+        return false;
+    }
+
+    export_svg(buffer, graph, draw_graph);
+
+    if (bytes.isEmpty()) {
+        if (error_message)
+            *error_message = QStringLiteral("empty SVG output");
+        return false;
+    }
+
+    *out_data_uri = svg_data_uri(bytes);
+    return true;
+}
+
+QList<int> sorted_distribution_keys(const Graph_Record& rec)
+{
+    QSet<int> keys;
+    for (auto it = rec.vertex_degree_distribution.constBegin();
+         it != rec.vertex_degree_distribution.constEnd(); ++it) {
+        keys.insert(it.key());
+    }
+    for (auto it = rec.face_degree_distribution.constBegin(); it != rec.face_degree_distribution.constEnd();
+         ++it) {
+        keys.insert(it.key());
+    }
+
+    QList<int> sorted = keys.values();
+    std::sort(sorted.begin(), sorted.end());
+    return sorted;
+}
+}  // namespace
 
 void Graph_Browser_Dialog::refresh_results()
 {
@@ -88,38 +153,17 @@ void Graph_Browser_Dialog::update_details_panel()
         if (rec.id != id)
             continue;
 
-        QString text;
-        text += QString("ID : %1\n").arg(rec.id);
-        text += QString("Titre : %1\n").arg(rec.title);
-        text += QString("Créé le : %1\n").arg(rec.created_at);
-        text += QString("Hash topologique : %1\n\n").arg(rec.topology_hash);
-
-        text += QString("Sommets : %1\n").arg(rec.node_count);
-        text += QString("Arêtes : %1\n").arg(rec.edge_count);
-        text += QString("Groupes : %1\n").arg(rec.group_count);
-        text += QString("Faces : %1\n\n").arg(rec.face_count);
-
-        text += QString("wa : %1\n").arg(rec.wa);
-        text += QString("w0 : %1\n").arg(rec.w0);
-        text += QString("p0 : %1\n").arg(rec.p0);
-        text += QString("pa : %1\n").arg(rec.pa);
-        text += QString("Delta t : %1\n").arg(rec.delta_t);
-        text += QString("Formule span : %1\n").arg(rec.span_formula);
-        text += QString("Non réductible : %1\n\n").arg(rec.is_non_reducible ? "oui" : "non");
-
-        text += "Distribution degrés sommets :\n";
-        for (auto it = rec.vertex_degree_distribution.constBegin();
-             it != rec.vertex_degree_distribution.constEnd(); ++it) {
-            text += QString("  %1 -> %2\n").arg(it.key()).arg(it.value());
+        QString graph_svg_data_uri;
+        QString node_svg_data_uri;
+        QString svg_error;
+        if (!build_svg_data_uris(m_repo, rec, &graph_svg_data_uri, &node_svg_data_uri, &svg_error)) {
+            graph_svg_data_uri.clear();
+            node_svg_data_uri.clear();
+            m_status_label->setText(
+                QStringLiteral("%1 résultat(s) - SVG indisponible (%2)").arg(m_rows.size()).arg(svg_error));
         }
 
-        text += "\nDistribution degrés faces :\n";
-        for (auto it = rec.face_degree_distribution.constBegin();
-             it != rec.face_degree_distribution.constEnd(); ++it) {
-            text += QString("  %1 -> %2\n").arg(it.key()).arg(it.value());
-        }
-
-        m_details_text->setPlainText(text);
+        m_details_text->setHtml(build_details_html(rec, graph_svg_data_uri, node_svg_data_uri));
         return;
     }
 
@@ -190,6 +234,121 @@ bool Graph_Browser_Dialog::load_selected_graph(Graph& graph,
     }
 
     if (!m_repo.deserialize_graph_into(rec.graph_json, graph, out_nodes, out_edges, &error)) {
+        if (error_message)
+            *error_message = error;
+        return false;
+    }
+
+    return true;
+}
+
+QString Graph_Browser_Dialog::build_details_html(const Graph_Record& rec,
+                                                 const QString& graph_svg_data_uri,
+                                                 const QString& node_svg_data_uri)
+{
+    const QList<int> keys = sorted_distribution_keys(rec);
+
+    QString html;
+    html += QStringLiteral("<h3>Détails</h3>");
+    html += QStringLiteral("<p><b>ID :</b> %1<br/>").arg(rec.id);
+    html += QStringLiteral("<b>Titre :</b> %1<br/>").arg(rec.title.toHtmlEscaped());
+    html += QStringLiteral("<b>Créé le :</b> %1</p>").arg(rec.created_at.toHtmlEscaped());
+
+    html += QStringLiteral("<table border='1' cellspacing='0' cellpadding='4'>");
+    html += QStringLiteral("<tr><th>Sommets</th><th>Arêtes</th><th>Groupes</th><th>Faces</th></tr>");
+    html += QStringLiteral("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td></tr>")
+                .arg(rec.node_count)
+                .arg(rec.edge_count)
+                .arg(rec.group_count)
+                .arg(rec.face_count);
+    html += QStringLiteral("</table><br/>");
+
+    html += QStringLiteral("<table border='1' cellspacing='0' cellpadding='6'>");
+    html += QStringLiteral("<tr><td><b>wa</b><br/>%1</td><td><b>w0</b><br/>%2</td></tr>")
+                .arg(rec.wa)
+                .arg(rec.w0);
+    html += QStringLiteral("<tr><td><b>p0</b><br/>%1</td><td><b>pa</b><br/>%2</td></tr>")
+                .arg(rec.p0)
+                .arg(rec.pa);
+    html += QStringLiteral("</table><br/>");
+
+    html += QStringLiteral("<p><b>Delta t :</b> %1<br/>").arg(rec.delta_t);
+    html += QStringLiteral("<b>Formule span :</b> %1<br/>").arg(rec.span_formula.toHtmlEscaped());
+    html += QStringLiteral("<b>Non réductible :</b> %1</p>")
+                .arg(rec.is_non_reducible ? QStringLiteral("oui") : QStringLiteral("non"));
+
+    html += QStringLiteral("<h3>Distribution des degrés</h3>");
+    html += QStringLiteral("<table border='1' cellspacing='0' cellpadding='4'>");
+    html += QStringLiteral("<tr><th>Type</th>");
+    for (int degree : keys) {
+        html += QStringLiteral("<th>%1</th>").arg(degree);
+    }
+    html += QStringLiteral("</tr>");
+
+    html += QStringLiteral("<tr><td><b>Sommets</b></td>");
+    for (int degree : keys) {
+        html += QStringLiteral("<td>%1</td>").arg(rec.vertex_degree_distribution.value(degree, 0));
+    }
+    html += QStringLiteral("</tr>");
+
+    html += QStringLiteral("<tr><td><b>Faces</b></td>");
+    for (int degree : keys) {
+        html += QStringLiteral("<td>%1</td>").arg(rec.face_degree_distribution.value(degree, 0));
+    }
+    html += QStringLiteral("</tr>");
+    html += QStringLiteral("</table><br/>");
+
+    html += QStringLiteral("<h3>Représentations SVG</h3>");
+    if (!graph_svg_data_uri.isEmpty()) {
+        html += QStringLiteral("<p><b>Graphe</b><br/><img src='%1' width='360'/></p>")
+                    .arg(graph_svg_data_uri);
+    } else {
+        html += QStringLiteral("<p><b>Graphe</b> : indisponible</p>");
+    }
+
+    if (!node_svg_data_uri.isEmpty()) {
+        html += QStringLiteral("<p><b>Nœud</b><br/><img src='%1' width='360'/></p>").arg(node_svg_data_uri);
+    } else {
+        html += QStringLiteral("<p><b>Nœud</b> : indisponible</p>");
+    }
+
+    return html;
+}
+
+bool Graph_Browser_Dialog::build_svg_data_uris(const Graph_Repository& repo,
+                                               const Graph_Record& rec,
+                                               QString* out_graph_svg_data_uri,
+                                               QString* out_node_svg_data_uri,
+                                               QString* error_message)
+{
+    if (!out_graph_svg_data_uri || !out_node_svg_data_uri) {
+        if (error_message)
+            *error_message = QStringLiteral("output SVG pointers are null");
+        return false;
+    }
+
+    Graph graph;
+    QList<Node*> nodes;
+    QList<Edge*> edges;
+    QString error;
+    const bool ok = repo.deserialize_graph_into(rec.graph_json, graph, nodes, edges, &error);
+    if (!ok) {
+        if (error_message)
+            *error_message = error;
+        return false;
+    }
+
+    bool graph_ok = export_graph_svg_data_uri(graph, true, out_graph_svg_data_uri, &error);
+    bool node_ok = export_graph_svg_data_uri(graph, false, out_node_svg_data_uri, &error);
+
+    for (Edge* edge : edges) {
+        delete edge;
+    }
+    for (Node* node : nodes) {
+        delete node;
+    }
+
+    if (!graph_ok || !node_ok) {
         if (error_message)
             *error_message = error;
         return false;

@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/node_cusp_shape.hpp
+ * \brief API declarations for node cusp shape graph data structures and operations.
+ */
+
 #ifndef NODE_CUSP_SHAPE_HPP
 #define NODE_CUSP_SHAPE_HPP
 #include <QIcon>

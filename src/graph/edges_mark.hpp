@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/edges_mark.hpp
+ * \brief API declarations for edges mark graph data structures and operations.
+ */
+
 #ifndef EDGES_MARK_HPP
 #define EDGES_MARK_HPP
 

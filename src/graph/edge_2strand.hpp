@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/edge_2strand.hpp
+ * \brief API declarations for edge 2-strand graph data structures and operations.
+ */
+
 #ifndef EDGE_2STRAND_HPP
 #define EDGE_2STRAND_HPP
 

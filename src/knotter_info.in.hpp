@@ -1,3 +1,8 @@
+/**
+ * \file src/knotter_info.in.hpp
+ * \brief API declarations for the knotter info.in application module.
+ */
+
 #define VERSION "${PROJECT_VERSION}"
 #define TARGET "${PROJECT_SLUG}"
 #define DOMAIN_NAME "${PROJECT_DOMAIN}"

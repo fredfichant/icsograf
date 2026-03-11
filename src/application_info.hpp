@@ -1,3 +1,8 @@
+/**
+ * \file src/application_info.hpp
+ * \brief API declarations for the application info application module.
+ */
+
 #ifndef APPLICATION_INFO_HPP
 #define APPLICATION_INFO_HPP
 

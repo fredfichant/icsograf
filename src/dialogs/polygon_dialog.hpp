@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/polygon_dialog.hpp
+ * \brief API declarations for the polygon dialog dialog or window.
+ */
+
 #ifndef POLYGON_DIALOG_HPP
 #define POLYGON_DIALOG_HPP
 

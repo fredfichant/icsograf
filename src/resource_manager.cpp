@@ -1,3 +1,8 @@
+/**
+ * \file src/resource_manager.cpp
+ * \brief Implementation of resource manager application module.
+ */
+
 #include "resource_manager.hpp"
 
 #include <QApplication>

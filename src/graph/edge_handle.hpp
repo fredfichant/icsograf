@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/edge_handle.hpp
+ * \brief API declarations for edge handle graph data structures and operations.
+ */
+
 #ifndef EDGE_HANDLE_HPP
 #define EDGE_HANDLE_HPP
 

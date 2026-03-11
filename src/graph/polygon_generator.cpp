@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/polygon_generator.cpp
+ * \brief Implementation of polygon generator graph logic.
+ */
+
 #include "polygon_generator.hpp"
 
 #include <QPointF>  // For QPointF

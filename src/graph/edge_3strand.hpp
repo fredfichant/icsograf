@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/edge_3strand.hpp
+ * \brief API declarations for edge 3-strand graph data structures and operations.
+ */
+
 #ifndef EDGE_3STRAND_HPP
 #define EDGE_3STRAND_HPP
 

@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/faces.hpp
+ * \brief API declarations for faces graph data structures and operations.
+ */
+
 #ifndef FACES_HPP
 #define FACES_HPP
 

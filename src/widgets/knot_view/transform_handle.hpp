@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/transform_handle.hpp
+ * \brief API declarations for transform handle interactions in the knot editor view.
+ */
+
 #ifndef TRANSFORM_HANDLE_HPP
 #define TRANSFORM_HANDLE_HPP
 

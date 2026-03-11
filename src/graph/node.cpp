@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/node.cpp
+ * \brief Implementation of node graph logic.
+ */
+
 #include "node.hpp"
 
 #include "edge.hpp"

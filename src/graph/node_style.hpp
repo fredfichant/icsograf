@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/node_style.hpp
+ * \brief API declarations for node style graph data structures and operations.
+ */
+
 #ifndef NODE_STYLE_HPP
 #define NODE_STYLE_HPP
 

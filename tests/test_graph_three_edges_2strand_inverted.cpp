@@ -1,3 +1,8 @@
+/**
+ * \file tests/test_graph_three_edges_2strand_inverted.cpp
+ * \brief Unit tests for graph three edges 2-strand inverted.
+ */
+
 #include <cassert>
 
 #include "edge_2strand.hpp"

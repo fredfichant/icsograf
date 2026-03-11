@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/export_image_dialog.hpp
+ * \brief API declarations for the export image dialog dialog or window.
+ */
+
 #ifndef EXPORT_IMAGE_DIALOG_HPP
 #define EXPORT_IMAGE_DIALOG_HPP
 

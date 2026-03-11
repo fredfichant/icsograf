@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/main_window.cpp
+ * \brief Implementation of main window dialog and window components.
+ */
+
 #include "main_window.hpp"
 
 #include <QBuffer>

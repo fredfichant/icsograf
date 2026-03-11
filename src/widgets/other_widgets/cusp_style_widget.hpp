@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/other_widgets/cusp_style_widget.hpp
+ * \brief API declarations for reusable cusp style widget widgets.
+ */
+
 #ifndef CUSP_STYLE_WIDGET_HPP
 #define CUSP_STYLE_WIDGET_HPP
 

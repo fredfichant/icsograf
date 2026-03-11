@@ -1,3 +1,8 @@
+/**
+ * \file src/io/image_exporter.cpp
+ * \brief Implementation of image exporter import and export routines.
+ */
+
 #include "image_exporter.hpp"
 
 #include <QSvgGenerator>

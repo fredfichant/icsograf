@@ -1,3 +1,8 @@
+/**
+ * \file tests/test_graph_non_reducible.cpp
+ * \brief Unit tests for graph non-reducible.
+ */
+
 #include <algorithm>
 #include <cassert>
 

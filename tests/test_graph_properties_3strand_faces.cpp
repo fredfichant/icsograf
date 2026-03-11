@@ -1,3 +1,8 @@
+/**
+ * \file tests/test_graph_properties_3strand_faces.cpp
+ * \brief Unit tests for graph properties 3-strand faces.
+ */
+
 #include <cassert>
 
 #include "edge_3strand.hpp"

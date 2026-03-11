@@ -1,3 +1,8 @@
+/**
+ * \file tests/test_edge_2strand.cpp
+ * \brief Unit tests for edge 2-strand.
+ */
+
 #include <cassert>
 
 #include "edge_2strand.hpp"

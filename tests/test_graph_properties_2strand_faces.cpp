@@ -1,3 +1,8 @@
+/**
+ * \file tests/test_graph_properties_2strand_faces.cpp
+ * \brief Unit tests for graph properties 2-strand faces.
+ */
+
 #include <cassert>
 
 #include "edge_2strand.hpp"

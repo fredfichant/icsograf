@@ -1,3 +1,8 @@
+/**
+ * \file src/database/graph_browser_dialog.hpp
+ * \brief Dialog declarations for browsing, filtering, previewing, and loading stored graphs.
+ */
+
 #ifndef GRAPH_BROWSER_DIALOG_HPP
 #define GRAPH_BROWSER_DIALOG_HPP
 
@@ -31,6 +36,15 @@ public:
                              QList<Edge*>& out_edges,
                              QString* error_message = nullptr);
 
+    static QString build_details_html(const Graph_Record& rec,
+                                      const QString& graph_svg_data_uri,
+                                      const QString& node_svg_data_uri);
+    static bool build_svg_data_uris(const Graph_Repository& repo,
+                                    const Graph_Record& rec,
+                                    QString* out_graph_svg_data_uri,
+                                    QString* out_node_svg_data_uri,
+                                    QString* error_message = nullptr);
+
 private slots:
     void on_search_clicked();
     void on_reset_clicked();
@@ -57,12 +71,7 @@ private:
     QSpinBox* m_edge_count_spin = nullptr;
     QSpinBox* m_group_count_spin = nullptr;
     QSpinBox* m_face_count_spin = nullptr;
-    QSpinBox* m_wa_spin = nullptr;
-    QSpinBox* m_w0_spin = nullptr;
-    QSpinBox* m_p0_spin = nullptr;
-    QSpinBox* m_pa_spin = nullptr;
     QSpinBox* m_delta_t_spin = nullptr;
-    QLineEdit* m_span_formula_edit = nullptr;
     QComboBox* m_non_reducible_combo = nullptr;
 
     QPushButton* m_search_button = nullptr;

@@ -1,3 +1,8 @@
+/**
+ * \file src/io/xml_loader_private.cpp
+ * \brief Implementation of xml loader private import and export routines.
+ */
+
 #include "xml_loader_private.hpp"
 
 #include <QMetaEnum>

@@ -1,3 +1,8 @@
+/**
+ * \file tests/test_graph_first_edge_3strand.cpp
+ * \brief Unit tests for graph first edge 3-strand.
+ */
+
 #include <cassert>
 
 #include "edge_3strand.hpp"

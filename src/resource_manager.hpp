@@ -1,3 +1,8 @@
+/**
+ * \file src/resource_manager.hpp
+ * \brief API declarations for the resource manager application module.
+ */
+
 #ifndef RESOURCE_MANAGER_HPP
 #define RESOURCE_MANAGER_HPP
 

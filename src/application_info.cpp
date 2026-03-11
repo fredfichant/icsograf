@@ -1,3 +1,8 @@
+/**
+ * \file src/application_info.cpp
+ * \brief Implementation of application info application module.
+ */
+
 #include "application_info.hpp"
 
 #include <QCoreApplication>

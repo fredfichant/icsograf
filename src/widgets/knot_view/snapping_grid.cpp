@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/snapping_grid.cpp
+ * \brief Implementation of snapping grid interactions in the knot view.
+ */
+
 #include "snapping_grid.hpp"
 
 #include <QLineF>

@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/path_builder.cpp
+ * \brief Implementation of path builder graph logic.
+ */
+
 #include "path_builder.hpp"
 
 Path_Builder::Path_Builder() {}

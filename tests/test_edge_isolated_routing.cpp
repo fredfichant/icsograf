@@ -1,3 +1,8 @@
+/**
+ * \file tests/test_edge_isolated_routing.cpp
+ * \brief Unit tests for edge isolated routing.
+ */
+
 #include <cassert>
 
 #include "edge_2strand.hpp"

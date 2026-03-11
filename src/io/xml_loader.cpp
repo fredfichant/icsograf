@@ -1,3 +1,8 @@
+/**
+ * \file src/io/xml_loader.cpp
+ * \brief Implementation of xml loader import and export routines.
+ */
+
 #include "xml_loader.hpp"
 
 #include <QBuffer>

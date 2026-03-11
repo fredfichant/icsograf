@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/cusp_style_dialog.cpp
+ * \brief Implementation of cusp style dialog dialog and window components.
+ */
+
 
 #include "cusp_style_dialog.hpp"
 

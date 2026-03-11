@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/snapping_grid.hpp
+ * \brief API declarations for snapping grid interactions in the knot editor view.
+ */
+
 #ifndef SNAPPING_GRID_HPP
 #define SNAPPING_GRID_HPP
 

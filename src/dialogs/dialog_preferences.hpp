@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/dialog_preferences.hpp
+ * \brief API declarations for the dialog preferences dialog or window.
+ */
+
 #ifndef DIALOG_PREFERENCES_HPP
 #define DIALOG_PREFERENCES_HPP
 

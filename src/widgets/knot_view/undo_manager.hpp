@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/undo_manager.hpp
+ * \brief API declarations for undo manager interactions in the knot editor view.
+ */
+
 #ifndef UNDO_MANAGER_HPP
 #define UNDO_MANAGER_HPP
 

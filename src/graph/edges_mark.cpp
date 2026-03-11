@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/edges_mark.cpp
+ * \brief Implementation of edges mark graph logic.
+ */
+
 #include "edges_mark.hpp"
 
 #include <algorithm>

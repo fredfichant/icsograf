@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/export_image_dialog.cpp
+ * \brief Implementation of export image dialog dialog and window components.
+ */
+
 #include "export_image_dialog.hpp"
 
 #include <QColorDialog>

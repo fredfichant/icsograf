@@ -1,3 +1,8 @@
+/**
+ * \file src/knot_file_manager.cpp
+ * \brief Implementation of knot file manager application module.
+ */
+
 #include "knot_file_manager.hpp"
 
 #include <QBuffer>

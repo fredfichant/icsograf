@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/graph.cpp
+ * \brief Implementation of graph graph logic.
+ */
+
 #include "graph.hpp"
 
 #include <algorithm>

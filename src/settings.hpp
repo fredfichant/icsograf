@@ -1,3 +1,8 @@
+/**
+ * \file src/settings.hpp
+ * \brief API declarations for the settings application module.
+ */
+
 #ifndef SETTINGS_HPP
 #define SETTINGS_HPP
 

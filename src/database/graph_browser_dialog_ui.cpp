@@ -1,3 +1,8 @@
+/**
+ * \file src/database/graph_browser_dialog_ui.cpp
+ * \brief UI construction and filter wiring for the graph browser dialog.
+ */
+
 #include "graph_browser_dialog.hpp"
 
 #include <QComboBox>
@@ -43,32 +48,10 @@ void Graph_Browser_Dialog::build_ui()
     m_face_count_spin->setValue(-1);
     m_face_count_spin->setSpecialValueText(QStringLiteral("Tous"));
 
-    m_wa_spin = new QSpinBox(this);
-    m_wa_spin->setRange(-1, 100000);
-    m_wa_spin->setValue(-1);
-    m_wa_spin->setSpecialValueText(QStringLiteral("Tous"));
-
-    m_w0_spin = new QSpinBox(this);
-    m_w0_spin->setRange(-1, 100000);
-    m_w0_spin->setValue(-1);
-    m_w0_spin->setSpecialValueText(QStringLiteral("Tous"));
-
-    m_p0_spin = new QSpinBox(this);
-    m_p0_spin->setRange(-1, 100000);
-    m_p0_spin->setValue(-1);
-    m_p0_spin->setSpecialValueText(QStringLiteral("Tous"));
-
-    m_pa_spin = new QSpinBox(this);
-    m_pa_spin->setRange(-1, 100000);
-    m_pa_spin->setValue(-1);
-    m_pa_spin->setSpecialValueText(QStringLiteral("Tous"));
-
     m_delta_t_spin = new QSpinBox(this);
     m_delta_t_spin->setRange(-1, 100000);
     m_delta_t_spin->setValue(-1);
     m_delta_t_spin->setSpecialValueText(QStringLiteral("Tous"));
-
-    m_span_formula_edit = new QLineEdit(this);
 
     m_non_reducible_combo = new QComboBox(this);
     m_non_reducible_combo->addItem(QStringLiteral("Tous"), -1);
@@ -80,12 +63,7 @@ void Graph_Browser_Dialog::build_ui()
     form->addRow(QStringLiteral("Nombre d'arêtes"), m_edge_count_spin);
     form->addRow(QStringLiteral("Nombre de groupes"), m_group_count_spin);
     form->addRow(QStringLiteral("Nombre de faces"), m_face_count_spin);
-    form->addRow(QStringLiteral("wa"), m_wa_spin);
-    form->addRow(QStringLiteral("w0"), m_w0_spin);
-    form->addRow(QStringLiteral("p0"), m_p0_spin);
-    form->addRow(QStringLiteral("pa"), m_pa_spin);
     form->addRow(QStringLiteral("Delta t"), m_delta_t_spin);
-    form->addRow(QStringLiteral("Formule span"), m_span_formula_edit);
     form->addRow(QStringLiteral("Non réductible"), m_non_reducible_combo);
 
     filters_layout->addLayout(form);
@@ -166,8 +144,6 @@ void Graph_Browser_Dialog::connect_signals()
             &Graph_Browser_Dialog::on_table_double_clicked);
 
     connect(m_title_edit, &QLineEdit::returnPressed, this, &Graph_Browser_Dialog::on_search_clicked);
-    connect(m_span_formula_edit, &QLineEdit::returnPressed, this,
-            &Graph_Browser_Dialog::on_search_clicked);
 }
 
 Graph_Query_Filter Graph_Browser_Dialog::current_filter() const
@@ -178,12 +154,7 @@ Graph_Query_Filter Graph_Browser_Dialog::current_filter() const
     filter.edge_count = m_edge_count_spin->value();
     filter.group_count = m_group_count_spin->value();
     filter.face_count = m_face_count_spin->value();
-    filter.wa = m_wa_spin->value();
-    filter.w0 = m_w0_spin->value();
-    filter.p0 = m_p0_spin->value();
-    filter.pa = m_pa_spin->value();
     filter.delta_t = m_delta_t_spin->value();
-    filter.span_formula = m_span_formula_edit->text().trimmed();
     filter.is_non_reducible = m_non_reducible_combo->currentData().toInt();
     filter.limit = 500;
     return filter;
@@ -201,12 +172,7 @@ void Graph_Browser_Dialog::on_reset_clicked()
     m_edge_count_spin->setValue(-1);
     m_group_count_spin->setValue(-1);
     m_face_count_spin->setValue(-1);
-    m_wa_spin->setValue(-1);
-    m_w0_spin->setValue(-1);
-    m_p0_spin->setValue(-1);
-    m_pa_spin->setValue(-1);
     m_delta_t_spin->setValue(-1);
-    m_span_formula_edit->clear();
     m_non_reducible_combo->setCurrentIndex(0);
 
     refresh_results();

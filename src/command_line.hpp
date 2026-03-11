@@ -1,3 +1,8 @@
+/**
+ * \file src/command_line.hpp
+ * \brief API declarations for the command line application module.
+ */
+
 
 #ifndef COMMAND_LINE_HPP
 #define COMMAND_LINE_HPP

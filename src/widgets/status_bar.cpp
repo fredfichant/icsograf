@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/status_bar.cpp
+ * \brief Implementation of status bar widget components.
+ */
+
 #include "status_bar.hpp"
 
 #include <QDoubleSpinBox>

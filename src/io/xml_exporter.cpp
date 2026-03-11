@@ -1,3 +1,8 @@
+/**
+ * \file src/io/xml_exporter.cpp
+ * \brief Implementation of xml exporter import and export routines.
+ */
+
 #include "xml_exporter.hpp"
 
 #include <QBuffer>

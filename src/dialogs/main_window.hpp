@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/main_window.hpp
+ * \brief API declarations for the main window dialog or window.
+ */
+
 #ifndef MAIN_WINDOW_HPP
 #define MAIN_WINDOW_HPP
 

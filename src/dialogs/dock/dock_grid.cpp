@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/dock/dock_grid.cpp
+ * \brief Implementation of dock grid dock UI component.
+ */
+
 #include "dock_grid.hpp"
 
 #include "resource_manager.hpp"

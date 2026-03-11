@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/knot_tool.cpp
+ * \brief Implementation of knot tool interactions in the knot view.
+ */
+
 #include "knot_tool.hpp"
 
 #include "commands.hpp"

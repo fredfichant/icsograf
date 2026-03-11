@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/edge_style.cpp
+ * \brief Implementation of edge style graph logic.
+ */
+
 #include "edge_style.hpp"
 
 Edge_Style Edge_Style::default_to(const Edge_Style& other) const

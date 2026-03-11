@@ -1,3 +1,8 @@
+/**
+ * \file src/database/graph_browser_dialog.cpp
+ * \brief Construction and initialization of the graph browser dialog.
+ */
+
 #include "graph_browser_dialog.hpp"
 
 #include <QMessageBox>

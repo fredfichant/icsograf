@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/commands.hpp
+ * \brief API declarations for commands interactions in the knot editor view.
+ */
+
 #ifndef COMMANDS_HPP
 #define COMMANDS_HPP
 

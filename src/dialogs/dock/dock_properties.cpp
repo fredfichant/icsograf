@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/dock/dock_properties.cpp
+ * \brief Implementation of dock properties dock UI component.
+ */
+
 #include "dock_properties.hpp"
 
 #include "graph_properties.hpp"

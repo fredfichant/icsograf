@@ -1,3 +1,8 @@
+/**
+ * \file src/command_line.cpp
+ * \brief Implementation of command line application module.
+ */
+
 #include "command_line.hpp"
 
 #include <QFile>

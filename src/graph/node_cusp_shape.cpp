@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/node_cusp_shape.cpp
+ * \brief Implementation of node cusp shape graph logic.
+ */
+
 #include "node_cusp_shape.hpp"
 
 #include "edge_type.hpp"

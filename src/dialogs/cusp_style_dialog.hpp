@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/cusp_style_dialog.hpp
+ * \brief API declarations for the cusp style dialog dialog or window.
+ */
+
 #ifndef CUSP_STYLE_DIALOG_HPP
 #define CUSP_STYLE_DIALOG_HPP
 

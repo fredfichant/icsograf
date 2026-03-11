@@ -1,3 +1,8 @@
+/**
+ * \file src/graph/edge.cpp
+ * \brief Implementation of edge graph logic.
+ */
+
 #include "edge.hpp"
 
 #include <QDebug>

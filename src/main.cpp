@@ -1,3 +1,8 @@
+/**
+ * \file src/main.cpp
+ * \brief Implementation of main application module.
+ */
+
 #include <QApplication>
 
 #include "QDebug"

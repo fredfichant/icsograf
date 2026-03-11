@@ -1,3 +1,8 @@
+/**
+ * \file src/dialogs/dock/dock_grid.hpp
+ * \brief API declarations for the dock grid dock widget.
+ */
+
 #ifndef DOCK_GRID_HPP
 #define DOCK_GRID_HPP
 

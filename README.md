@@ -42,8 +42,6 @@ Dependencies
 Getting the latest sources
 ---------------------------------------
 
-The git repository is located at git://gitlab.com/mattbas/Knotter.git
-You can browse it online at https://gitlab.com/mattbas/Knotter
 
 
 ### Cloning from Git ###

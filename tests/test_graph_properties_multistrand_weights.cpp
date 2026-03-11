@@ -1,3 +1,8 @@
+/**
+ * \file tests/test_graph_properties_multistrand_weights.cpp
+ * \brief Unit tests for graph properties multistrand weights.
+ */
+
 #include <cassert>
 
 #include "edge_2strand.hpp"

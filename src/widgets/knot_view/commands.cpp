@@ -1,3 +1,8 @@
+/**
+ * \file src/widgets/knot_view/commands.cpp
+ * \brief Implementation of commands interactions in the knot view.
+ */
+
 #include "commands.hpp"
 
 int Knot_Command::auto_id = 0;
