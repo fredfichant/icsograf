@@ -26,7 +26,7 @@ class Edge_Type
     /**
      *  \brief Debug function to draw handles on the edge
      */
-    void debug_draw_handles(QPainter* painter, const Edge& edge) const;
+    // void debug_draw_handles(QPainter* painter, const Edge& edge) const;
 
     /**
      *  \brief Perform any rendering to path and return the next handle

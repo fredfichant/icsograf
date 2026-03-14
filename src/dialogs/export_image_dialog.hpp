@@ -30,7 +30,6 @@ class Export_Image_Dialog : public QDialog, private Ui::Export_Image_Dialog
 
    private slots:
     void reset_size();
-    void on_button_color_background_clicked();
 
     void on_button_svg_clicked();
 
@@ -39,7 +38,7 @@ class Export_Image_Dialog : public QDialog, private Ui::Export_Image_Dialog
      *  \brief Check whether file is open for writing
      */
     bool file_ok(QFile& file);
-    void updateColorButton(QPushButton* button, const QColor& color);
+
 };
 
 #endif  // EXPORT_IMAGE_DIALOG_HPP

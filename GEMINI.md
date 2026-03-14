@@ -43,10 +43,23 @@ The executable will be located in the `build/bin` directory.
 *   The application supports plugins, which can be written in C++ or a scripting language.
 *   Internationalization is supported through Qt's translation system.
 
-## phase 1 :
+## Phase 2 : Deployment
 
-*at each step, give assesment to the user  and then build to check for errors*
+### Configure Qt Creator Deploy Settings
 
+To properly deploy the application and bundle its dependencies, follow these steps in Qt Creator:
+
+1.  Open the **Projects** mode (left sidebar).
+2.  Select the **Run** configuration for your kit.
+3.  Under the **Deployment** section:
+    *   If there are no steps, click **Add Deploy Step** > **Make**.
+    *   In the **Make arguments** field, enter `install`.
+    *   Ensure the **Build target** is set to `All`.
+4.  Now, when you select **Build > Deploy Project**, it will:
+    *   Install the binary and data files.
+    *   Run `macdeployqt` (macOS) or `windeployqt` (Windows) to bundle Qt libraries.
+
+### Refactoring
 - [x] assess refactoring edge_normal, edge_2strand and edge_3strand ; for example :
  - create a class for 'QLineF Edge_2Strand::handle' logic
  - create a class for inverted logic

@@ -110,9 +110,11 @@ void Edge::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
         painter->setPen(p);
         painter->drawLine(to_line());
     }
+    /*
     if (isSelected()) {  // Ou une autre condition
         m_style.edge_type->debug_draw_handles(painter, *this);
     }
+    */
 }
 
 QPainterPath Edge::shape() const

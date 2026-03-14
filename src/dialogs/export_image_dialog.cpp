@@ -17,6 +17,7 @@ Export_Image_Dialog::Export_Image_Dialog(QWidget* parent)
     : QDialog(parent), view(nullptr), m_backgroundColor(Qt::white)
 {
     setupUi(this);
+    check_properties->setChecked(true);
 }
 
 void Export_Image_Dialog::set_view(const Knot_View* v)
@@ -57,7 +58,7 @@ void Export_Image_Dialog::on_button_svg_clicked()
     QFile quf(exname);
     file_name = exname;
 
-    export_svg(quf, view->graph(), check_graph->isChecked());
+    export_svg(quf, view->graph(), check_graph->isChecked(), check_properties->isChecked());
 }
 
 bool Export_Image_Dialog::file_ok(QFile& file)
@@ -72,13 +73,3 @@ bool Export_Image_Dialog::file_ok(QFile& file)
 
 void Export_Image_Dialog::reset_size() {}
 
-void Export_Image_Dialog::updateColorButton(QPushButton* button, const QColor& color)
-{
-    if (button) {
-        QString styleSheet = QString("background-color: %1; border: 1px solid gray;")
-                                 .arg(color.name(QColor::HexArgb));
-        button->setStyleSheet(styleSheet);
-    }
-}
-
-void Export_Image_Dialog::on_button_color_background_clicked() {}

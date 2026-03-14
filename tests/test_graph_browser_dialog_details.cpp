@@ -65,14 +65,10 @@ int main(int argc, char** argv)
     assert(repo.load_graph_record(save.diagram_id, &rec, &error));
 
     QString graph_svg_data_uri;
-    QString node_svg_data_uri;
-    assert(Graph_Browser_Dialog::build_svg_data_uris(repo, rec, &graph_svg_data_uri, &node_svg_data_uri,
-                                                     &error));
+    assert(Graph_Browser_Dialog::build_svg_data_uris(repo, rec, &graph_svg_data_uri, &error));
     assert(graph_svg_data_uri.startsWith(QStringLiteral("data:image/svg+xml;base64,")));
-    assert(node_svg_data_uri.startsWith(QStringLiteral("data:image/svg+xml;base64,")));
 
-    const QString html =
-        Graph_Browser_Dialog::build_details_html(rec, graph_svg_data_uri, node_svg_data_uri);
+    const QString html = Graph_Browser_Dialog::build_details_html(rec, graph_svg_data_uri);
     assert(!html.contains(QStringLiteral("Hash topologique")));
     assert(html.contains(QStringLiteral("<table")));
     assert(html.contains(QStringLiteral("wa")));
@@ -82,6 +78,7 @@ int main(int argc, char** argv)
     assert(html.contains(QStringLiteral("Sommets")));
     assert(html.contains(QStringLiteral("Faces")));
     assert(html.contains(QStringLiteral("Représentations SVG")));
+    assert(!html.contains(QStringLiteral("Nœud")));
     assert(html.contains(QStringLiteral("data:image/svg+xml;base64,")));
 
     return 0;

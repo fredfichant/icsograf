@@ -5,7 +5,7 @@
 
 #include "edge_type.hpp"
 
-#include <QDebug>
+//#include <QDebug>
 #include <QVector>
 
 #include "edge.hpp"
@@ -50,7 +50,8 @@ void Edge_Type::paint_highlighted(QPainter* painter, const Edge& edge)
 }
 void Edge_Type::paint(QPainter* painter, const Edge& edge) { painter->drawLine(edge.to_line()); }
 
-//debug
+/**
+ * \brief Debug draw   debug
 void Edge_Type::debug_draw_handles(QPainter* painter, const Edge& edge) const
 {
     painter->save();
@@ -87,6 +88,7 @@ void Edge_Type::debug_draw_handles(QPainter* painter, const Edge& edge) const
 
     painter->restore();
 }
+*/
 
 Edge_Handle Edge_Type::traverse(Edge* edge, Edge_Handle handle, Path_Builder& path) const
 {

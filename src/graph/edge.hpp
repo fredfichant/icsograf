@@ -1,7 +1,7 @@
 /**
  * \file edge.hpp
  * \brief Edge representation in the knot graph
- * \author Mattia Basaglia
+ * \author fred fichant
  */
 
 #ifndef EDGE_HPP

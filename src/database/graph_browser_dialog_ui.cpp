@@ -60,10 +60,10 @@ void Graph_Browser_Dialog::build_ui()
 
     form->addRow(QStringLiteral("Titre"), m_title_edit);
     form->addRow(QStringLiteral("Nombre de sommets"), m_node_count_spin);
-    form->addRow(QStringLiteral("Nombre d'arêtes"), m_edge_count_spin);
-    form->addRow(QStringLiteral("Nombre de groupes"), m_group_count_spin);
+    form->addRow(QStringLiteral("nombre d'arêtes/croisements"), m_edge_count_spin);
+    form->addRow(QStringLiteral("nombre de ronds"), m_group_count_spin);
     form->addRow(QStringLiteral("Nombre de faces"), m_face_count_spin);
-    form->addRow(QStringLiteral("Delta t"), m_delta_t_spin);
+    form->addRow(QStringLiteral("∆T"), m_delta_t_spin);
     form->addRow(QStringLiteral("Non réductible"), m_non_reducible_combo);
 
     filters_layout->addLayout(form);
@@ -86,13 +86,13 @@ void Graph_Browser_Dialog::build_ui()
                                                       << QStringLiteral("Titre")
                                                       << QStringLiteral("Créé le")
                                                       << QStringLiteral("Arêtes")
-                                                      << QStringLiteral("Groupes")
+                                                      << QStringLiteral("R")
                                                       << QStringLiteral("Faces")
                                                       << QStringLiteral("wa")
                                                       << QStringLiteral("w0")
                                                       << QStringLiteral("p0")
                                                       << QStringLiteral("pa")
-                                                      << QStringLiteral("Delta t"));
+                                                      << QStringLiteral("∆T"));
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->setSelectionMode(QAbstractItemView::SingleSelection);
     m_table->setEditTriggers(QAbstractItemView::NoEditTriggers);

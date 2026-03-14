@@ -84,6 +84,8 @@ set(SOURCES
 
   widgets/other_widgets/cusp_style_widget.cpp
   widgets/other_widgets/cusp_style_widget.ui
+   widgets/other_widgets/edge_type_widget.cpp
+  widgets/other_widgets/edge_type_widget.ui
 
   main.cpp
   resource_manager.cpp

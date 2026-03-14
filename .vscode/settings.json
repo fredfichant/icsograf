@@ -1,3 +1,5 @@
 {
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "qttools.creator": "/usr/local/opt/qt@5/bin",
+    "qt-ui.customWidgetsDesignerExePath": "/usr/local/Cellar/qt@5/5.15.18/bin/Designer"
 }

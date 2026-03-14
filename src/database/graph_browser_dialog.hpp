@@ -36,13 +36,10 @@ public:
                              QList<Edge*>& out_edges,
                              QString* error_message = nullptr);
 
-    static QString build_details_html(const Graph_Record& rec,
-                                      const QString& graph_svg_data_uri,
-                                      const QString& node_svg_data_uri);
+    static QString build_details_html(const Graph_Record& rec, const QString& graph_svg_data_uri);
     static bool build_svg_data_uris(const Graph_Repository& repo,
                                     const Graph_Record& rec,
                                     QString* out_graph_svg_data_uri,
-                                    QString* out_node_svg_data_uri,
                                     QString* error_message = nullptr);
 
 private slots:
