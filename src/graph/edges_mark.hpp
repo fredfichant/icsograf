@@ -21,6 +21,21 @@ struct EdgeMarking
     bool is_a;  // only if has_unique_solution
 };
 
+struct EdgeDistributionTable
+{
+    std::string label;
+    int wa = 0;
+    int w0 = 0;
+    int p0 = 0;
+    int pa = 0;
+
+    bool operator==(const EdgeDistributionTable& other) const
+    {
+        return label == other.label && wa == other.wa && w0 == other.w0 && p0 == other.p0 &&
+               pa == other.pa;
+    }
+};
+
 class GraphMarker
 {
    public:
@@ -40,8 +55,23 @@ class GraphMarker
 
     std::map<const Edge*, EdgeMarking> mark_graph(const Graph& graph,
                                                   const std::vector<std::vector<size_t>>& faces);
+    std::vector<EdgeDistributionTable> edge_distribution_tables_from_linear_solutions(
+        const Graph& graph, const std::vector<std::vector<size_t>>& faces);
+    std::vector<std::vector<int>> edge_assignments_from_linear_solutions(
+        const Graph& graph, const std::vector<std::vector<size_t>>& faces);
+    std::vector<EdgeDistributionTable> edge_distribution_tables(
+        const Graph& graph, const std::vector<std::vector<size_t>>& faces);
 
    private:
+    struct LinearSystemSolution
+    {
+        bool consistent = false;
+        std::vector<bool> particular;
+        std::vector<std::vector<bool>> nullspace;
+    };
+
+    LinearSystemSolution solve_marking_system(const Graph& graph,
+                                              const std::vector<std::vector<size_t>>& faces);
     std::vector<std::string> encodeSymbols(const std::vector<int>& values);
 };
 

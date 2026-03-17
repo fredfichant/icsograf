@@ -6,25 +6,40 @@
 #ifndef KNOT_VIEW_HPP
 #define KNOT_VIEW_HPP
 
+#include <memory>
+
 #include <QGraphicsView>
-#include <QStack>
-#include <QUndoStack>
 
 #include "graph.hpp"
 #include "knot_tool.hpp"
 #include "node_mover.hpp"
-#include "pen_join_style_metatype.hpp"
 #include "snapping_grid.hpp"
 
 class Context_Menu_Node;
 class Context_Menu_Edge;
+class Knot_Graph_Editor;
+class Knot_View_IO;
+class Knot_Selection_Controller;
+class Knot_Style_Controller;
+class Knot_Viewport_Controller;
+class QIODevice;
+class QMouseEvent;
+class QPainter;
+class QPrinter;
+class QUndoStack;
+class QWheelEvent;
 
 class Knot_View : public QGraphicsView
 {
     Q_OBJECT
 
     friend class Knot_Command;
+    friend class Knot_Graph_Editor;
     friend class Knot_Tool;
+    friend class Knot_View_IO;
+    friend class Knot_Selection_Controller;
+    friend class Knot_Style_Controller;
+    friend class Knot_Viewport_Controller;
 
     enum Mouse_Mode_Enum
     {
@@ -51,6 +66,11 @@ class Knot_View : public QGraphicsView
 
     QPoint move_center;  ///< Point aligned to the cursor during movement
     Graph m_graph;
+    std::unique_ptr<Knot_Graph_Editor> m_graph_editor;
+    std::unique_ptr<Knot_View_IO> m_io;
+    std::unique_ptr<Knot_Selection_Controller> m_selection_controller;
+    std::unique_ptr<Knot_Style_Controller> m_style_controller;
+    std::unique_ptr<Knot_Viewport_Controller> m_viewport_controller;
     std::unique_ptr<class UndoManager> m_undoManager;
     Snapping_Grid m_grid;
     // Background_Image    bg_img; -- REMOVED
@@ -458,6 +478,16 @@ class Knot_View : public QGraphicsView
     void update_mouse_cursor();
 
     void set_active_tool(Knot_Tool& tool);
+    bool handle_mouse_press_on_scene(const QPoint& mouse_pos, const QPointF& scene_pos,
+                                     const QPointF& snapped_scene_pos, QMouseEvent* event);
+    QPointF handle_mouse_move_on_scene(const QPoint& mouse_pos, const QPointF& scene_pos,
+                                       const QPointF& snapped_scene_pos, QMouseEvent* event);
+    void handle_mouse_release_on_scene(const QPoint& mouse_pos, const QPointF& scene_pos,
+                                       const QPointF& snapped_scene_pos, QMouseEvent* event);
+    void handle_context_menu_request(const QPoint& mouse_pos, const QPointF& scene_pos);
+    bool handle_wheel_zoom_or_transform(QWheelEvent* event);
+    void handle_wheel_edge_type_or_scroll(QWheelEvent* event);
+    void update_highlighted_item(const QPointF& scene_pos);
 };
 
 #endif  // KNOT_VIEW_HPP

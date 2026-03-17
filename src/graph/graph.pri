@@ -3,8 +3,11 @@ INCLUDEPATH += $$PWD
 HEADERS += \
     $$PWD/node.hpp \
     $$PWD/graph.hpp \
+    $$PWD/graph_appearance.hpp \
+    $$PWD/graph_analyzer.hpp \
     $$PWD/edge.hpp \
     $$PWD/edge_type.hpp \
+    $$PWD/graph_renderer.hpp \
     $$PWD/graph_item.hpp \
     $$PWD/node_style.hpp \
     $$PWD/path_builder.hpp \
@@ -17,6 +20,8 @@ HEADERS += \
 SOURCES += \
     $$PWD/node.cpp \
     $$PWD/graph.cpp \
+    $$PWD/graph_analyzer.cpp \
+    $$PWD/graph_renderer.cpp \
     $$PWD/edge.cpp \
     $$PWD/edge_type.cpp \
     $$PWD/graph_item.cpp \

@@ -1,20 +1,31 @@
 /**
  * \file graph.hpp
  * \brief Graph representation and rendering for knots
- * \author Mattia Basaglia
+ * \author fred fichant
  */
 
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
-#include <QObject>
-#include <QPainter>
+#include <QGraphicsItem>
+#include <QList>
+#include <QPainterPath>
+#include <QPen>
+#include <QRectF>
 
 #include "edge.hpp"
+#include "graph_appearance.hpp"
 #include "graph_properties.hpp"
-#include "node.hpp"
-#include "path_builder.hpp"
-#include "traversal_info.hpp"
+
+class QColor;
+class Graph_Analyzer;
+class Graph_Renderer;
+class Node;
+class Path_Builder;
+class QPainter;
+class QStyleOptionGraphicsItem;
+struct Traversal_Info;
+class QWidget;
 
 /**
  * \brief Class that represents the knot (as a graph) and renders it
@@ -31,13 +42,12 @@ class Graph : public QGraphicsItem
    private:
     QList<Node*> m_nodes;             ///< List of nodes in the graph
     QList<Edge*> m_edges;             ///< List of edges in the graph
-    Node_Style m_default_node_style;  ///< Default style for nodes without overrides
-    Edge_Style m_default_edge_style;  ///< Default style for edges without overrides
+    friend class Graph_Analyzer;
+    friend class Graph_Renderer;
+
     QRectF bounding_box;              ///< Calculated bounding rectangle of the entire knot
-    QList<QColor> m_colors;           ///< List of colors used for strands
-    bool auto_color;                  ///< If true, colors are assigned automatically
     QList<QPainterPath> paths;        ///< Rendered knot (one per loop)
-    QPen pen;                         ///< The pen used for stroking the knot strands
+    Graph_Appearance m_appearance;    ///< Aggregated style and rendering settings
     Graph_Properties* m_properties;   ///< Object holding graph statistics and properties
 
    public:
@@ -113,7 +123,7 @@ class Graph : public QGraphicsItem
     /**
      * \brief Returns the list of strand colors
      */
-    const QList<QColor>& colors() const { return m_colors; }
+    const QList<QColor>& colors() const { return m_appearance.colors; }
 
     /**
      * \brief Sets the list of strand colors
@@ -124,7 +134,7 @@ class Graph : public QGraphicsItem
     /**
      * \brief Returns the stroke width for the strands
      */
-    double width() const { return pen.widthF(); }
+    double width() const { return m_appearance.pen.widthF(); }
 
     /**
      * \brief Sets the stroke width for the strands
@@ -135,7 +145,7 @@ class Graph : public QGraphicsItem
     /**
      * \brief Returns the pen join style for strands
      */
-    Qt::PenJoinStyle join_style() const { return pen.joinStyle(); }
+    Qt::PenJoinStyle join_style() const { return m_appearance.pen.joinStyle(); }
 
     /**
      * \brief Sets the pen join style for strands
@@ -157,23 +167,23 @@ class Graph : public QGraphicsItem
     /**
      * \brief Returns true if custom colors are enabled
      */
-    bool custom_colors() const { return !auto_color; }
+    bool custom_colors() const { return !m_appearance.auto_color; }
 
     /**
      * \brief Toggles between automatic and custom strand colors
      * \param b true to enable custom colors
      */
-    void set_custom_colors(bool b) { auto_color = !b; }
+    void set_custom_colors(bool b) { m_appearance.auto_color = !b; }
 
     /**
      * \brief Returns the graph's default node style
      */
-    Node_Style default_node_style() const { return m_default_node_style; }
+    Node_Style default_node_style() const { return m_appearance.default_node_style; }
 
     /**
      * \brief Accesses the graph's default node style as a reference
      */
-    Node_Style& default_node_style_reference() { return m_default_node_style; }
+    Node_Style& default_node_style_reference() { return m_appearance.default_node_style; }
 
     /**
      * \brief Sets the graph's default node style
@@ -184,12 +194,12 @@ class Graph : public QGraphicsItem
     /**
      * \brief Returns the graph's default edge style
      */
-    Edge_Style default_edge_style() const { return m_default_edge_style; }
+    Edge_Style default_edge_style() const { return m_appearance.default_edge_style; }
 
     /**
      * \brief Accesses the graph's default edge style as a reference
      */
-    Edge_Style& default_edge_style_reference() { return m_default_edge_style; }
+    Edge_Style& default_edge_style_reference() { return m_appearance.default_edge_style; }
 
     /**
      * \brief Sets the graph's default edge style

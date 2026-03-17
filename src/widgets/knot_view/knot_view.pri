@@ -15,6 +15,11 @@
 
 HEADERS += \
     $$PWD/knot_view.hpp \
+    $$PWD/knot_graph_editor.hpp \
+    $$PWD/knot_selection_controller.hpp \
+    $$PWD/knot_style_controller.hpp \
+    $$PWD/knot_view_io.hpp \
+    $$PWD/knot_viewport_controller.hpp \
     $$PWD/commands.hpp \
     $$PWD/snapping_grid.hpp \
     $$PWD/background_image.hpp \
@@ -27,6 +32,11 @@ HEADERS += \
 
 SOURCES += \
     $$PWD/knot_view.cpp \
+    $$PWD/knot_graph_editor.cpp \
+    $$PWD/knot_selection_controller.cpp \
+    $$PWD/knot_style_controller.cpp \
+    $$PWD/knot_view_io.cpp \
+    $$PWD/knot_viewport_controller.cpp \
     $$PWD/commands.cpp \
     $$PWD/snapping_grid.cpp \
     $$PWD/background_image.cpp \

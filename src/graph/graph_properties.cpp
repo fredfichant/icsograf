@@ -94,6 +94,14 @@ void Graph_Properties::set_edge_distribution(int wa, int w0, int p0, int pa)
     }
 }
 
+void Graph_Properties::set_edge_distribution_tables(const std::vector<EdgeDistributionTable>& tables)
+{
+    if (m_edge_distribution_tables != tables) {
+        m_edge_distribution_tables = tables;
+        emit properties_changed();
+    }
+}
+
 void Graph_Properties::set_span_formula(const QString& formula)
 {
     const QString normalized = formula.isEmpty() ? QString("0") : formula;

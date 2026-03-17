@@ -9,6 +9,9 @@
 #include <QMap>
 #include <QObject>
 #include <QString>
+#include <vector>
+
+#include "edges_mark.hpp"
 
 /**
  * \brief Holds various statistics and calculated properties of a Graph
@@ -21,6 +24,7 @@ class Graph_Properties : public QObject
     Q_OBJECT
 
     friend class Graph;
+    friend class Graph_Analyzer;
 
    public:
     /**
@@ -59,6 +63,11 @@ class Graph_Properties : public QObject
     int p0() const { return m_p0; }
     /** \brief Weighted average of edge distribution parameter pa */
     int pa() const { return m_pa; }
+    /** \brief Returns the distinct 2x2 edge distribution tables derived from valid markings */
+    const std::vector<EdgeDistributionTable>& edge_distribution_tables() const
+    {
+        return m_edge_distribution_tables;
+    }
 
     /**
      * \brief Calculates the Delta T property of the graph
@@ -108,6 +117,8 @@ class Graph_Properties : public QObject
     void set_face_adjustment(int count);
     /** \brief Updates edge distribution parameters and emits properties_changed() if changed */
     void set_edge_distribution(int wa, int w0, int p0, int pa);
+    /** \brief Updates the distinct 2x2 edge distribution tables and emits properties_changed() if changed */
+    void set_edge_distribution_tables(const std::vector<EdgeDistributionTable>& tables);
     /** \brief Updates span_formula and emits properties_changed() if changed */
     void set_span_formula(const QString& formula);
     /** \brief Updates the non-reducible flag and emits properties_changed() if changed */
@@ -122,6 +133,7 @@ class Graph_Properties : public QObject
     int m_face_adjustment;                        ///< Extra faces induced by multi-strand edges
 
     int m_wa, m_w0, m_p0, m_pa;  ///< Edge distribution parameters
+    std::vector<EdgeDistributionTable> m_edge_distribution_tables;  ///< Unique 2x2 tables
     QString m_span_formula;      ///< Circular lexicographic span formula (portance P)
     bool m_is_non_reducible;     ///< True if the knot satisfies the non-reducibility inequality
 };

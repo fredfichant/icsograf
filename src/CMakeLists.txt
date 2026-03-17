@@ -44,6 +44,8 @@ set(SOURCES
 
   graph/node.cpp
   graph/graph.cpp
+  graph/graph_analyzer.cpp
+  graph/graph_renderer.cpp
   graph/edge.cpp
   graph/edge_type.cpp
   graph/edge_type_utils.cpp
@@ -72,6 +74,11 @@ set(SOURCES
   io/xml_loader.cpp
 
   widgets/knot_view/knot_view.cpp
+  widgets/knot_view/knot_graph_editor.cpp
+  widgets/knot_view/knot_view_io.cpp
+  widgets/knot_view/knot_selection_controller.cpp
+  widgets/knot_view/knot_style_controller.cpp
+  widgets/knot_view/knot_viewport_controller.cpp
   widgets/knot_view/undo_manager.cpp
   widgets/knot_view/commands.cpp
   widgets/knot_view/snapping_grid.cpp

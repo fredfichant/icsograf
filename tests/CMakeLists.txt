@@ -7,6 +7,8 @@ set(TEST_CORE_SOURCES
   ${CMAKE_SOURCE_DIR}/src/graph/node.cpp
   ${CMAKE_SOURCE_DIR}/src/graph/edge.cpp
   ${CMAKE_SOURCE_DIR}/src/graph/graph.cpp
+  ${CMAKE_SOURCE_DIR}/src/graph/graph_analyzer.cpp
+  ${CMAKE_SOURCE_DIR}/src/graph/graph_renderer.cpp
   ${CMAKE_SOURCE_DIR}/src/graph/edge_type.cpp
   ${CMAKE_SOURCE_DIR}/src/graph/edge_type_utils.cpp
   ${CMAKE_SOURCE_DIR}/src/graph/edge_handle_calculator.cpp
@@ -134,6 +136,33 @@ function(add_icsograf_db_ui_test test_name test_file)
   add_test(NAME ${test_name} COMMAND ${test_name})
 endfunction()
 
+function(add_icsograf_db_tool target_name target_file)
+  add_executable(${target_name}
+    ${target_file}
+    ${TEST_CORE_SOURCES}
+    ${CMAKE_SOURCE_DIR}/src/database/graph_repository.cpp
+    ${CMAKE_SOURCE_DIR}/src/database/graph_repository_codec.cpp
+  )
+
+  target_include_directories(${target_name}
+    PRIVATE
+      ${TEST_INCLUDE_DIRS}
+  )
+
+  target_link_libraries(${target_name}
+    PRIVATE
+      Qt5::Core
+      Qt5::Gui
+      Qt5::Widgets
+      Qt5::Svg
+      Qt5::PrintSupport
+      Qt5::Xml
+      Qt5::Network
+      Qt5::UiTools
+      Qt5::Sql
+  )
+endfunction()
+
 add_icsograf_test(test_edge_handles ${CMAKE_CURRENT_SOURCE_DIR}/test_edge_handles.cpp)
 add_icsograf_test(test_edge_2strand ${CMAKE_CURRENT_SOURCE_DIR}/test_edge_2strand.cpp)
 add_icsograf_test(test_edge_3strand ${CMAKE_CURRENT_SOURCE_DIR}/test_edge_3strand.cpp)
@@ -152,3 +181,4 @@ add_icsograf_test(test_graph_non_reducible ${CMAKE_CURRENT_SOURCE_DIR}/test_grap
 add_icsograf_test(test_graph_validation ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_validation.cpp)
 add_icsograf_db_test(test_graph_repository ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_repository.cpp)
 add_icsograf_db_ui_test(test_graph_browser_dialog_details ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_browser_dialog_details.cpp)
+add_icsograf_db_tool(inspect_edge_distribution ${CMAKE_CURRENT_SOURCE_DIR}/inspect_edge_distribution.cpp)

@@ -6,11 +6,18 @@
 #include "edges_mark.hpp"
 
 #include <algorithm>
+#include <QLineF>
 #include <set>
+#include <tuple>
 
 #include "edge.hpp"
+#include "edge_handle.hpp"
+#include "edge_normal.hpp"
+#include "edge_type.hpp"
 #include "graph.hpp"
 #include "node.hpp"
+#include "path_builder.hpp"
+#include "traversal_info.hpp"
 
 namespace {
 
@@ -87,9 +94,84 @@ class BinaryLinearSystem
     }
 };
 
+int edge_weight(const Edge* edge)
+{
+    const Edge_Type* type = edge->style().edge_type;
+    if (!type) return 1;
+    const QString name = type->machine_name();
+    if (name.startsWith("2strand")) return 2;
+    if (name.startsWith("3strand")) return 3;
+    return 1;
+}
+
+bool edge_is_inverted(const Edge* edge)
+{
+    const Edge_Type* type = edge->style().edge_type;
+    return type && type->machine_name().contains("inverted");
+}
+
+bool node_jump(Edge* in_edge, Edge::Handle in_handle, Edge*& out_edge, Edge::Handle& out_handle)
+{
+    Node* node = in_edge->vertex_for(in_handle);
+    if (!node) return false;
+
+    const double in_angle = QLineF(node->pos(), in_edge->other(node)->pos()).angle();
+    const Edge_Handle pure_handle = (Edge_Handle) (in_handle & Edge_Handle_Namespace::HANDLE_MASK);
+
+    Traversal_Info::handside_type handside = Traversal_Info::LEFT;
+    if (in_edge->vertex1() == node) {
+        if (pure_handle == Edge_Handle_Namespace::TOP_LEFT)
+            handside = Traversal_Info::RIGHT;
+        else if (pure_handle == Edge_Handle_Namespace::BOTTOM_LEFT)
+            handside = Traversal_Info::LEFT;
+        else
+            return false;
+    } else if (in_edge->vertex2() == node) {
+        if (pure_handle == Edge_Handle_Namespace::BOTTOM_RIGHT)
+            handside = Traversal_Info::RIGHT;
+        else if (pure_handle == Edge_Handle_Namespace::TOP_RIGHT)
+            handside = Traversal_Info::LEFT;
+        else
+            return false;
+    } else {
+        return false;
+    }
+
+    out_edge = in_edge;
+    double best_delta = 360.0;
+    for (Edge* candidate : node->edges()) {
+        if (candidate == in_edge) continue;
+        const double out_angle = QLineF(node->pos(), candidate->other(node)->pos()).angle();
+        double delta = in_angle - out_angle;
+        if (delta < 0) delta += 360.0;
+        if (handside == Traversal_Info::RIGHT) delta = 360.0 - delta;
+        if (delta < best_delta) {
+            best_delta = delta;
+            out_edge = candidate;
+        }
+    }
+
+    const Edge_Handle strand_bit = (Edge_Handle) (in_handle & Edge_Handle_Namespace::STRAND_MASK);
+    if (out_edge->vertex1() == node) {
+        out_handle = (Edge_Handle) ((handside == Traversal_Info::RIGHT
+                                         ? Edge_Handle_Namespace::BOTTOM_LEFT
+                                         : Edge_Handle_Namespace::TOP_LEFT) |
+                                    strand_bit);
+        return true;
+    }
+    if (out_edge->vertex2() == node) {
+        out_handle = (Edge_Handle) ((handside == Traversal_Info::RIGHT
+                                         ? Edge_Handle_Namespace::TOP_RIGHT
+                                         : Edge_Handle_Namespace::BOTTOM_RIGHT) |
+                                    strand_bit);
+        return true;
+    }
+    return false;
+}
+
 }  // namespace
 
-std::map<const Edge*, EdgeMarking> GraphMarker::mark_graph(
+GraphMarker::LinearSystemSolution GraphMarker::solve_marking_system(
     const Graph& graph, const std::vector<std::vector<size_t>>& faces)
 {
     const QList<Edge*>& edges_list = graph.edges();
@@ -131,18 +213,31 @@ std::map<const Edge*, EdgeMarking> GraphMarker::mark_graph(
     }
 
     auto [consistent, particular, nullspace] = system.solve();
+    if (!consistent) return {};
+
+    return {true, particular, nullspace};
+}
+
+std::map<const Edge*, EdgeMarking> GraphMarker::mark_graph(
+    const Graph& graph, const std::vector<std::vector<size_t>>& faces)
+{
+    const QList<Edge*>& edges_list = graph.edges();
     std::map<const Edge*, EdgeMarking> result;
+    if (edges_list.empty()) return result;
 
-    if (!consistent) return result;
+    const LinearSystemSolution solution = solve_marking_system(graph, faces);
+    if (!solution.consistent) return result;
 
+    const std::vector<bool>& particular = solution.particular;
+    const std::vector<std::vector<bool>>& nullspace = solution.nullspace;
     int k = nullspace.size();
     if (k == 0) {
-        for (int i = 0; i < m; ++i) {
+        for (int i = 0; i < edges_list.size(); ++i) {
             result[edges_list[i]] = {particular[i] ? "a" : "0", true, particular[i]};
         }
     } else if (k <= 10) {  // Limit number of solutions
         int num_solutions = 1 << k;
-        for (int i = 0; i < m; ++i) {
+        for (int i = 0; i < edges_list.size(); ++i) {
             std::vector<int> values;
             for (int mask = 0; mask < num_solutions; mask++) {
                 bool val = particular[i];
@@ -161,6 +256,119 @@ std::map<const Edge*, EdgeMarking> GraphMarker::mark_graph(
         }
     }
     return result;
+}
+
+std::vector<EdgeDistributionTable> GraphMarker::edge_distribution_tables(
+    const Graph& graph, const std::vector<std::vector<size_t>>& faces)
+{
+    return edge_distribution_tables_from_linear_solutions(graph, faces);
+}
+
+std::vector<EdgeDistributionTable> GraphMarker::edge_distribution_tables_from_linear_solutions(
+    const Graph& graph, const std::vector<std::vector<size_t>>& faces)
+{
+    const QList<Edge*>& edges_list = graph.edges();
+    std::vector<EdgeDistributionTable> tables;
+    if (edges_list.empty()) return tables;
+
+    const LinearSystemSolution solution = solve_marking_system(graph, faces);
+    if (!solution.consistent) return tables;
+
+    const std::vector<bool>& particular = solution.particular;
+    const std::vector<std::vector<bool>>& nullspace = solution.nullspace;
+    const int k = nullspace.size();
+
+    auto build_table = [&](const std::vector<bool>& assignment) {
+        EdgeDistributionTable table;
+        for (int i = 0; i < edges_list.size(); ++i) {
+            const Edge* edge = edges_list[i];
+            const int weight = edge_weight(edge);
+            const bool inverted = edge_is_inverted(edge);
+            const bool is_a = assignment[i];
+
+            if (is_a) {
+                if (inverted)
+                    table.pa += weight;
+                else
+                    table.wa += weight;
+            } else {
+                if (inverted)
+                    table.p0 += weight;
+                else
+                    table.w0 += weight;
+            }
+        }
+        return table;
+    };
+
+    if (k == 0) {
+        tables.push_back(build_table(particular));
+    } else {
+        const int num_solutions = 1 << k;
+        for (int mask = 0; mask < num_solutions; ++mask) {
+            std::vector<bool> assignment = particular;
+            for (int j = 0; j < k; ++j) {
+                if (!(mask & (1 << j))) continue;
+                for (std::size_t i = 0; i < assignment.size(); ++i) {
+                    assignment[i] = assignment[i] ^ nullspace[j][i];
+                }
+            }
+            tables.push_back(build_table(assignment));
+        }
+    }
+
+    std::vector<int> label_ids;
+    label_ids.reserve(tables.size());
+    for (std::size_t i = 0; i < tables.size(); ++i) {
+        label_ids.push_back(static_cast<int>(i));
+    }
+    const std::vector<std::string> labels = encodeSymbols(label_ids);
+    for (std::size_t i = 0; i < tables.size() && i < labels.size(); ++i) {
+        tables[i].label = labels[i];
+    }
+
+    return tables;
+}
+
+std::vector<std::vector<int>> GraphMarker::edge_assignments_from_linear_solutions(
+    const Graph& graph, const std::vector<std::vector<size_t>>& faces)
+{
+    const QList<Edge*>& edges_list = graph.edges();
+    std::vector<std::vector<int>> assignments;
+    if (edges_list.empty()) return assignments;
+
+    const LinearSystemSolution solution = solve_marking_system(graph, faces);
+    if (!solution.consistent) return assignments;
+
+    const std::vector<bool>& particular = solution.particular;
+    const std::vector<std::vector<bool>>& nullspace = solution.nullspace;
+    const int k = nullspace.size();
+
+    if (k == 0) {
+        std::vector<int> assignment;
+        assignment.reserve(particular.size());
+        for (bool value : particular) assignment.push_back(value ? 1 : 0);
+        assignments.push_back(assignment);
+        return assignments;
+    }
+
+    const int num_solutions = 1 << k;
+    for (int mask = 0; mask < num_solutions; ++mask) {
+        std::vector<bool> current = particular;
+        for (int j = 0; j < k; ++j) {
+            if (!(mask & (1 << j))) continue;
+            for (std::size_t i = 0; i < current.size(); ++i) {
+                current[i] = current[i] ^ nullspace[j][i];
+            }
+        }
+
+        std::vector<int> assignment;
+        assignment.reserve(current.size());
+        for (bool value : current) assignment.push_back(value ? 1 : 0);
+        assignments.push_back(assignment);
+    }
+
+    return assignments;
 }
 
 std::vector<std::string> GraphMarker::encodeSymbols(const std::vector<int>& values)
