@@ -37,7 +37,7 @@ bool validation_debug_enabled()
 
 bool is_simple_edge(const Edge* edge)
 {
-    const Edge_Type* type = edge->style().edge_type;
+    const Edge_Type* type = edge->effective_edge_type();
     return !type || type->strand_count() == 1;
 }
 

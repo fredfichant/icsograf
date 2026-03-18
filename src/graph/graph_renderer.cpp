@@ -90,10 +90,11 @@ void Graph_Renderer::traverse(Graph& graph, Path_Builder& path)
                 edge->mark_traversed(handle);
             }
 
-            Edge::Handle next_handle = edge->style().edge_type->traverse(edge, handle, path);
+            Edge_Type* edge_type = edge->effective_edge_type();
+            Edge::Handle next_handle = edge_type->traverse(edge, handle, path);
 
             if (next_handle == Edge_Handle_Namespace::NO_HANDLE)
-                next_handle = edge->style().edge_type->Edge_Type::traverse(edge, handle, path);
+                next_handle = edge_type->Edge_Type::traverse(edge, handle, path);
             handle = next_handle;
         }
     }

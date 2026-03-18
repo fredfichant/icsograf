@@ -7,6 +7,7 @@
 #define EDGE_TYPE_UTILS_HPP
 
 #include <QPointF>
+#include <QPainter>
 #include <QString>
 
 #include "edge_handle.hpp"
@@ -37,5 +38,14 @@ QString handleToString(Edge_Handle handle);
  * \return The calculated QPointF in the scene coordinates.
  */
 QPointF get_handle_pos(const Edge* edge, Edge_Handle handle);
+
+/**
+ * \brief Draws the editor representation of an edge as one or more parallel lines.
+ *
+ * For 2-strand edges, this renders 2 parallel lines spaced by 8 scene units.
+ * For 3-strand edges, this renders 3 parallel lines spaced by 6 scene units.
+ * Other edge types are rendered as a single line.
+ */
+void draw_editor_edge_lines(QPainter* painter, const Edge& edge, int strands);
 
 #endif  // EDGE_TYPE_UTILS_HPP

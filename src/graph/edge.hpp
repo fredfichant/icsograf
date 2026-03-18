@@ -108,6 +108,11 @@ class Edge : public Graph_Item
     Edge_Style defaulted_style() const;
 
     /**
+     * \brief Returns the effective edge type, falling back to graph defaults when available
+     */
+    Edge_Type* effective_edge_type() const;
+
+    /**
      * \brief Returns the number of strands for this edge
      */
     int strand_count() const;

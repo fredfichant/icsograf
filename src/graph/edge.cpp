@@ -9,6 +9,7 @@
 
 #include "edge_style.hpp"
 #include "edge_type.hpp"
+#include "edge_type_utils.hpp"
 #include "graph.hpp"
 #include "resource_manager.hpp"
 
@@ -22,10 +23,10 @@ Edge::Edge(Node* v1, Node* v2, Edge_Type* type)
       available_handles(Edge_Handle_Namespace::TOP_LEFT | Edge_Handle_Namespace::TOP_RIGHT |
                         Edge_Handle_Namespace::BOTTOM_LEFT | Edge_Handle_Namespace::BOTTOM_RIGHT),
       m_graph(nullptr),
-      m_marking_color(Qt::black)
+    m_marking_color(Qt::black)
 {
     attach();
-    setZValue(1);
+    setZValue(-1);
     setFlag(QGraphicsItem::ItemIsSelectable);
 
     m_style.enabled_style |= Edge_Style::EDGE_TYPE;
@@ -67,7 +68,14 @@ Edge_Style& Edge::style() { return m_style; }
 
 Edge_Style Edge::defaulted_style() const
 {
+    if (!m_graph) return m_style;
     return m_style.default_to(m_graph->default_edge_style());
+}
+
+Edge_Type* Edge::effective_edge_type() const
+{
+    Edge_Type* type = defaulted_style().edge_type;
+    return type ? type : resource_manager().default_edge_type();
 }
 
 int Edge::strand_count() const { return defaulted_style().strand_count; }
@@ -88,6 +96,8 @@ void Edge::set_spacing(double s)
 
 void Edge::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
+    Edge_Type* type = effective_edge_type();
+
     if (isSelected()) {
         QPen pen(color_selected, 2);
         pen.setCosmetic(true);
@@ -99,20 +109,23 @@ void Edge::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
     }
 
     if (visible && highlighted)
-        m_style.edge_type->paint_highlighted(painter, *this);
+        type->paint_highlighted(painter, *this);
     else if (visible || highlighted)
-        m_style.edge_type->paint_regular(painter, *this);
+        type->paint_regular(painter, *this);
 
     if (m_marking_color != Qt::black) {
         QPen p = painter->pen();
         p.setColor(m_marking_color);
         p.setWidthF(2.0);
         painter->setPen(p);
-        painter->drawLine(to_line());
+
+        int strands = strand_count();
+        if (type->strand_count() > strands) strands = type->strand_count();
+        draw_editor_edge_lines(painter, *this, strands);
     }
     /*
     if (isSelected()) {  // Ou une autre condition
-        m_style.edge_type->debug_draw_handles(painter, *this);
+        type->debug_draw_handles(painter, *this);
     }
     */
 }

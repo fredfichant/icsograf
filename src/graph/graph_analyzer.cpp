@@ -24,7 +24,7 @@
 void Graph_Analyzer::update(const Graph& graph)
 {
     const auto edge_weight = [](const Edge* e) {
-        const Edge_Type* type = e->style().edge_type;
+        const Edge_Type* type = e->effective_edge_type();
         if (!type) return 1;
         const QString name = type->machine_name();
         if (name.startsWith("2strand")) return 2;
@@ -82,8 +82,9 @@ void Graph_Analyzer::update(const Graph& graph)
     const auto crossing_event = [&](const Edge* edge, Edge_Handle in, Edge_Handle out) {
         const Edge_Handle a = (Edge_Handle) (in & Edge_Handle_Namespace::HANDLE_MASK);
         const Edge_Handle b = (Edge_Handle) (out & Edge_Handle_Namespace::HANDLE_MASK);
-        const QString type_name = edge->style().edge_type ? edge->style().edge_type->machine_name()
-                                                          : QString("regular");
+        const QString type_name =
+            edge->effective_edge_type() ? edge->effective_edge_type()->machine_name()
+                                        : QString("regular");
         const bool inverted = type_name.contains("inverted");
 
         if (type_name.startsWith("3strand")) {
@@ -300,9 +301,10 @@ void Graph_Analyzer::update(const Graph& graph)
                 edge->mark_traversed(handle);
             }
 
-            Edge::Handle next_handle = edge->style().edge_type->traverse(edge, handle, sink);
+            Edge_Type* edge_type = edge->effective_edge_type();
+            Edge::Handle next_handle = edge_type->traverse(edge, handle, sink);
             if (next_handle == Edge_Handle_Namespace::NO_HANDLE)
-                next_handle = edge->style().edge_type->Edge_Type::traverse(edge, handle, sink);
+                next_handle = edge_type->Edge_Type::traverse(edge, handle, sink);
             if (next_handle == Edge_Handle_Namespace::NO_HANDLE) break;
 
             events.push_back(crossing_event(edge, handle, next_handle));

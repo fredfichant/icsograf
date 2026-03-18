@@ -46,6 +46,10 @@ class Edge_Type
 
     /// Icon showing the style
     virtual QIcon icon() const = 0;
+
+   protected:
+    double paint_width(const Edge& edge) const;
+    void paint_with_color(QPainter* painter, const Edge& edge, const QColor& color);
 };
 
 Q_DECLARE_METATYPE(Edge_Type*)

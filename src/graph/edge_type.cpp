@@ -14,41 +14,35 @@
 
 Edge_Type::Edge_Type() {}
 
+double Edge_Type::paint_width(const Edge& edge) const
+{
+    Q_UNUSED(edge)
+    return 4.0;
+}
+
+void Edge_Type::paint_with_color(QPainter* painter, const Edge& edge, const QColor& color)
+{
+    QPen pen(color, paint_width(edge));
+    pen.setCosmetic(true);
+    painter->setPen(pen);
+    paint(painter, edge);
+}
+
 void Edge_Type::paint_regular(QPainter* painter, const Edge& edge)
 {
-    int strands = edge.strand_count();
-    if (strand_count() > strands)
-        strands = strand_count();
-    double width = 4;
-    if (strands == 2)
-        width = 8;
-    else if (strands == 3)
-        width = 12;
-
-    QPen pen(Edge::color_resting, width);
-    pen.setCosmetic(true);
-    painter->setPen(pen);
-
-    paint(painter, edge);
+    paint_with_color(painter, edge, Edge::color_resting);
 }
+
 void Edge_Type::paint_highlighted(QPainter* painter, const Edge& edge)
 {
-    int strands = edge.strand_count();
-    if (strand_count() > strands)
-        strands = strand_count();
-    double width = 4;
-    if (strands == 2)
-        width = 8;
-    else if (strands == 3)
-        width = 12;
-
-    QPen pen(Edge::color_highlighted, width);
-    pen.setCosmetic(true);
-    painter->setPen(pen);
-
-    paint(painter, edge);
+    paint_with_color(painter, edge, Edge::color_highlighted);
 }
-void Edge_Type::paint(QPainter* painter, const Edge& edge) { painter->drawLine(edge.to_line()); }
+void Edge_Type::paint(QPainter* painter, const Edge& edge)
+{
+    int strands = edge.strand_count();
+    if (strand_count() > strands) strands = strand_count();
+    draw_editor_edge_lines(painter, edge, strands);
+}
 
 /**
  * \brief Debug draw   debug

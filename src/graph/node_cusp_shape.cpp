@@ -41,8 +41,8 @@ void Cusp_Shape::default_path(Path_Builder& path, QLineF start, QLineF finish) c
 void Cusp_Rounded::draw_joint(Path_Builder& path, const Traversal_Info& ti,
                               const Node_Style& style) const
 {
-    QLineF start = ti.in.edge->style().edge_type->handle(ti.in.edge, ti.in.handle);
-    QLineF finish = ti.out.edge->style().edge_type->handle(ti.out.edge, ti.out.handle);
+    QLineF start = ti.in.edge->effective_edge_type()->handle(ti.in.edge, ti.in.handle);
+    QLineF finish = ti.out.edge->effective_edge_type()->handle(ti.out.edge, ti.out.handle);
 
     if (ti.angle_delta > style.cusp_angle)  // draw cusp
     {

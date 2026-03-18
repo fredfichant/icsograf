@@ -5,6 +5,9 @@
 
 #include "node.hpp"
 
+#include <QApplication>
+#include <QPalette>
+
 #include "edge.hpp"
 
 int Node::radius = 5;
@@ -51,6 +54,13 @@ Edge* Node::edge_to(const Node* n) const
 void Node::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
     QRectF r(-radius, -radius, radius * 2, radius * 2);
+    const QRectF mask(-external_radius(), -external_radius(), external_radius() * 2,
+                      external_radius() * 2);
+
+    // Mask the knot path behind the node so the graph reads as being underneath it.
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(QApplication::palette().color(QPalette::Base));
+    painter->drawEllipse(mask);
 
     if (isSelected()) {
         painter->setPen(QPen(color_selected, 2));

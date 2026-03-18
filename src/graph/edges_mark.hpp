@@ -72,6 +72,7 @@ class GraphMarker
 
     LinearSystemSolution solve_marking_system(const Graph& graph,
                                               const std::vector<std::vector<size_t>>& faces);
+    std::vector<std::vector<int>> component_edge_sets(const Graph& graph);
     std::vector<std::string> encodeSymbols(const std::vector<int>& values);
 };
 

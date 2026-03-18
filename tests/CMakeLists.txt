@@ -164,6 +164,7 @@ function(add_icsograf_db_tool target_name target_file)
 endfunction()
 
 add_icsograf_test(test_edge_handles ${CMAKE_CURRENT_SOURCE_DIR}/test_edge_handles.cpp)
+add_icsograf_test(test_graph_item_visibility ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_item_visibility.cpp)
 add_icsograf_test(test_edge_2strand ${CMAKE_CURRENT_SOURCE_DIR}/test_edge_2strand.cpp)
 add_icsograf_test(test_edge_3strand ${CMAKE_CURRENT_SOURCE_DIR}/test_edge_3strand.cpp)
 add_icsograf_test(test_edge_isolated_routing ${CMAKE_CURRENT_SOURCE_DIR}/test_edge_isolated_routing.cpp)

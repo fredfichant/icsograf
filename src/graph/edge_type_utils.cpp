@@ -5,6 +5,7 @@
 
 #include "edge_type_utils.hpp"
 
+#include <QVector>
 #include <qmath.h>
 
 #include "edge.hpp"
@@ -182,4 +183,29 @@ QPointF get_handle_pos(const Edge* edge, Edge_Handle handle)
     }
 
     return p;
+}
+
+void draw_editor_edge_lines(QPainter* painter, const Edge& edge, int strands)
+{
+    const QLineF base = edge.to_line();
+    if (qFuzzyIsNull(base.length())) {
+        painter->drawPoint(base.p1());
+        return;
+    }
+
+    QVector<qreal> offsets = {0.0};
+    if (strands == 2) {
+        offsets = {-4.0, 4.0};
+    } else if (strands == 3) {
+        offsets = {-6.0, 0.0, 6.0};
+    }
+
+    QLineF normal = base.normalVector();
+    normal.setLength(1.0);
+    const qreal dx = normal.dx();
+    const qreal dy = normal.dy();
+
+    for (qreal offset : offsets) {
+        painter->drawLine(base.translated(dx * offset, dy * offset));
+    }
 }

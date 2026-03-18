@@ -5,4 +5,4 @@
 
 #include "graph_item.hpp"
 
-Graph_Item::Graph_Item() : highlighted(false) {}
+Graph_Item::Graph_Item() : highlighted(false), visible(true) {}

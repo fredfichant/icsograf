@@ -398,17 +398,26 @@ void Knot_View::rubberband_select(QList<Node*> nodes, bool modifier)
 
 Node* Knot_View::node_at(QPointF p) const
 {
-    return dynamic_cast<Node*>(scene()->itemAt(p, QTransform()));
+    for (QGraphicsItem* item : scene()->items(p)) {
+        if (Node* node = dynamic_cast<Node*>(item)) return node;
+    }
+    return nullptr;
 }
 
 Edge* Knot_View::edge_at(QPointF p) const
 {
-    return dynamic_cast<Edge*>(scene()->itemAt(p, QTransform()));
+    for (QGraphicsItem* item : scene()->items(p)) {
+        if (Edge* edge = dynamic_cast<Edge*>(item)) return edge;
+    }
+    return nullptr;
 }
 
 Graph_Item* Knot_View::item_at(QPointF p) const
 {
-    return dynamic_cast<Graph_Item*>(scene()->itemAt(p, QTransform()));
+    for (QGraphicsItem* item : scene()->items(p)) {
+        if (Graph_Item* graph_item = dynamic_cast<Graph_Item*>(item)) return graph_item;
+    }
+    return nullptr;
 }
 
 bool Knot_View::insert(const Graph& graph, QString macro_name) { return m_io->insert(graph, macro_name); }
