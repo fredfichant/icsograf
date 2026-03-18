@@ -94,24 +94,5 @@
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>button_reset_size</sender>
-   <signal>clicked()</signal>
-   <receiver>Export_Image_Dialog</receiver>
-   <slot>reset_size()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>143</x>
-     <y>256</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>275</x>
-     <y>259</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
- <slots>
-  <slot>reset_size()</slot>
- </slots>
 </ui>

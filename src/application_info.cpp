@@ -14,9 +14,9 @@
 #include <QDesktopServices>
 #endif
 
-#include "knotter_info.hpp"
+#include "icsograf_info.hpp"
 
-QString Application_Info::name() { return tr("Knotter"); }
+QString Application_Info::name() { return tr("icsograf"); }
 
 QString Application_Info::version() { return QString(VERSION); }
 

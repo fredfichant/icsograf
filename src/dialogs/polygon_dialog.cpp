@@ -7,20 +7,16 @@
 
 #include <QCheckBox>
 #include <QDialogButtonBox>
-#include <QDir>
-#include <QFile>
-#include <QMessageBox>
+#include <QGridLayout>
+#include <QLabel>
 #include <QSpinBox>
-#include <QUiLoader>
 
 #include "knot_view.hpp"
 #include "polygon_generator.hpp"
-#include "resource_manager.hpp"
 
 Polygon_Dialog::Polygon_Dialog(Knot_View* view, QWidget* parent)
-    : QObject(parent), m_view(view), m_parent(parent), m_uiLoader(std::make_unique<QUiLoader>())
-{
-}
+    : QObject(parent), m_view(view), m_parent(parent)
+{}
 
 Polygon_Dialog::~Polygon_Dialog() = default;
 
@@ -28,39 +24,36 @@ void Polygon_Dialog::exec()
 {
     if (!m_view) return;
 
-    QFile file(QDir(resource_manager().program.data("plugins/polygon"))
-                   .absoluteFilePath("dialog_insert_polygon.ui"));
-    if (!file.open(QFile::ReadOnly)) {
-        QMessageBox::critical(m_parent, tr("Error"),
-                              tr("Could not open plugin UI file: %1").arg(file.errorString()));
-        return;
-    }
+    QDialog dialog(m_parent);
+    dialog.setWindowTitle(tr("Insert Polygon"));
 
-    m_dialog.reset(qobject_cast<QDialog*>(m_uiLoader->load(&file, m_parent)));
-    file.close();
+    auto* layout = new QGridLayout(&dialog);
 
-    if (!m_dialog) {
-        QMessageBox::critical(m_parent, tr("Error"), tr("Could not load plugin UI file."));
-        return;
-    }
+    auto* check_middle_node = new QCheckBox(tr("Node at Center"), &dialog);
+    check_middle_node->setObjectName(QStringLiteral("check_middle_node"));
+    check_middle_node->setToolTip(
+        tr("Whether there should be a node connected to the vertices on the center of the polygon"));
+    layout->addWidget(check_middle_node, 0, 0, 1, 2);
 
-    QSpinBox* spinSides = m_dialog->findChild<QSpinBox*>("spin_sides");
-    QCheckBox* checkMiddleNode = m_dialog->findChild<QCheckBox*>("check_middle_node");
+    auto* sides_label = new QLabel(tr("Sides"), &dialog);
+    layout->addWidget(sides_label, 1, 0);
 
-    if (!spinSides || !checkMiddleNode) {
-        QMessageBox::critical(m_parent, tr("Error"), tr("Missing UI elements in plugin dialog."));
-        return;
-    }
+    auto* spin_sides = new QSpinBox(&dialog);
+    spin_sides->setObjectName(QStringLiteral("spin_sides"));
+    spin_sides->setRange(3, 32);
+    spin_sides->setValue(5);
+    layout->addWidget(spin_sides, 1, 1);
 
-    QDialogButtonBox* buttonBox = m_dialog->findChild<QDialogButtonBox*>("buttonBox");
-    if (buttonBox) {
-        connect(buttonBox, &QDialogButtonBox::accepted, m_dialog.get(), &QDialog::accept);
-        connect(buttonBox, &QDialogButtonBox::rejected, m_dialog.get(), &QDialog::reject);
-    }
+    auto* button_box =
+        new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog);
+    button_box->setObjectName(QStringLiteral("buttonBox"));
+    connect(button_box, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    connect(button_box, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+    layout->addWidget(button_box, 2, 0, 1, 2);
 
-    if (m_dialog->exec() == QDialog::Accepted) {
-        int sides = spinSides->value();
-        bool middleNode = checkMiddleNode->isChecked();
+    if (dialog.exec() == QDialog::Accepted) {
+        int sides = spin_sides->value();
+        bool middleNode = check_middle_node->isChecked();
         double radius = (m_view->grid().is_enabled() ? m_view->grid().size() : 32.0) * 3.0;
 
         Graph polygonGraph =

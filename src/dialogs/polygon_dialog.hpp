@@ -7,9 +7,7 @@
 #define POLYGON_DIALOG_HPP
 
 #include <QDialog>
-#include <memory>
 
-class QUiLoader;
 class Knot_View;
 
 class Polygon_Dialog : public QObject
@@ -25,8 +23,6 @@ class Polygon_Dialog : public QObject
    private:
     Knot_View* m_view;
     QWidget* m_parent;
-    std::unique_ptr<QUiLoader> m_uiLoader;
-    std::unique_ptr<QDialog> m_dialog;
 };
 
 #endif  // POLYGON_DIALOG_HPP

@@ -9,6 +9,7 @@
 #include <QHeaderView>
 #include <QLabel>
 #include <QLayoutItem>
+#include <QScrollArea>
 #include <QAbstractItemView>
 #include <QTableWidget>
 #include <QTableWidgetItem>
@@ -26,8 +27,8 @@ QTableWidget* create_edge_distribution_table(const EdgeDistributionTable& table,
     auto* widget = new QTableWidget(parent);
     widget->setRowCount(2);
     widget->setColumnCount(2);
-    widget->setVerticalHeaderLabels({QStringLiteral("a"), QStringLiteral("0")});
-    widget->setHorizontalHeaderLabels({QStringLiteral("w"), QStringLiteral("p")});
+    widget->setVerticalHeaderLabels({QStringLiteral("p"), QStringLiteral("p'")});
+    widget->setHorizontalHeaderLabels({QStringLiteral("w"), QStringLiteral("w'")});
     widget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     widget->setSelectionMode(QAbstractItemView::NoSelection);
     widget->setFocusPolicy(Qt::NoFocus);
@@ -66,6 +67,21 @@ void clear_layout(QVBoxLayout* layout)
     }
 }
 
+void adjust_table_height(QTableWidget* table)
+{
+    if (!table) return;
+
+    const int frame = table->frameWidth() * 2;
+    const int header_height = table->horizontalHeader()->isVisible()
+                                  ? table->horizontalHeader()->height()
+                                  : 0;
+    int rows_height = 0;
+    for (int row = 0; row < table->rowCount(); ++row) {
+        rows_height += table->rowHeight(row);
+    }
+    table->setFixedHeight(frame + header_height + rows_height);
+}
+
 }  // namespace
 
 Properties_View::Properties_View(const Graph_Properties& properties, QWidget* parent)
@@ -88,10 +104,16 @@ Properties_View::Properties_View(const Graph_Properties& properties, QWidget* pa
     m_main_layout->addLayout(m_form_layout);
 
     // Degree distribution table
+    m_main_layout->addWidget(new QLabel(tr("distribution des degrés :"), this));
     m_degree_table = new QTableWidget(this);
     m_degree_table->setRowCount(2);
     m_degree_table->setVerticalHeaderLabels({tr("Sommets"), tr("Faces")});
+    m_degree_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_degree_table->setSelectionMode(QAbstractItemView::NoSelection);
+    m_degree_table->setFocusPolicy(Qt::NoFocus);
     m_degree_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    m_degree_table->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    m_degree_table->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_main_layout->addWidget(m_degree_table);
 
     m_main_layout->addWidget(new QLabel(tr("table(s) d'état(s):"), this));
@@ -104,7 +126,11 @@ Properties_View::Properties_View(const Graph_Properties& properties, QWidget* pa
     m_edge_distribution_tables_layout = new QVBoxLayout(m_edge_distribution_tables_widget);
     m_edge_distribution_tables_layout->setContentsMargins(0, 0, 0, 0);
     m_edge_distribution_tables_layout->setSpacing(8);
-    m_main_layout->addWidget(m_edge_distribution_tables_widget);
+    m_edge_distribution_scroll_area = new QScrollArea(this);
+    m_edge_distribution_scroll_area->setWidgetResizable(true);
+    m_edge_distribution_scroll_area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_edge_distribution_scroll_area->setWidget(m_edge_distribution_tables_widget);
+    m_main_layout->addWidget(m_edge_distribution_scroll_area, 1);
 
     m_delta_t_label = new QLabel(this);
     m_form_layout->addRow(tr("∆T:"), m_delta_t_label);
@@ -132,48 +158,49 @@ void Properties_View::update_view()
     const QMap<int, int>& face_dist = m_properties.face_degree_distribution();
 
     m_degree_table->clearContents();
-
     if (vertex_dist.isEmpty() && face_dist.isEmpty()) {
         m_degree_table->setColumnCount(0);
-        return;
+    } else {
+        std::set<int> degrees;
+        for (int degree : vertex_dist.keys()) {
+            degrees.insert(degree);
+        }
+        for (int degree : face_dist.keys()) {
+            degrees.insert(degree);
+        }
+
+        if (degrees.empty()) {
+            m_degree_table->setColumnCount(0);
+        } else {
+            QList<int> sorted_degrees =
+                QList<int>::fromStdList(std::list<int>(degrees.begin(), degrees.end()));
+            qSort(sorted_degrees);
+
+            m_degree_table->setColumnCount(sorted_degrees.size());
+
+            QStringList headers;
+            for (int i = 0; i < sorted_degrees.size(); ++i) {
+                int degree = sorted_degrees[i];
+                headers << QString::number(degree);
+
+                int vertex_count = vertex_dist.value(degree, 0);
+                QTableWidgetItem* vertex_item =
+                    new QTableWidgetItem(QString::number(vertex_count));
+                vertex_item->setTextAlignment(Qt::AlignCenter);
+                m_degree_table->setItem(0, i, vertex_item);
+
+                int face_count = face_dist.value(degree, 0);
+                QTableWidgetItem* face_item = new QTableWidgetItem(QString::number(face_count));
+                face_item->setTextAlignment(Qt::AlignCenter);
+                m_degree_table->setItem(1, i, face_item);
+            }
+
+            m_degree_table->setHorizontalHeaderLabels(headers);
+        }
     }
 
-    std::set<int> degrees;
-    for (int degree : vertex_dist.keys()) {
-        degrees.insert(degree);
-    }
-    for (int degree : face_dist.keys()) {
-        degrees.insert(degree);
-    }
-
-    if (degrees.empty()) {
-        m_degree_table->setColumnCount(0);
-        return;
-    }
-
-    QList<int> sorted_degrees =
-        QList<int>::fromStdList(std::list<int>(degrees.begin(), degrees.end()));
-    qSort(sorted_degrees);
-
-    m_degree_table->setColumnCount(sorted_degrees.size());
-
-    QStringList headers;
-    for (int i = 0; i < sorted_degrees.size(); ++i) {
-        int degree = sorted_degrees[i];
-        headers << QString::number(degree);
-
-        int vertex_count = vertex_dist.value(degree, 0);
-        QTableWidgetItem* vertex_item = new QTableWidgetItem(QString::number(vertex_count));
-        vertex_item->setTextAlignment(Qt::AlignCenter);
-        m_degree_table->setItem(0, i, vertex_item);
-
-        int face_count = face_dist.value(degree, 0);
-        QTableWidgetItem* face_item = new QTableWidgetItem(QString::number(face_count));
-        face_item->setTextAlignment(Qt::AlignCenter);
-        m_degree_table->setItem(1, i, face_item);
-    }
-
-    m_degree_table->setHorizontalHeaderLabels(headers);
+    m_degree_table->resizeRowsToContents();
+    adjust_table_height(m_degree_table);
 
     clear_layout(m_edge_distribution_tables_layout);
 

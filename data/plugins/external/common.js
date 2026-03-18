@@ -15,7 +15,7 @@ function execute_external(program_id)
                 data = document.render.svg();
             else
                 data = document.render.raster(0,0,format_upper);
-            var tmpfile = system.unique_temp_file("knotter",format_lower);
+            var tmpfile = system.unique_temp_file("icsograf",format_lower);
             system.write_file(tmpfile,data);
             if ( ! system.exec(command,[tmpfile]) )
             {

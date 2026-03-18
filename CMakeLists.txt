@@ -6,7 +6,7 @@ set(PROJECT_DESCRIPTION "Interactive Knotian Editor")
 set(PROJECT_MANINTAINER_NAME "frédéric fichant")
 set(PROJECT_MANINTAINER_EMAIL "fredfichant@gmail.com")
 set(PROJECT_MANINTAINER "${PROJECT_MANINTAINER_NAME} <${PROJECT_MANINTAINER_EMAIL}>")
-set(PROJECT_DESCRIPTION_LONG "icsograf est l'éditeur d'états nœudiens. \
+set(PROJECT_DESCRIPTION_LONG "icsograf is an interactive knotian editor. \
 Knots drawn with icsograf can be exported as SVG.")
 set(PROJECT_DOMAIN "vertex-924b0.web.app")
 set(PROJECT_HOMEPAGE_URL "https://vertex-924b0.web.app/")
@@ -42,7 +42,7 @@ if(APPLE AND NOT Qt5_DIR)
         list(APPEND CMAKE_PREFIX_PATH "/opt/homebrew/opt/qt@5")
     endif()
 endif()
-find_package(Qt5 COMPONENTS Widgets Xml Svg Network UiTools PrintSupport Sql REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Xml Svg Network PrintSupport Sql REQUIRED)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
@@ -66,14 +66,30 @@ add_custom_target(copy_data ALL
 
 # Data
 install(DIRECTORY data/ DESTINATION ${DATA_INSTALL})
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/knotter.desktop.in ${CMAKE_CURRENT_BINARY_DIR}/knotter.desktop)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/knotter.desktop DESTINATION "share/applications")
-install(FILES data/img/icon2.png DESTINATION share/icons/hicolor/64x64/apps/ )
-install(FILES data/img/icon2.svg DESTINATION share/icons/hicolor/scalable/apps/ )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/icsograf.desktop.in
+               ${CMAKE_CURRENT_BINARY_DIR}/icsograf.desktop)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/icsograf.desktop DESTINATION "share/applications")
+install(FILES data/img/icon2.png DESTINATION share/icons/hicolor/64x64/apps/
+        RENAME ${PROJECT_SLUG}.png)
+install(FILES data/img/icon2.svg DESTINATION share/icons/hicolor/scalable/apps/
+        RENAME ${PROJECT_SLUG}.svg)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/man/icsograf.1.in
+               ${CMAKE_CURRENT_BINARY_DIR}/icsograf.1)
+find_program(GZIP_EXECUTABLE gzip)
+if(GZIP_EXECUTABLE)
+    execute_process(
+        COMMAND ${GZIP_EXECUTABLE} -n -c ${CMAKE_CURRENT_BINARY_DIR}/icsograf.1
+        OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/icsograf.1.gz
+    )
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/icsograf.1.gz DESTINATION share/man/man1)
+else()
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/icsograf.1 DESTINATION share/man/man1)
+endif()
 
 # ==================== Configuration CPack ====================
 set(CPACK_PACKAGE_NAME "icsograf")
-set(CPACK_PACKAGE_VENDOR "web-knotters")
+set(CPACK_PACKAGE_VENDOR "icsograf")
 set(CPACK_PACKAGE_DESCRIPTION "icsograf est l'éditeur d'états nœudiens")
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})

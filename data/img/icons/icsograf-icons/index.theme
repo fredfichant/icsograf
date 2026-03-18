@@ -1,6 +1,6 @@
 [Icon Theme]
-Name=Knotter Icons
-Comment=Icons used in Knotter
+Name=icsograf Icons
+Comment=Icons used in icsograf
 DisplayDepth=32
 
 # Pas d'héritage externe sur macOS
@@ -57,5 +57,4 @@ Context=Actions
 Size=64
 Type=Fixed
 Context=Actions
-
 

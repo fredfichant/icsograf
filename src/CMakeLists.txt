@@ -6,13 +6,13 @@ cmake_minimum_required(VERSION 3.10)
 # --- Qt (portable) ---
 # Normalement déjà fait au niveau racine, mais le répéter ici ne casse rien.
 find_package(Qt5 REQUIRED COMPONENTS
-  Core Gui Widgets Svg PrintSupport Xml UiTools Network Sql
+  Core Gui Widgets Svg PrintSupport Xml Network Sql
 )
 
 # --- Fichier généré (version/infos appli) ---
 configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/knotter_info.in.hpp
-  ${CMAKE_CURRENT_BINARY_DIR}/knotter_info.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/icsograf_info.in.hpp
+  ${CMAKE_CURRENT_BINARY_DIR}/icsograf_info.hpp
 )
 
 # --- Sources ---
@@ -116,7 +116,7 @@ add_executable(${PROJECT_SLUG}
 # --- Includes (portable) ---
 target_include_directories(${PROJECT_SLUG}
   PRIVATE
-    ${CMAKE_CURRENT_BINARY_DIR}            # knotter_info.hpp
+    ${CMAKE_CURRENT_BINARY_DIR}            # icsograf_info.hpp
     ${CMAKE_CURRENT_BINARY_DIR}/database
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogs/dock
@@ -137,7 +137,6 @@ target_link_libraries(${PROJECT_SLUG}
     Qt5::PrintSupport
     Qt5::Xml
     Qt5::Network
-    Qt5::UiTools
     Qt5::Sql
 )
 

@@ -621,7 +621,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;About Knotter...</string>
+    <string>&amp;About icsograf...</string>
    </property>
   </action>
   <action name="action_Export">

@@ -102,8 +102,8 @@ void Knot_View_IO::paste_selection()
     Graph graph;
     QByteArray clip_data;
 
-    if (mimeData->hasFormat("application/x-knotter")) {
-        clip_data = mimeData->data("application/x-knotter");
+    if (mimeData->hasFormat("application/x-icsograf")) {
+        clip_data = mimeData->data("application/x-icsograf");
     } else if (mimeData->hasFormat("text/xml")) {
         clip_data = mimeData->data("text/xml");
     } else {

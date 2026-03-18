@@ -394,10 +394,12 @@ std::vector<std::vector<int>> GraphMarker::edge_assignments_from_linear_solution
     if (components.empty()) return assignments;
 
     std::vector<int> component_of_edge(edges_list.size(), 0);
-    for (int component_index = 0; component_index < components.size(); ++component_index) {
+    for (std::size_t component_index = 0; component_index < components.size(); ++component_index) {
         for (int edge_id : components[component_index]) {
-            if (edge_id >= 0 && edge_id < component_of_edge.size()) {
-                component_of_edge[edge_id] = component_index;
+            if (edge_id >= 0 &&
+                static_cast<std::size_t>(edge_id) < component_of_edge.size()) {
+                component_of_edge[static_cast<std::size_t>(edge_id)] =
+                    static_cast<int>(component_index);
             }
         }
     }

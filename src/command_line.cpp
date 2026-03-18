@@ -73,8 +73,8 @@ void Command_Line::help() const
 {
     version();
     std::cout << "Usage:\n"
-              << "knotter [args file [-o output] ...] [qt-options ...]\n"
-              << "knotter -(h|v|l)\n"
+              << "icsograf [args file [-o output] ...] [qt-options ...]\n"
+              << "icsograf -(h|v|l)\n"
 
               << "\n"
               << "\tInformation:\n"

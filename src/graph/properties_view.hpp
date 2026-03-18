@@ -11,6 +11,7 @@
 class Graph_Properties;
 class QLabel;
 class QFormLayout;
+class QScrollArea;
 class QVBoxLayout;
 class QTableWidget;
 
@@ -49,6 +50,7 @@ class Properties_View : public QWidget
     QLabel* m_face_count_label;                ///< Label to display the number of faces.
     QTableWidget* m_degree_table;              ///< Table to display vertex and face degree distributions.
     QLabel* m_edge_distribution_warning_label; ///< Warning shown when too many tables exist.
+    QScrollArea* m_edge_distribution_scroll_area;  ///< Scroll area dedicated to the 2x2 tables.
     QWidget* m_edge_distribution_tables_widget;  ///< Container for the 2x2 distribution tables.
     QVBoxLayout* m_edge_distribution_tables_layout;  ///< Layout for the 2x2 distribution tables.
     QLabel* m_delta_t_label;                   ///< Label to display the Delta T value.

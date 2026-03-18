@@ -340,7 +340,7 @@
          <item row="3" column="0" colspan="3">
           <widget class="QPushButton" name="button_clear_settings">
            <property name="toolTip">
-            <string>Clear configuration and restore defaults next time Knotter is launched</string>
+            <string>Clear configuration and restore defaults next time icsograf is launched</string>
            </property>
            <property name="text">
             <string>Clear  saved configuration</string>

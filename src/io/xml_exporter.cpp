@@ -167,7 +167,7 @@ void export_xml_mime_data(QMimeData* data, const Graph& graph)
     QBuffer xml_stream(&knot_xml);
     export_xml(graph, xml_stream);
 
-    data->setData("application/x-knotter", knot_xml);
+    data->setData("application/x-icsograf", knot_xml);
 
     if (resource_manager().settings.clipboard_feature(Settings::XML))
         data->setData("text/xml", knot_xml);

@@ -13,7 +13,7 @@
 #include <QNetworkRequest>
 #include <QStyle>
 
-#include "knotter_info.hpp"
+#include "icsograf_info.hpp"
 
 void Resource_Manager::initialize()
 {
@@ -29,7 +29,7 @@ void Resource_Manager::initialize()
     QString iconPath = QCoreApplication::applicationDirPath() + "/../data/img/icons";
 
     QIcon::setThemeSearchPaths({iconPath});
-    QIcon::setThemeName("knotter-icons");
+    QIcon::setThemeName("icsograf-icons");
 
     // network
     m_network_access_manager = new QNetworkAccessManager;

@@ -10,7 +10,7 @@
 #include "faces.hpp"
 #include "edges_mark.hpp"
 #include "io/xml_loader.hpp"
-#include "knotter_info.hpp"
+#include "icsograf_info.hpp"
 
 namespace {
 

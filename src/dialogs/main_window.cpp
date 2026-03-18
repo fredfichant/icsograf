@@ -33,7 +33,7 @@
 #include <QCheckBox>  // Added
 #include <QSpinBox>   // Added
 
-#include "knotter_info.hpp"
+#include "icsograf_info.hpp"
 
 // Newly added includes for forward-declared classes
 #include <QDoubleSpinBox>
@@ -278,7 +278,7 @@ void Main_Window::load_config()
     if (!resource_manager().settings.current_version()) {
         int load_old =
             QMessageBox::question(this, tr("Load old configuration"),
-                                  tr("Knotter has detected configuration for version %1,\n"
+                                  tr("icsograf has detected configuration for version %1,\n"
                                      "this is version %2.\n"
                                      "Do you want to load it anyways?")
                                       .arg(resource_manager().settings.version())
@@ -543,7 +543,7 @@ void Main_Window::handleDisplayGraphToggled(bool checked)
 void Main_Window::dragEnterEvent(QDragEnterEvent* event)
 {
     if (event->mimeData()->hasFormat("text/uri-list") ||
-        event->mimeData()->hasFormat("application/x-knotter"))
+        event->mimeData()->hasFormat("application/x-icsograf"))
         event->acceptProposedAction();
 }
 
@@ -559,10 +559,10 @@ void Main_Window::dropEvent(QDropEvent* event)
             }
         }
     }
-    if (event->mimeData()->hasFormat("application/x-knotter")) {
+    if (event->mimeData()->hasFormat("application/x-icsograf")) {
         m_fileManager->create_tab();
 
-        QByteArray clip_data = event->mimeData()->data("application/x-knotter");
+        QByteArray clip_data = event->mimeData()->data("application/x-icsograf");
         QBuffer read_data(&clip_data);
         view->load_file(read_data, tr("Drop"));
     }
@@ -659,9 +659,10 @@ QUndoGroup& Main_Window::undoGroup() { return undo_group; }
 void Main_Window::handleAboutTriggered()
 {
     QMessageBox::about(this, tr("About %1").arg(resource_manager().program.name()),
-                       tr("<b>%1 %2</b>")
+                       tr("<b>%1 %2</b><br/>%3")
                            .arg(resource_manager().program.name())
-                           .arg(resource_manager().program.version()));
+                           .arg(resource_manager().program.version())
+                           .arg(PROGRAM_DESCRIPTION));
 }
 
 void Main_Window::handleInsertPolygonTriggered() { Polygon_Dialog(view, this).exec(); }

@@ -1,12 +1,12 @@
-.TH __name__ 1 "" "__name__-__version__" __title__
+.TH ${PROJECT_SLUG} 1 "" "${PROJECT_SLUG}-${PROJECT_VERSION}" ${PROJECT_NAME}
 
 .SH NAME
-__title__ - __desc__
+${PROJECT_NAME} - ${PROJECT_DESCRIPTION}
 
 .SH SYNOPSIS
-.B __name__  \-h\fR|\fB\-v\fR|\fB\-l
+.B ${PROJECT_SLUG}  \-h\fR|\fB\-v\fR|\fB\-l
 
-.B __name__ 
+.B ${PROJECT_SLUG}
 [args 
 .I file 
 .RB [ -o 
@@ -16,9 +16,9 @@ __title__ - __desc__
 
 
 .SH DESCRIPTION
-.B __title__
+.B ${PROJECT_NAME}
 
-__long_desc__
+${PROJECT_DESCRIPTION_LONG}
 
 .SH  OPTIONS 
 
@@ -56,4 +56,4 @@ Disable graph output for the following exports.
 Don't start the gui after parsing the command line.
 
 .SH AUTHOR
-__author__ <__email__>
+${PROJECT_MANINTAINER_NAME} <${PROJECT_MANINTAINER_EMAIL}>

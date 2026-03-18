@@ -11,7 +11,7 @@
 #include <QStyle>
 #include <QStyleFactory>
 
-#include "knotter_info.hpp"
+#include "icsograf_info.hpp"
 #include "resource_manager.hpp"
 #include "xml_exporter.hpp"
 #include "xml_loader.hpp"
