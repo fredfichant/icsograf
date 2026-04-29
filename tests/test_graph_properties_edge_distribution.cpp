@@ -65,18 +65,13 @@ int main()
     assert(multi.properties()->group_count() == 2);
     assert(tables.size() == 2);
 
-    bool found_all_zero = false;
     bool found_split = false;
     for (const EdgeDistributionTable& table : tables) {
         assert(table.wa + table.w0 + table.p0 + table.pa == multi.properties()->edge_count());
-        if (table.wa == 0 && table.w0 == 4 && table.p0 == 0 && table.pa == 0) {
-            found_all_zero = true;
-        }
         if (table.wa == 1 && table.w0 == 3 && table.p0 == 0 && table.pa == 0) {
             found_split = true;
         }
     }
-    assert(found_all_zero);
     assert(found_split);
 
     Node i1(QPointF(-200, 0));

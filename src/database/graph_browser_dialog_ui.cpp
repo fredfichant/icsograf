@@ -107,12 +107,15 @@ void Graph_Browser_Dialog::build_ui()
     auto* splitter = new QSplitter(this);
 
     m_table = new QTableWidget(this);
-    m_table->setColumnCount(10);
-    m_table->setHorizontalHeaderLabels(
-        QStringList() << QStringLiteral("ID") << QStringLiteral("nom") << QStringLiteral("C")
-                      << QStringLiteral("R") << QStringLiteral("F") << QStringLiteral("wp")
-                      << QStringLiteral("wp'") << QStringLiteral("w'p'") << QStringLiteral("w'p")
-                      << QStringLiteral("∆T"));
+    m_table->setColumnCount(8);
+    m_table->setHorizontalHeaderLabels(QStringList() << QStringLiteral("ID")
+                                                     << QStringLiteral("nom")
+                                                     << QStringLiteral("C")
+                                                     << QStringLiteral("R")
+                                                     << QStringLiteral("F")
+                                                     << QStringLiteral("table")
+                                                     << QStringLiteral("∆T")
+                                                     << QStringLiteral("Portance"));
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->setSelectionMode(QAbstractItemView::SingleSelection);
     m_table->setEditTriggers(QAbstractItemView::NoEditTriggers);

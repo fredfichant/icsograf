@@ -80,6 +80,14 @@ Edge_Type* Edge::effective_edge_type() const
 
 int Edge::strand_count() const { return defaulted_style().strand_count; }
 
+int Edge::effective_strand_count() const
+{
+    int strands = strand_count();
+    Edge_Type* type = effective_edge_type();
+    if (type and type->strand_count() > strands) strands = type->strand_count();
+    return strands;
+}
+
 void Edge::set_strand_count(int count)
 {
     m_style.strand_count = count;

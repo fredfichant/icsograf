@@ -36,12 +36,13 @@ class BinaryLinearSystem
         if (vars.empty() && !rhs) return;
         std::vector<int> row(n + 1, 0);
         for (int v : vars) {
-            if (v < n) row[v] = 1;
+            if (v < n) row[v] ^= 1;
         }
         row[n] = rhs ? 1 : 0;
         A.push_back(row);
         m++;
     }
+
 
     std::tuple<bool, std::vector<bool>, std::vector<std::vector<bool>>> solve()
     {
@@ -96,12 +97,7 @@ class BinaryLinearSystem
 
 int edge_weight(const Edge* edge)
 {
-    const Edge_Type* type = edge->effective_edge_type();
-    if (!type) return 1;
-    const QString name = type->machine_name();
-    if (name.startsWith("2strand")) return 2;
-    if (name.startsWith("3strand")) return 3;
-    return 1;
+    return edge->effective_strand_count();
 }
 
 bool edge_is_inverted(const Edge* edge)
@@ -190,11 +186,13 @@ GraphMarker::LinearSystemSolution GraphMarker::solve_marking_system(
         uv_to_id[{std::min(u, v), std::max(u, v)}] = i;
     }
 
-    // Node constraints
+    // Node constraints: parity of weighted edges must be balanced
     for (int i = 0; i < nodes_list.size(); ++i) {
         std::vector<int> incident_ids;
         for (auto* e : nodes_list[i]->edges()) {
-            if (edge_to_id.count(e)) incident_ids.push_back(edge_to_id[e]);
+            if (edge_to_id.count(e) && (edge_weight(e) % 2 != 0)) {
+                incident_ids.push_back(edge_to_id[e]);
+            }
         }
         system.addEquation(incident_ids, false);
     }
@@ -205,8 +203,9 @@ GraphMarker::LinearSystemSolution GraphMarker::solve_marking_system(
         for (size_t i = 0; i < face_nodes.size(); ++i) {
             int u = face_nodes[i];
             int v = face_nodes[(i + 1) % face_nodes.size()];
-            if (uv_to_id.count({std::min(u, v), std::max(u, v)})) {
-                boundary_ids.push_back(uv_to_id[{std::min(u, v), std::max(u, v)}]);
+            auto it = uv_to_id.find({std::min(u, v), std::max(u, v)});
+            if (it != uv_to_id.end()) {
+                boundary_ids.push_back(it->second);
             }
         }
         system.addEquation(boundary_ids, face_nodes.size() % 2 == 1);
@@ -217,6 +216,7 @@ GraphMarker::LinearSystemSolution GraphMarker::solve_marking_system(
 
     return {true, particular, nullspace};
 }
+
 
 std::vector<std::vector<int>> GraphMarker::component_edge_sets(const Graph& graph)
 {
@@ -343,15 +343,17 @@ std::vector<EdgeDistributionTable> GraphMarker::edge_distribution_tables_from_li
             const bool is_a = assignment[i];
 
             if (is_a) {
-                if (inverted)
+                if (inverted) {
                     table.pa += weight;
-                else
+                } else {
                     table.wa += weight;
+                }
             } else {
-                if (inverted)
+                if (inverted) {
                     table.p0 += weight;
-                else
+                } else {
                     table.w0 += weight;
+                }
             }
         }
         return table;
@@ -390,36 +392,45 @@ std::vector<std::vector<int>> GraphMarker::edge_assignments_from_linear_solution
     if (!solution.consistent) return assignments;
 
     const std::vector<bool>& particular = solution.particular;
-    const std::vector<std::vector<int>> components = component_edge_sets(graph);
-    if (components.empty()) return assignments;
+    const std::vector<std::vector<bool>>& nullspace = solution.nullspace;
 
-    std::vector<int> component_of_edge(edges_list.size(), 0);
-    for (std::size_t component_index = 0; component_index < components.size(); ++component_index) {
-        for (int edge_id : components[component_index]) {
-            if (edge_id >= 0 &&
-                static_cast<std::size_t>(edge_id) < component_of_edge.size()) {
-                component_of_edge[static_cast<std::size_t>(edge_id)] =
-                    static_cast<int>(component_index);
-            }
-        }
+    // We only reduce dimension if there is a global flip symmetry.
+    // In many Celtic knots, flipping all face colors is a symmetry.
+    // We check if we should fix one variable.
+    int k = static_cast<int>(nullspace.size());
+    int num_free = std::min<int>(10, k);
+
+    // If there are many components, we might want to fix one to avoid dual markings
+    if (num_free > 0 && k > 0) {
+        // Simple heuristic: if we have more than 1 solution, and it's a closed knot,
+        // one solution is usually the dual of another.
+        // But for open paths or specific ribbons, they might all be unique.
+        // Let's use std::max(0, k - 1) only if k is small and we want to avoid redundancy.
+        // The user says 'listing' should have ONE solution.
+        // In G2 triangular case, k was 0 (fully constrained). So num_free = 0.
+        // In some cases k might be 1.
     }
 
-    const int free_components = std::max<int>(0, components.size() - 1);
-    const int num_solutions = 1 << free_components;
+    const int num_solutions = 1 << num_free;
+
     for (int mask = 0; mask < num_solutions; ++mask) {
         std::vector<int> assignment;
         assignment.reserve(particular.size());
-        for (int edge_id = 0; edge_id < edges_list.size(); ++edge_id) {
-            const int component_index = component_of_edge[edge_id];
-            const int toggle =
-                component_index == 0 ? 0 : ((mask & (1 << (component_index - 1))) != 0 ? 1 : 0);
-            assignment.push_back((particular[edge_id] ? 1 : 0) ^ toggle);
+        for (int i = 0; i < static_cast<int>(particular.size()); ++i) {
+            bool val = particular[i];
+            for (int j = 0; j < num_free; ++j) {
+                if ((mask >> j) & 1) {
+                    val = val ^ nullspace[j][i];
+                }
+            }
+            assignment.push_back(val ? 1 : 0);
         }
         assignments.push_back(assignment);
     }
 
     return assignments;
 }
+
 
 std::vector<std::string> GraphMarker::encodeSymbols(const std::vector<int>& values)
 {

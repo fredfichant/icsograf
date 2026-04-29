@@ -39,8 +39,19 @@
 namespace {
 constexpr int kMaxDisplayedEdgeDistributionTables = 8;
 
+/**
+ * \brief Returns a shortened version of the topology hash.
+ * \param topology_hash The full topology hash string.
+ * \return The first 12 characters of the hash.
+ */
 QString short_signature(const QString& topology_hash) { return topology_hash.left(12); }
 
+/**
+ * \brief Renders SVG data into a QPixmap for previewing.
+ * \param svg_bytes The SVG data as a byte array.
+ * \param max_size The maximum size constraints for the output pixmap.
+ * \return A QPixmap containing the rendered SVG, or a null QPixmap if rendering fails.
+ */
 QPixmap render_svg_preview(const QByteArray& svg_bytes, const QSize& max_size)
 {
     QSvgRenderer renderer(svg_bytes);
@@ -66,6 +77,14 @@ QPixmap render_svg_preview(const QByteArray& svg_bytes, const QSize& max_size)
     return QPixmap::fromImage(image);
 }
 
+/**
+ * \brief Exports a Graph to SVG format as a byte array.
+ * \param graph The graph to export.
+ * \param draw_graph Whether to draw the graph structure.
+ * \param out_svg_bytes Pointer to store the output SVG byte array.
+ * \param error_message Optional pointer to store any error message.
+ * \return True if export succeeds, false otherwise.
+ */
 bool export_graph_svg_bytes(const Graph& graph, bool draw_graph, QByteArray* out_svg_bytes,
                             QString* error_message)
 {
@@ -90,6 +109,11 @@ bool export_graph_svg_bytes(const Graph& graph, bool draw_graph, QByteArray* out
     return true;
 }
 
+/**
+ * \brief Gathers and sorts all unique degree keys from both vertex and face distributions.
+ * \param rec The graph record containing the distributions.
+ * \return A sorted list of degree integers.
+ */
 QList<int> sorted_distribution_keys(const Graph_Record& rec)
 {
     QSet<int> keys;
@@ -107,6 +131,12 @@ QList<int> sorted_distribution_keys(const Graph_Record& rec)
     return sorted;
 }
 
+/**
+ * \brief Creates a UI table widget displaying an EdgeDistributionTable.
+ * \param table The edge distribution table data.
+ * \param parent The parent widget.
+ * \return A configured QTableWidget displaying the distribution table.
+ */
 QTableWidget* create_edge_distribution_table(const EdgeDistributionTable& table, QWidget* parent)
 {
     auto* widget = new QTableWidget(parent);
@@ -150,6 +180,10 @@ QTableWidget* create_edge_distribution_table(const EdgeDistributionTable& table,
     return widget;
 }
 
+/**
+ * \brief Recursively clears and deletes all widgets within a layout.
+ * \param layout The QVBoxLayout to clear.
+ */
 void clear_layout(QVBoxLayout* layout)
 {
     if (!layout) return;
@@ -161,6 +195,12 @@ void clear_layout(QVBoxLayout* layout)
     }
 }
 
+/**
+ * \brief Computes the edge distribution tables for a graph record.
+ * \param repo The graph repository for deserialization.
+ * \param rec The graph record containing the serialized graph JSON.
+ * \return A vector of computed EdgeDistributionTable objects.
+ */
 std::vector<EdgeDistributionTable> compute_edge_distribution_tables(const Graph_Repository& repo,
                                                                    const Graph_Record& rec)
 {
@@ -187,6 +227,9 @@ std::vector<EdgeDistributionTable> compute_edge_distribution_tables(const Graph_
 }
 }  // namespace
 
+/**
+ * \brief Retrieves graphs matching the current filter from the database and updates the table.
+ */
 void Graph_Browser_Dialog::refresh_results()
 {
     QString error;
@@ -206,6 +249,10 @@ void Graph_Browser_Dialog::refresh_results()
     m_status_label->setText(QStringLiteral("%1 résultat(s)").arg(m_rows.size()));
 }
 
+/**
+ * \brief Populates the results table with a list of graph records.
+ * \param rows The list of graph records to display.
+ */
 void Graph_Browser_Dialog::populate_table(const QList<Graph_Record>& rows)
 {
     m_table->setRowCount(0);
@@ -219,14 +266,19 @@ void Graph_Browser_Dialog::populate_table(const QList<Graph_Record>& rows)
 
         m_table->setItem(i, 0, id_item);
         m_table->setItem(i, 1, new QTableWidgetItem(rec.title));
-        m_table->setItem(i, 2, new QTableWidgetItem(QString::number(rec.edge_count)));
-        m_table->setItem(i, 3, new QTableWidgetItem(QString::number(rec.group_count)));
+
+        auto* edge_item = new QTableWidgetItem();
+        edge_item->setData(Qt::DisplayRole, rec.edge_count);
+        m_table->setItem(i, 2, edge_item);
+
+        auto* group_item = new QTableWidgetItem();
+        group_item->setData(Qt::DisplayRole, rec.group_count);
+        m_table->setItem(i, 3, group_item);
+
         m_table->setItem(i, 4, new QTableWidgetItem(QString::number(rec.face_count)));
-        m_table->setItem(i, 5, new QTableWidgetItem(QString::number(rec.wa)));
-        m_table->setItem(i, 6, new QTableWidgetItem(QString::number(rec.w0)));
-        m_table->setItem(i, 7, new QTableWidgetItem(QString::number(rec.p0)));
-        m_table->setItem(i, 8, new QTableWidgetItem(QString::number(rec.pa)));
-        m_table->setItem(i, 9, new QTableWidgetItem(QString::number(rec.delta_t)));
+        m_table->setItem(i, 5, new QTableWidgetItem(QStringLiteral("%1, %2, %3, %4").arg(rec.wa).arg(rec.w0).arg(rec.p0).arg(rec.pa)));
+        m_table->setItem(i, 6, new QTableWidgetItem(QString::number(rec.delta_t)));
+        m_table->setItem(i, 7, new QTableWidgetItem( rec.span_formula ));
     }
 
     if (!rows.isEmpty()) {
@@ -239,6 +291,10 @@ void Graph_Browser_Dialog::populate_table(const QList<Graph_Record>& rows)
     }
 }
 
+/**
+ * \brief Retrieves the database ID of the currently selected graph in the table.
+ * \return The graph ID, or -1 if no graph is selected.
+ */
 qint64 Graph_Browser_Dialog::selected_graph_id() const
 {
     const QList<QTableWidgetItem*> items = m_table->selectedItems();
@@ -250,6 +306,9 @@ qint64 Graph_Browser_Dialog::selected_graph_id() const
     return first->data(Qt::UserRole).toLongLong();
 }
 
+/**
+ * \brief Updates the details panel with metadata and visuals of the selected graph.
+ */
 void Graph_Browser_Dialog::update_details_panel()
 {
     const qint64 id = selected_graph_id();
@@ -358,6 +417,9 @@ void Graph_Browser_Dialog::update_details_panel()
     clear_details_panel();
 }
 
+/**
+ * \brief Slot called when the table selection changes. Enables/disables actions and refreshes details.
+ */
 void Graph_Browser_Dialog::on_selection_changed()
 {
     m_selected_id = selected_graph_id();
@@ -367,6 +429,9 @@ void Graph_Browser_Dialog::on_selection_changed()
     update_details_panel();
 }
 
+/**
+ * \brief Slot to copy the textual details of the selected graph to the clipboard.
+ */
 void Graph_Browser_Dialog::on_copy_details_clicked()
 {
     const qint64 id = selected_graph_id();
@@ -380,6 +445,9 @@ void Graph_Browser_Dialog::on_copy_details_clicked()
     }
 }
 
+/**
+ * \brief Slot to export the currently selected graph's SVG preview to a file.
+ */
 void Graph_Browser_Dialog::on_export_svg_clicked()
 {
     if (m_selected_svg_bytes.isEmpty()) {
@@ -410,6 +478,9 @@ void Graph_Browser_Dialog::on_export_svg_clicked()
     m_status_label->setText(QStringLiteral("SVG exporté : %1").arg(file_path));
 }
 
+/**
+ * \brief Slot to display a modal dialog with an enlarged SVG preview of the selected graph.
+ */
 void Graph_Browser_Dialog::on_enlarge_preview_clicked()
 {
     if (m_selected_svg_bytes.isEmpty()) return;
@@ -436,6 +507,9 @@ void Graph_Browser_Dialog::on_enlarge_preview_clicked()
     dialog->show();
 }
 
+/**
+ * \brief Slot called when the 'Open' button is clicked. Accepts the dialog.
+ */
 void Graph_Browser_Dialog::on_open_clicked()
 {
     if (selected_graph_id() < 0) {
@@ -447,6 +521,9 @@ void Graph_Browser_Dialog::on_open_clicked()
     accept();
 }
 
+/**
+ * \brief Slot to delete the currently selected graph from the database after user confirmation.
+ */
 void Graph_Browser_Dialog::on_delete_clicked()
 {
     const qint64 id = selected_graph_id();
@@ -468,6 +545,14 @@ void Graph_Browser_Dialog::on_delete_clicked()
     refresh_results();
 }
 
+/**
+ * \brief Deserializes and loads the selected graph's data.
+ * \param graph The Graph object to populate.
+ * \param out_nodes The list to populate with the graph's nodes.
+ * \param out_edges The list to populate with the graph's edges.
+ * \param error_message Optional pointer to store any error message.
+ * \return True if loading succeeds, false otherwise.
+ */
 bool Graph_Browser_Dialog::load_selected_graph(Graph& graph, QList<Node*>& out_nodes,
                                                QList<Edge*>& out_edges, QString* error_message)
 {
@@ -492,6 +577,9 @@ bool Graph_Browser_Dialog::load_selected_graph(Graph& graph, QList<Node*>& out_n
     return true;
 }
 
+/**
+ * \brief Clears all text, widgets, and previews from the details panel.
+ */
 void Graph_Browser_Dialog::clear_details_panel()
 {
     m_selected_svg_bytes.clear();
@@ -521,12 +609,21 @@ void Graph_Browser_Dialog::clear_details_panel()
     m_enlarge_preview_button->setEnabled(false);
 }
 
+/**
+ * \brief Sets a text value on a QLabel, defaulting to "n/a" if empty.
+ * \param label The target QLabel.
+ * \param value The text value to set.
+ */
 void Graph_Browser_Dialog::set_metadata_value(QLabel* label, const QString& value)
 {
     if (!label) return;
     label->setText(value.isEmpty() ? QStringLiteral("n/a") : value);
 }
 
+/**
+ * \brief Renders and displays SVG bytes in the preview graphics scene.
+ * \param svg_bytes The SVG data to display.
+ */
 void Graph_Browser_Dialog::set_preview_svg(const QByteArray& svg_bytes)
 {
     m_preview_scene->clear();
@@ -548,6 +645,11 @@ void Graph_Browser_Dialog::set_preview_svg(const QByteArray& svg_bytes)
     m_preview_view->fitInView(m_preview_scene->sceneRect(), Qt::KeepAspectRatio);
 }
 
+/**
+ * \brief Constructs a formatted multi-line string containing the metadata and distributions of a graph record.
+ * \param rec The graph record to textify.
+ * \return A string representation of the graph's details.
+ */
 QString Graph_Browser_Dialog::build_details_text(const Graph_Record& rec) const
 {
     QString text;
@@ -587,6 +689,14 @@ QString Graph_Browser_Dialog::build_details_text(const Graph_Record& rec) const
     return text;
 }
 
+/**
+ * \brief Deserializes a graph record and generates its SVG byte representation.
+ * \param repo The graph repository for deserialization.
+ * \param rec The graph record containing the serialized graph JSON.
+ * \param out_graph_svg_bytes Pointer to store the generated SVG bytes.
+ * \param error_message Optional pointer to store any error message.
+ * \return True if generation succeeds, false otherwise.
+ */
 bool Graph_Browser_Dialog::build_svg_bytes(const Graph_Repository& repo, const Graph_Record& rec,
                                            QByteArray* out_graph_svg_bytes, QString* error_message)
 {

@@ -179,3 +179,4 @@ add_icsograf_test(test_graph_validation ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_v
 add_icsograf_db_test(test_graph_repository ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_repository.cpp)
 add_icsograf_db_ui_test(test_graph_browser_dialog_details ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_browser_dialog_details.cpp)
 add_icsograf_db_tool(inspect_edge_distribution ${CMAKE_CURRENT_SOURCE_DIR}/inspect_edge_distribution.cpp)
+add_icsograf_test(repro_listing ${CMAKE_CURRENT_SOURCE_DIR}/repro_listing.cpp)

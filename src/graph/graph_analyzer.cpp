@@ -23,31 +23,23 @@
 
 void Graph_Analyzer::update(const Graph& graph)
 {
-    const auto edge_weight = [](const Edge* e) {
-        const Edge_Type* type = e->effective_edge_type();
-        if (!type) return 1;
-        const QString name = type->machine_name();
-        if (name.startsWith("2strand")) return 2;
-        if (name.startsWith("3strand")) return 3;
-        return 1;
-    };
     graph.m_properties->set_node_count(graph.m_nodes.size());
     int weighted_edge_count = 0;
-    for (Edge* e : graph.m_edges) weighted_edge_count += edge_weight(e);
+    for (Edge* e : graph.m_edges) weighted_edge_count += e->effective_strand_count();
     graph.m_properties->set_edge_count(weighted_edge_count);
     graph.m_properties->set_group_count(graph.paths.size());
 
     QMap<int, int> vertex_dist;
     for (Node* n : graph.m_nodes) {
         int deg = 0;
-        for (const Edge* e : n->edges()) deg += edge_weight(e);
+        for (const Edge* e : n->edges()) deg += e->effective_strand_count();
         vertex_dist[deg] = vertex_dist.value(deg, 0) + 1;
     }
     graph.m_properties->set_vertex_degree_distribution(vertex_dist);
 
     std::vector<std::vector<std::size_t>> faces = find_faces(graph);
     int face_adjustment = 0;
-    for (Edge* e : graph.m_edges) face_adjustment += edge_weight(e) - 1;
+    for (Edge* e : graph.m_edges) face_adjustment += e->effective_strand_count() - 1;
     graph.m_properties->set_face_adjustment(face_adjustment);
     graph.m_properties->set_face_count(faces.size());
 

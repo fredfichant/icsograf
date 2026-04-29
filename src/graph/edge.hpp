@@ -118,6 +118,11 @@ class Edge : public Graph_Item
     int strand_count() const;
 
     /**
+     * \brief Returns the effective number of strands, taking into account the edge type's default
+     */
+    int effective_strand_count() const;
+
+    /**
      * \brief Sets the number of strands
      * \param count New strand count
      */
