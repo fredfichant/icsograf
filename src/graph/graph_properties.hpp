@@ -71,9 +71,14 @@ class Graph_Properties : public QObject
 
     /**
      * \brief Calculates the Delta T property of the graph
-     * \return Absolute difference between strand crossing types
+     * \return Absolute difference between strand crossing types (first solution)
      */
     int delta_t() const { return qAbs((m_wa + m_p0) - (m_w0 + m_pa)); }
+
+    /**
+     * \brief Returns all possible Delta T values as a comma-separated string
+     */
+    QString delta_t_text() const;
     /** \brief Returns the span formula (portance P) */
     const QString& span_formula() const { return m_span_formula; }
     /** \brief Returns whether the knot is non-reducible according to the current bounds */

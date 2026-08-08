@@ -232,7 +232,7 @@ void Properties_View::update_view()
         }
     }
 
-    m_delta_t_label->setText(QString::number(m_properties.delta_t()));
+    m_delta_t_label->setText(m_properties.delta_t_text());
     m_span_formula_label->setText(m_properties.span_formula());
     m_non_reducible_label->setText(m_properties.is_non_reducible() ? tr("OK")
                                                                     : tr("arc trop long"));

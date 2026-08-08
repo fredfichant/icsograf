@@ -225,6 +225,29 @@ std::vector<EdgeDistributionTable> compute_edge_distribution_tables(const Graph_
 
     return tables;
 }
+
+/**
+ * \brief Computes the comma-separated delta_t string for a graph record.
+ * \param repo The graph repository for deserialization.
+ * \param rec The graph record.
+ * \return A comma-separated string of unique delta_t values.
+ */
+QString compute_delta_t_string(const Graph_Repository& repo, const Graph_Record& rec)
+{
+    const std::vector<EdgeDistributionTable> tables = compute_edge_distribution_tables(repo, rec);
+    if (tables.empty()) return QString::number(rec.delta_t);
+
+    QSet<int> values;
+    for (const auto& table : tables) {
+        values.insert(qAbs((table.wa + table.p0) - (table.w0 + table.pa)));
+    }
+
+    QStringList list;
+    QList<int> sorted = values.values();
+    std::sort(sorted.begin(), sorted.end());
+    for (int v : sorted) list << QString::number(v);
+    return list.join(QStringLiteral(", "));
+}
 }  // namespace
 
 /**
@@ -277,7 +300,7 @@ void Graph_Browser_Dialog::populate_table(const QList<Graph_Record>& rows)
 
         m_table->setItem(i, 4, new QTableWidgetItem(QString::number(rec.face_count)));
         m_table->setItem(i, 5, new QTableWidgetItem(QStringLiteral("%1, %2, %3, %4").arg(rec.wa).arg(rec.w0).arg(rec.p0).arg(rec.pa)));
-        m_table->setItem(i, 6, new QTableWidgetItem(QString::number(rec.delta_t)));
+        m_table->setItem(i, 6, new QTableWidgetItem(compute_delta_t_string(m_repo, rec)));
         m_table->setItem(i, 7, new QTableWidgetItem( rec.span_formula ));
     }
 
@@ -329,19 +352,12 @@ void Graph_Browser_Dialog::update_details_panel()
         set_metadata_value(m_details_edge_count, QString::number(rec.edge_count));
         set_metadata_value(m_details_group_count, QString::number(rec.group_count));
         set_metadata_value(m_details_face_count, QString::number(rec.face_count));
-        set_metadata_value(m_details_delta_t, QString::number(rec.delta_t));
-        set_metadata_value(m_details_span, rec.span_formula);
-        set_metadata_value(m_details_non_reducible,
-                           rec.is_non_reducible ? QStringLiteral("oui") : QStringLiteral("non"));
-        set_metadata_value(m_details_wa, QString::number(rec.wa));
-        set_metadata_value(m_details_w0, QString::number(rec.w0));
-        set_metadata_value(m_details_p0, QString::number(rec.p0));
-        set_metadata_value(m_details_pa, QString::number(rec.pa));
-        m_details_title->setText(rec.title.isEmpty() ? QStringLiteral("(sans titre)") : rec.title);
+        set_metadata_value(m_details_delta_t, compute_delta_t_string(m_repo, rec));
 
         clear_layout(m_invariants_tables_layout);
         const std::vector<EdgeDistributionTable> edge_tables =
             compute_edge_distribution_tables(m_repo, rec);
+
         if (edge_tables.empty()) {
             m_invariants_warning_label->hide();
             m_invariants_tables_layout->addWidget(new QLabel(QStringLiteral("Aucune table disponible"),
@@ -372,6 +388,15 @@ void Graph_Browser_Dialog::update_details_panel()
                     create_edge_distribution_table(table, m_invariants_tables_widget));
             }
         }
+
+        set_metadata_value(m_details_span, rec.span_formula);
+        set_metadata_value(m_details_non_reducible,
+                           rec.is_non_reducible ? QStringLiteral("oui") : QStringLiteral("non"));
+        set_metadata_value(m_details_wa, QString::number(rec.wa));
+        set_metadata_value(m_details_w0, QString::number(rec.w0));
+        set_metadata_value(m_details_p0, QString::number(rec.p0));
+        set_metadata_value(m_details_pa, QString::number(rec.pa));
+        m_details_title->setText(rec.title.isEmpty() ? QStringLiteral("(sans titre)") : rec.title);
 
         const QList<int> keys = sorted_distribution_keys(rec);
         QStringList headers;
@@ -662,7 +687,7 @@ QString Graph_Browser_Dialog::build_details_text(const Graph_Record& rec) const
     text += QStringLiteral("Arêtes (C): %1\n").arg(rec.edge_count);
     text += QStringLiteral("Ronds (R): %1\n").arg(rec.group_count);
     text += QStringLiteral("Faces (F): %1\n").arg(rec.face_count);
-    text += QStringLiteral("∆T: %1\n").arg(rec.delta_t);
+    text += QStringLiteral("∆T: %1\n").arg(compute_delta_t_string(m_repo, rec));
     text += QStringLiteral("Portance: %1\n").arg(rec.span_formula);
     text += QStringLiteral("Non réductible: %1\n")
                 .arg(rec.is_non_reducible ? QStringLiteral("oui") : QStringLiteral("non"));

@@ -13,7 +13,7 @@ Contacts
 ---------------------------------------
 
 frédéric fichant <fredfichant@gmail.com>
-[icsograph Website](https://vertex-924b0.web.app/)
+[icsograph Website](https://webknot.web.app/)
 
 If you have any suggestion, criticism, feature request or bug report please let me know.
 

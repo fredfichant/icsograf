@@ -5,6 +5,9 @@
 
 #include "graph_properties.hpp"
 
+#include <QSet>
+#include <QStringList>
+
 Graph_Properties::Graph_Properties(QObject* parent)
     : QObject(parent),
       m_node_count(0),
@@ -119,13 +122,33 @@ void Graph_Properties::set_is_non_reducible(bool value)
     }
 }
 
+QString Graph_Properties::delta_t_text() const
+{
+    if (m_edge_distribution_tables.empty()) {
+        return QString::number(delta_t());
+    }
+
+    QSet<int> values;
+    for (const auto& table : m_edge_distribution_tables) {
+        values.insert(qAbs((table.wa + table.p0) - (table.w0 + table.pa)));
+    }
+
+    QStringList list;
+    QList<int> sortedValues = values.values();
+    std::sort(sortedValues.begin(), sortedValues.end());
+    for (int v : sortedValues) {
+        list << QString::number(v);
+    }
+    return list.join(", ");
+}
+
 QString Graph_Properties::summary_text() const
 {
     return QString("sommets: %1, arêtes: %2, faces: %3, Delta T: %4, Portance P: %5, nœud: %6")
         .arg(node_count())
         .arg(edge_count())
         .arg(face_count())
-        .arg(delta_t())
+        .arg(delta_t_text())
         .arg(span_formula())
         .arg(is_non_reducible() ? "non-réductible" : "réductible");
 }
