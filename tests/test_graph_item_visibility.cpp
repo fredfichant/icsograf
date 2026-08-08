@@ -1,8 +1,8 @@
-#include <cassert>
-
 #include <QApplication>
 #include <QImage>
 #include <QPainter>
+#include <QPalette>
+#include <cassert>
 
 #include "edge_2strand.hpp"
 #include "edge_3strand.hpp"
@@ -35,6 +35,10 @@ int main(int argc, char** argv)
     QApplication app(argc, argv);
 
     {
+        QPalette palette = app.palette();
+        palette.setColor(QPalette::Base, Qt::white);
+        app.setPalette(palette);
+
         Node node(QPointF(0, 0));
 
         QImage image = create_canvas();
@@ -136,7 +140,7 @@ int main(int argc, char** argv)
         node.paint(&painter);
         painter.end();
 
-        assert(image.pixelColor(116, 110) != QColor(Qt::black));
+        assert(image.pixelColor(110, 110) == Node::color_resting);
     }
 
     return 0;

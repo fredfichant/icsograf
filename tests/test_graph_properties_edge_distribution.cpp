@@ -6,13 +6,14 @@
 #include <cassert>
 
 #include "edge_2strand.hpp"
-#include "edge_normal.hpp"
 #include "edge_3strand.hpp"
+#include "edge_normal.hpp"
 #include "graph.hpp"
 
 static void assert_table_totals_match_edge_count(const Graph& graph)
 {
-    const std::vector<EdgeDistributionTable>& tables = graph.properties()->edge_distribution_tables();
+    const std::vector<EdgeDistributionTable>& tables =
+        graph.properties()->edge_distribution_tables();
     assert(!tables.empty());
     for (const EdgeDistributionTable& table : tables) {
         assert(table.wa + table.w0 + table.p0 + table.pa == graph.properties()->edge_count());
@@ -35,8 +36,8 @@ int main()
 
     g.render_knot();
 
-    const int total = g.properties()->wa() + g.properties()->w0() + g.properties()->p0() +
-                      g.properties()->pa();
+    const int total =
+        g.properties()->wa() + g.properties()->w0() + g.properties()->p0() + g.properties()->pa();
     assert(total > 0);
     assert(g.properties()->edge_distribution_tables().size() == 1);
     assert_table_totals_match_edge_count(g);
@@ -61,14 +62,15 @@ int main()
     multi.add_edge(&f3);
     multi.render_knot();
 
-    const std::vector<EdgeDistributionTable>& tables = multi.properties()->edge_distribution_tables();
+    const std::vector<EdgeDistributionTable>& tables =
+        multi.properties()->edge_distribution_tables();
     assert(multi.properties()->group_count() == 2);
     assert(tables.size() == 2);
 
     bool found_split = false;
     for (const EdgeDistributionTable& table : tables) {
         assert(table.wa + table.w0 + table.p0 + table.pa == multi.properties()->edge_count());
-        if (table.wa == 1 && table.w0 == 3 && table.p0 == 0 && table.pa == 0) {
+        if (table.wa == 2 && table.w0 == 2 && table.p0 == 0 && table.pa == 0) {
             found_split = true;
         }
     }

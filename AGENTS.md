@@ -1,47 +1,50 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-`src/` contains the Qt/C++ application code. Key areas: `graph/` (core model/render logic), `widgets/` (UI components, including `knot_view/`), `dialogs/` (Qt dialogs and `.ui` files), and `io/` (XML/image import-export).  
-`data/` stores runtime assets (icons, styles, plugins).  
-`cmake/` contains reusable CMake modules/macros.  
-`docs/` contains Doxygen sources and generated HTML.  
-`package/` contains packaging metadata (deb/rpm/windows/snap).
+
+`src/` contains the Qt/C++ application. Core graph models and rendering live in
+`src/graph/`; interface code is in `src/widgets/` (notably `widgets/knot_view/`)
+and `src/dialogs/`; import/export lives in `src/io/`. Database code is under
+`src/database/`. Runtime icons, styles, and plugins belong in `data/`.
+Reusable CMake helpers are in `cmake/`, packaging metadata in `package/`, and
+Doxygen material in `docs/`. Focused CTest executables are in `tests/`.
 
 ## Build, Test, and Development Commands
-- `cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug`: configure a local debug build (C++17, ASan flags enabled in Debug).
-- `cmake --build build -j`: compile the `icsograf` binary and copy `data/` into `build/data`.
-- `./build/bin/icsograf`: run the app from the build tree.
-- `cmake -S . -B build -DCMAKE_BUILD_TYPE=Release`: configure an optimized build.
-- `./qt_format.sh`: format all `src/**/*.cpp|hpp` with `clang-format`.
+
+Configure a Debug build (C++17 and AddressSanitizer enabled):
+
+```sh
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build -j
+ctest --test-dir build -V
+./build/bin/icsograf
+```
+
+Use `-DCMAKE_BUILD_TYPE=Release` for an optimized build. The build copies
+`data/` into `build/data`; run the executable from the build tree so assets are
+available. Format C++ sources before review with `./qt_format.sh`.
 
 ## Coding Style & Naming Conventions
-Use `.clang-format` (Google base, 4-space indent, 100-column limit, no tabs, Qt-friendly macros).  
-Run formatting before opening a PR.  
-Follow existing naming patterns:
-- Types/classes: `Pascal_Case` (for example `Edge_Style`, `Main_Window`).
-- Functions/methods: mixed style already exists; prefer consistency with the surrounding file.
-- Member fields: `m_` prefix (for example `m_view`).
-- Header guards: `ALL_CAPS_HPP`.
+
+Follow `.clang-format`: Google-derived C++ style, four-space indentation, no
+tabs, and a 100-column limit. Function definitions use Allman braces. Use
+existing naming patterns: classes/types use `Pascal_Case` (for example,
+`Edge_Style`), member fields use `m_` (for example, `m_view`), and header guards
+use `ALL_CAPS_HPP`. Match the surrounding method naming where styles differ.
 
 ## Testing Guidelines
-There is no committed unit-test suite yet (`add_test(...)` is not wired in current CMake files).  
-For each change, include manual verification steps in your PR (for example: open app, create/edit/export a knot, reload saved file, check plugin dialog behavior).  
-If you add tests, use CTest integration (`enable_testing()` + `add_test(...)`) so they run via `ctest --test-dir build -V`.
+
+Tests are CTest executables registered in `tests/CMakeLists.txt`, generally
+named `test_<area>.cpp` and implemented with focused `assert()` checks. Add a
+matching test when changing graph or edge behavior; edge fixes require a CTest
+under `tests/`. Run the full build and `ctest --test-dir build -V` after C++
+changes. For UI and export changes, also manually create/edit a knot, save and
+reload it, and verify the affected dialog or exported file.
 
 ## Commit & Pull Request Guidelines
-Current history uses short, informal commit messages. Prefer clearer, imperative subjects moving forward, e.g. `graph: fix edge slide bounds`.  
-Keep commits focused and scoped by subsystem (`graph`, `dialogs`, `io`, `widgets`).  
-PRs should include:
-- What changed and why.
-- Linked issue (if any).
-- Manual test evidence.
-- UI screenshots/GIFs for visible dialog/view changes.
 
-## Testing rules
-
-- Any bug fix in edge classes must include a CTest in tests/
-- Prefer small focused tests with assert()
-- After modifying C++ code, run:
-  - cmake --build build -j
-  - ctest --test-dir build -V
-- Summarize the failing test before changing implementation
+Recent history uses short informal messages; prefer clear imperative subjects
+scoped to the subsystem, such as `graph: fix edge slide bounds`. Keep commits
+focused. PRs should explain what changed and why, link the issue when relevant,
+include build/test or manual verification evidence, and attach screenshots or a
+GIF for visible UI changes.

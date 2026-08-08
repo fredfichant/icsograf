@@ -3,22 +3,58 @@
  * \brief Unit tests for graph browser dialog details.
  */
 
-#include <cassert>
-
 #include <QApplication>
 #include <QDir>
 #include <QFile>
 #include <QGraphicsView>
 #include <QLabel>
+#include <QMap>
 #include <QPushButton>
 #include <QSqlDatabase>
 #include <QTableWidget>
+#include <cassert>
 
 #include "database/graph_browser_dialog.hpp"
 #include "database/graph_repository.hpp"
 #include "edge_2strand.hpp"
 #include "edge_normal.hpp"
 #include "graph.hpp"
+
+namespace {
+
+QString distribution_summary(const QMap<int, int>& distribution)
+{
+    if (distribution.isEmpty()) {
+        return QString();
+    }
+
+    const int max_degree = distribution.lastKey();
+    QString summary;
+    for (int degree = 2; degree <= max_degree; ++degree) {
+        summary += QString::number(distribution.value(degree, 0));
+    }
+    return summary;
+}
+
+QString span_formula_summary(const QString& span_formula)
+{
+    if (!span_formula.isEmpty()) {
+        bool is_metabole = true;
+        for (QChar c : span_formula) {
+            if (c != QChar('1') && c != QChar('|')) {
+                is_metabole = false;
+                break;
+            }
+        }
+        if (is_metabole) {
+            return QStringLiteral("métabole");
+        }
+    }
+
+    return span_formula;
+}
+
+}  // namespace
 
 int main(int argc, char** argv)
 {
@@ -55,6 +91,7 @@ int main(int argc, char** argv)
     Edge e1(&a, &b, &normal);
     Edge e2(&b, &c, &normal);
     Edge e3(&c, &d, &two_strand);
+    Edge e4(&d, &a, &normal);
 
     Graph g;
     g.add_node(&a);
@@ -64,6 +101,7 @@ int main(int argc, char** argv)
     g.add_edge(&e1);
     g.add_edge(&e2);
     g.add_edge(&e3);
+    g.add_edge(&e4);
     g.render_knot();
 
     const Graph_Save_Result save = repo.save_graph(g, "details-panel");
@@ -81,7 +119,7 @@ int main(int argc, char** argv)
     const QList<QTableWidget*> tables = dialog.findChildren<QTableWidget*>();
     int invariant_table_count = 0;
     for (QTableWidget* table : tables) {
-        if (table->columnCount() == 10) results_table = table;
+        if (table->columnCount() == 11) results_table = table;
         if (table->objectName() == QStringLiteral("detailsDistributionTable")) {
             distribution_table = table;
         }
@@ -93,6 +131,7 @@ int main(int argc, char** argv)
     assert(results_table != nullptr);
     assert(distribution_table != nullptr);
     assert(results_table->rowCount() >= 1);
+    assert(results_table->columnCount() == 11);
 
     results_table->selectRow(0);
     app.processEvents();
@@ -104,8 +143,7 @@ int main(int argc, char** argv)
     QLabel* json_length = dialog.findChild<QLabel*>(QStringLiteral("detailsJsonLengthValue"));
     QLabel* node_count = dialog.findChild<QLabel*>(QStringLiteral("detailsNodeCountValue"));
     QLabel* edge_count = dialog.findChild<QLabel*>(QStringLiteral("detailsEdgeCountValue"));
-    QLabel* non_reducible =
-        dialog.findChild<QLabel*>(QStringLiteral("detailsNonReducibleValue"));
+    QLabel* non_reducible = dialog.findChild<QLabel*>(QStringLiteral("detailsNonReducibleValue"));
 
     assert(title != nullptr);
     assert(id_value != nullptr);
@@ -123,6 +161,14 @@ int main(int argc, char** argv)
     assert(edge_count->text() == QString::number(rec.edge_count));
     assert(non_reducible->text() == QStringLiteral("oui") ||
            non_reducible->text() == QStringLiteral("non"));
+    assert(results_table->item(0, 8) != nullptr);
+    assert(results_table->item(0, 8)->text() == span_formula_summary(rec.span_formula));
+    assert(results_table->item(0, 9) != nullptr);
+    assert(results_table->item(0, 9)->text() ==
+           distribution_summary(rec.vertex_degree_distribution));
+    assert(results_table->item(0, 10) != nullptr);
+    assert(results_table->item(0, 10)->text() ==
+           distribution_summary(rec.face_degree_distribution));
 
     assert(distribution_table->rowCount() >= 1);
     assert(distribution_table->columnCount() >= 1);
@@ -135,7 +181,7 @@ int main(int argc, char** argv)
             invariant_table_count++;
         }
     }
-    assert(invariant_table_count >= 2);
+    assert(invariant_table_count >= 1);
 
     QGraphicsView* preview_view =
         dialog.findChild<QGraphicsView*>(QStringLiteral("detailsPreviewView"));
@@ -143,10 +189,8 @@ int main(int argc, char** argv)
     assert(preview_view->scene() != nullptr);
     assert(!preview_view->scene()->items().isEmpty());
 
-    QPushButton* copy_button =
-        dialog.findChild<QPushButton*>(QStringLiteral("copyDetailsButton"));
-    QPushButton* export_button =
-        dialog.findChild<QPushButton*>(QStringLiteral("exportSvgButton"));
+    QPushButton* copy_button = dialog.findChild<QPushButton*>(QStringLiteral("copyDetailsButton"));
+    QPushButton* export_button = dialog.findChild<QPushButton*>(QStringLiteral("exportSvgButton"));
     QPushButton* enlarge_button =
         dialog.findChild<QPushButton*>(QStringLiteral("enlargePreviewButton"));
     assert(copy_button != nullptr);

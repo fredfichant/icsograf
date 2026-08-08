@@ -132,6 +132,48 @@ QList<int> sorted_distribution_keys(const Graph_Record& rec)
 }
 
 /**
+ * \brief Builds an expanded textual representation of a degree distribution.
+ * \param distribution The degree -> count map to serialize.
+ * \return A string like "2210", starting at degree 2 and filling missing degrees with 0.
+ */
+QString distribution_summary(const QMap<int, int>& distribution)
+{
+    if (distribution.isEmpty()) {
+        return QString();
+    }
+
+    const int max_degree = distribution.lastKey();
+    QString summary;
+    for (int degree = 2; degree <= max_degree; ++degree) {
+        summary += QString::number(distribution.value(degree, 0));
+    }
+    return summary;
+}
+
+/**
+ * \brief Returns the display text for a span formula in the results table.
+ * \param span_formula The stored span formula.
+ * \return "métabole" when the formula contains only 1 and | characters, otherwise the formula.
+ */
+QString span_formula_summary(const QString& span_formula)
+{
+    if (!span_formula.isEmpty()) {
+        bool is_metabole = true;
+        for (QChar c : span_formula) {
+            if (c != QChar('1') && c != QChar('|')) {
+                is_metabole = false;
+                break;
+            }
+        }
+        if (is_metabole) {
+            return QStringLiteral("métabole");
+        }
+    }
+
+    return span_formula;
+}
+
+/**
  * \brief Creates a UI table widget displaying an EdgeDistributionTable.
  * \param table The edge distribution table data.
  * \param parent The parent widget.
@@ -290,18 +332,25 @@ void Graph_Browser_Dialog::populate_table(const QList<Graph_Record>& rows)
         m_table->setItem(i, 0, id_item);
         m_table->setItem(i, 1, new QTableWidgetItem(rec.title));
 
-        auto* edge_item = new QTableWidgetItem();
-        edge_item->setData(Qt::DisplayRole, rec.edge_count);
-        m_table->setItem(i, 2, edge_item);
-
         auto* group_item = new QTableWidgetItem();
         group_item->setData(Qt::DisplayRole, rec.group_count);
-        m_table->setItem(i, 3, group_item);
+        m_table->setItem(i, 2, group_item);
 
-        m_table->setItem(i, 4, new QTableWidgetItem(QString::number(rec.face_count)));
-        m_table->setItem(i, 5, new QTableWidgetItem(QStringLiteral("%1, %2, %3, %4").arg(rec.wa).arg(rec.w0).arg(rec.p0).arg(rec.pa)));
-        m_table->setItem(i, 6, new QTableWidgetItem(compute_delta_t_string(m_repo, rec)));
-        m_table->setItem(i, 7, new QTableWidgetItem( rec.span_formula ));
+        auto* edge_item = new QTableWidgetItem();
+        edge_item->setData(Qt::DisplayRole, rec.edge_count);
+        m_table->setItem(i, 3, edge_item);
+
+        m_table->setItem(i, 4, new QTableWidgetItem(QString::number(rec.node_count)));
+        m_table->setItem(i, 5, new QTableWidgetItem(QString::number(rec.face_count)));
+        m_table->setItem(i, 6, new QTableWidgetItem(QStringLiteral("%1, %2, %3, %4").arg(rec.wa).arg(rec.w0).arg(rec.pa).arg(rec.p0)));
+        m_table->setItem(i, 7, new QTableWidgetItem(compute_delta_t_string(m_repo, rec)));
+        m_table->setItem(i, 8, new QTableWidgetItem(span_formula_summary(rec.span_formula)));
+        m_table->setItem(i, 9,
+                         new QTableWidgetItem(
+                             distribution_summary(rec.vertex_degree_distribution)));
+        m_table->setItem(i, 10,
+                         new QTableWidgetItem(
+                             distribution_summary(rec.face_degree_distribution)));
     }
 
     if (!rows.isEmpty()) {
@@ -683,9 +732,9 @@ QString Graph_Browser_Dialog::build_details_text(const Graph_Record& rec) const
     text += QStringLiteral("Créé le: %1\n").arg(rec.created_at);
     text += QStringLiteral("Signature courte: %1\n").arg(short_signature(rec.topology_hash));
     text += QStringLiteral("Longueur JSON: %1 octets\n").arg(rec.graph_json.size());
-    text += QStringLiteral("Sommets (S): %1\n").arg(rec.node_count);
-    text += QStringLiteral("Arêtes (C): %1\n").arg(rec.edge_count);
     text += QStringLiteral("Ronds (R): %1\n").arg(rec.group_count);
+    text += QStringLiteral("Arêtes (C): %1\n").arg(rec.edge_count);
+    text += QStringLiteral("Sommets (S): %1\n").arg(rec.node_count);
     text += QStringLiteral("Faces (F): %1\n").arg(rec.face_count);
     text += QStringLiteral("∆T: %1\n").arg(compute_delta_t_string(m_repo, rec));
     text += QStringLiteral("Portance: %1\n").arg(rec.span_formula);

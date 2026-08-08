@@ -92,14 +92,14 @@ Properties_View::Properties_View(const Graph_Properties& properties, QWidget* pa
 
     // Simple properties
     m_form_layout = new QFormLayout();
-    m_node_count_label = new QLabel(this);
-    m_edge_count_label = new QLabel(this);
     m_group_count_label = new QLabel(this);
+    m_edge_count_label = new QLabel(this);
+    m_node_count_label = new QLabel(this);
     m_face_count_label = new QLabel(this);
 
-    m_form_layout->addRow(tr("Nodes:"), m_node_count_label);
-    m_form_layout->addRow(tr("Edges (C):"), m_edge_count_label);
     m_form_layout->addRow(tr("Groups (R):"), m_group_count_label);
+    m_form_layout->addRow(tr("Edges (C):"), m_edge_count_label);
+    m_form_layout->addRow(tr("Nodes:"), m_node_count_label);
     m_form_layout->addRow(tr("Faces:"), m_face_count_label);
     m_main_layout->addLayout(m_form_layout);
 

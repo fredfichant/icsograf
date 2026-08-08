@@ -107,15 +107,18 @@ void Graph_Browser_Dialog::build_ui()
     auto* splitter = new QSplitter(this);
 
     m_table = new QTableWidget(this);
-    m_table->setColumnCount(8);
+    m_table->setColumnCount(11);
     m_table->setHorizontalHeaderLabels(QStringList() << QStringLiteral("ID")
                                                      << QStringLiteral("nom")
-                                                     << QStringLiteral("C")
                                                      << QStringLiteral("R")
+                                                     << QStringLiteral("C")
+                                                     << QStringLiteral("S")
                                                      << QStringLiteral("F")
                                                      << QStringLiteral("table")
                                                      << QStringLiteral("∆T")
-                                                     << QStringLiteral("Portance"));
+                                                     << QStringLiteral("portance")
+                                                     << QStringLiteral("sommets")
+                                                     << QStringLiteral("faces"));
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->setSelectionMode(QAbstractItemView::SingleSelection);
     m_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -172,9 +175,9 @@ void Graph_Browser_Dialog::build_ui()
     metadata_layout->addRow(QStringLiteral("Créé le :"), m_details_created);
     metadata_layout->addRow(QStringLiteral("Signature courte :"), m_details_short_signature);
     metadata_layout->addRow(QStringLiteral("Longueur JSON :"), m_details_json_length);
-    metadata_layout->addRow(QStringLiteral("Sommets (S) :"), m_details_node_count);
-    metadata_layout->addRow(QStringLiteral("Arêtes (C) :"), m_details_edge_count);
     metadata_layout->addRow(QStringLiteral("Ronds (R) :"), m_details_group_count);
+    metadata_layout->addRow(QStringLiteral("Arêtes (C) :"), m_details_edge_count);
+    metadata_layout->addRow(QStringLiteral("Sommets (S) :"), m_details_node_count);
     metadata_layout->addRow(QStringLiteral("Faces (F) :"), m_details_face_count);
     metadata_layout->addRow(QStringLiteral("∆T :"), m_details_delta_t);
     metadata_layout->addRow(QStringLiteral("Portance :"), m_details_span);
