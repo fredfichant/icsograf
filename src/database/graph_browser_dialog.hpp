@@ -35,6 +35,8 @@ public:
     explicit Graph_Browser_Dialog(QWidget* parent = nullptr);
     ~Graph_Browser_Dialog() override;
 
+    QString build_results_tsv() const;
+
     bool load_selected_graph(Graph& graph,
                              QList<Node*>& out_nodes,
                              QList<Edge*>& out_edges,
@@ -49,7 +51,7 @@ private slots:
     void on_table_double_clicked(int row, int column);
     void on_copy_details_clicked();
     void on_export_svg_clicked();
-    void on_enlarge_preview_clicked();
+    void on_export_tsv_clicked();
 
 private:
     void build_ui();
@@ -83,6 +85,7 @@ private:
 
     QPushButton* m_search_button = nullptr;
     QPushButton* m_reset_button = nullptr;
+    QPushButton* m_export_tsv_button = nullptr;
     QPushButton* m_open_button = nullptr;
     QPushButton* m_delete_button = nullptr;
     QPushButton* m_cancel_button = nullptr;
@@ -114,7 +117,6 @@ private:
     QGraphicsScene* m_preview_scene = nullptr;
     QPushButton* m_copy_details_button = nullptr;
     QPushButton* m_export_svg_button = nullptr;
-    QPushButton* m_enlarge_preview_button = nullptr;
 };
 
 #endif  // GRAPH_BROWSER_DIALOG_HPP

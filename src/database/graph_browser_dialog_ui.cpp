@@ -89,16 +89,17 @@ void Graph_Browser_Dialog::build_ui()
     fields_layout->addLayout(create_filter_block(QStringLiteral("Ronds (R)"), m_group_count_spin));
     fields_layout->addLayout(create_filter_block(QStringLiteral("Faces (F)"), m_face_count_spin));
     fields_layout->addLayout(create_filter_block(QStringLiteral("∆T"), m_delta_t_spin));
-    fields_layout->addLayout(
-        create_filter_block(QStringLiteral("Non réductible"), m_non_reducible_combo));
+    
 
     filters_layout->addLayout(fields_layout, 1);
 
     auto* buttons_layout = new QVBoxLayout();
     m_search_button = new QPushButton(QStringLiteral("Rechercher"), this);
     m_reset_button = new QPushButton(QStringLiteral("Réinitialiser"), this);
+    m_export_tsv_button = new QPushButton(QStringLiteral("Exporter TSV"), this);
     buttons_layout->addWidget(m_search_button);
     buttons_layout->addWidget(m_reset_button);
+    buttons_layout->addWidget(m_export_tsv_button);
     buttons_layout->addStretch(1);
 
     filters_layout->addLayout(buttons_layout);
@@ -131,7 +132,8 @@ void Graph_Browser_Dialog::build_ui()
     m_details_scroll->setWidgetResizable(true);
     m_details_scroll->setFrameShape(QFrame::NoFrame);
 
-    auto* details_container = new QWidget(m_details_scroll);
+    auto* details_container = new QWidget();
+    m_details_scroll->setWidget(details_container);
     auto* details_layout = new QVBoxLayout(details_container);
     details_layout->setContentsMargins(16, 16, 16, 16);
     details_layout->setSpacing(12);
@@ -241,19 +243,13 @@ void Graph_Browser_Dialog::build_ui()
     auto* detail_buttons_layout = new QHBoxLayout();
     m_copy_details_button = new QPushButton(QStringLiteral("Copier les détails"), details_container);
     m_export_svg_button = new QPushButton(QStringLiteral("Exporter SVG"), details_container);
-    m_enlarge_preview_button =
-        new QPushButton(QStringLiteral("Agrandir l’aperçu"), details_container);
     m_copy_details_button->setObjectName(QStringLiteral("copyDetailsButton"));
     m_export_svg_button->setObjectName(QStringLiteral("exportSvgButton"));
-    m_enlarge_preview_button->setObjectName(QStringLiteral("enlargePreviewButton"));
     detail_buttons_layout->addWidget(m_copy_details_button);
     detail_buttons_layout->addWidget(m_export_svg_button);
-    detail_buttons_layout->addWidget(m_enlarge_preview_button);
     detail_buttons_layout->addStretch(1);
     details_layout->addLayout(detail_buttons_layout);
     details_layout->addStretch(1);
-
-    m_details_scroll->setWidget(details_container);
 
     splitter->addWidget(m_table);
     splitter->addWidget(m_details_scroll);
@@ -317,17 +313,17 @@ void Graph_Browser_Dialog::build_ui()
         QLabel#filterLabel {
             font-size: 12px;
             font-weight: 700;
-            color: #33597d;
+            color: #5589bb;
         }
         QLabel#detailsTitle {
             font-size: 18px;
             font-weight: 700;
-            color: #0b2742;
+            color: #6097c9;
         }
         QLabel#detailsSectionTitle {
             font-size: 14px;
             font-weight: 700;
-            color: #1d4f7a;
+            color: #4784b9;
         }
         QPushButton {
             background-color: #1c5d99;
@@ -365,6 +361,8 @@ void Graph_Browser_Dialog::connect_signals()
 {
     connect(m_search_button, &QPushButton::clicked, this, &Graph_Browser_Dialog::on_search_clicked);
     connect(m_reset_button, &QPushButton::clicked, this, &Graph_Browser_Dialog::on_reset_clicked);
+    connect(m_export_tsv_button, &QPushButton::clicked, this,
+            &Graph_Browser_Dialog::on_export_tsv_clicked);
     connect(m_open_button, &QPushButton::clicked, this, &Graph_Browser_Dialog::on_open_clicked);
     connect(m_delete_button, &QPushButton::clicked, this, &Graph_Browser_Dialog::on_delete_clicked);
     connect(m_cancel_button, &QPushButton::clicked, this, &QDialog::reject);
@@ -372,8 +370,6 @@ void Graph_Browser_Dialog::connect_signals()
             &Graph_Browser_Dialog::on_copy_details_clicked);
     connect(m_export_svg_button, &QPushButton::clicked, this,
             &Graph_Browser_Dialog::on_export_svg_clicked);
-    connect(m_enlarge_preview_button, &QPushButton::clicked, this,
-            &Graph_Browser_Dialog::on_enlarge_preview_clicked);
 
     connect(m_table, &QTableWidget::itemSelectionChanged, this,
             &Graph_Browser_Dialog::on_selection_changed);

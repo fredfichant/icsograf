@@ -12,6 +12,8 @@
 #include <QPushButton>
 #include <QSqlDatabase>
 #include <QTableWidget>
+#include <QByteArray>
+#include <QStringList>
 #include <cassert>
 
 #include "database/graph_browser_dialog.hpp"
@@ -58,6 +60,7 @@ QString span_formula_summary(const QString& span_formula)
 
 int main(int argc, char** argv)
 {
+    qputenv("QT_QPA_PLATFORM", QByteArray("offscreen"));
     QApplication app(argc, argv);
     const QStringList plugin_paths = {QStringLiteral("/usr/local/opt/qt@5/plugins"),
                                       QStringLiteral("/opt/homebrew/opt/qt@5/plugins")};
@@ -191,14 +194,38 @@ int main(int argc, char** argv)
 
     QPushButton* copy_button = dialog.findChild<QPushButton*>(QStringLiteral("copyDetailsButton"));
     QPushButton* export_button = dialog.findChild<QPushButton*>(QStringLiteral("exportSvgButton"));
-    QPushButton* enlarge_button =
-        dialog.findChild<QPushButton*>(QStringLiteral("enlargePreviewButton"));
+    QPushButton* export_tsv_button = nullptr;
+    const QList<QPushButton*> buttons = dialog.findChildren<QPushButton*>();
+    for (QPushButton* button : buttons) {
+        if (button->text() == QStringLiteral("Exporter TSV")) {
+            export_tsv_button = button;
+            break;
+        }
+    }
     assert(copy_button != nullptr);
     assert(export_button != nullptr);
-    assert(enlarge_button != nullptr);
+    assert(export_tsv_button != nullptr);
     assert(copy_button->isEnabled());
     assert(export_button->isEnabled());
-    assert(enlarge_button->isEnabled());
+
+    const QString tsv = dialog.build_results_tsv();
+    assert(!tsv.isEmpty());
+
+    const QStringList lines = tsv.split(QChar('\n'), Qt::SkipEmptyParts);
+    assert(lines.size() >= 2);
+    assert(lines[0] ==
+           QStringLiteral("ID\tnom\tR\tC\tS\tF\ttable\t∆T\tportance\tsommets\tfaces"));
+    const QStringList fields = lines[1].split(QChar('\t'));
+    assert(fields.size() == 11);
+    assert(fields[0] == QString::number(rec.id));
+    assert(fields[1] == QStringLiteral("details-panel"));
+    assert(fields[2] == QString::number(rec.group_count));
+    assert(fields[3] == QString::number(rec.edge_count));
+    assert(fields[4] == QString::number(rec.node_count));
+    assert(fields[5] == QString::number(rec.face_count));
+    assert(fields[8] == span_formula_summary(rec.span_formula));
+    assert(fields[9] == distribution_summary(rec.vertex_degree_distribution));
+    assert(fields[10] == distribution_summary(rec.face_degree_distribution));
 
     return 0;
 }

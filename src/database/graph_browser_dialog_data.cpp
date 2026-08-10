@@ -25,6 +25,7 @@
 #include <QSvgRenderer>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <QTextStream>
 #include <QVBoxLayout>
 #include <algorithm>
 
@@ -185,8 +186,8 @@ QTableWidget* create_edge_distribution_table(const EdgeDistributionTable& table,
     widget->setObjectName(QStringLiteral("detailsInvariantsTable"));
     widget->setRowCount(2);
     widget->setColumnCount(2);
-    widget->setHorizontalHeaderLabels(QStringList() << QStringLiteral("w") << QStringLiteral("p"));
-    widget->setVerticalHeaderLabels(QStringList() << QStringLiteral("a") << QStringLiteral("0"));
+    widget->setHorizontalHeaderLabels(QStringList() << QStringLiteral("w") << QStringLiteral("w'"));
+    widget->setVerticalHeaderLabels(QStringList() << QStringLiteral("p") << QStringLiteral("p'"));
     widget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     widget->setSelectionMode(QAbstractItemView::NoSelection);
     widget->setFocusPolicy(Qt::NoFocus);
@@ -289,6 +290,14 @@ QString compute_delta_t_string(const Graph_Repository& repo, const Graph_Record&
     std::sort(sorted.begin(), sorted.end());
     for (int v : sorted) list << QString::number(v);
     return list.join(QStringLiteral(", "));
+}
+
+QString escape_tsv_field(QString value)
+{
+    value.replace(QStringLiteral("\r\n"), QStringLiteral("\n"));
+    value.replace(QChar('\r'), QChar('\n'));
+    value.replace(QChar('\t'), QChar(' '));
+    return value;
 }
 }  // namespace
 
@@ -484,7 +493,6 @@ void Graph_Browser_Dialog::update_details_panel()
         set_preview_svg(graph_svg_bytes);
         m_copy_details_button->setEnabled(true);
         m_export_svg_button->setEnabled(!graph_svg_bytes.isEmpty());
-        m_enlarge_preview_button->setEnabled(!graph_svg_bytes.isEmpty());
         return;
     }
 
@@ -519,6 +527,66 @@ void Graph_Browser_Dialog::on_copy_details_clicked()
     }
 }
 
+QString Graph_Browser_Dialog::build_results_tsv() const
+{
+    if (!m_table) return QString();
+
+    QString output;
+    QTextStream stream(&output);
+
+    QStringList header_fields;
+    header_fields.reserve(m_table->columnCount());
+    for (int column = 0; column < m_table->columnCount(); ++column) {
+        QTableWidgetItem* header_item = m_table->horizontalHeaderItem(column);
+        header_fields << escape_tsv_field(header_item ? header_item->text() : QString());
+    }
+    stream << header_fields.join(QChar('\t')) << QChar('\n');
+
+    for (int row = 0; row < m_table->rowCount(); ++row) {
+        QStringList row_fields;
+        row_fields.reserve(m_table->columnCount());
+        for (int column = 0; column < m_table->columnCount(); ++column) {
+            QTableWidgetItem* item = m_table->item(row, column);
+            row_fields << escape_tsv_field(item ? item->text() : QString());
+        }
+        stream << row_fields.join(QChar('\t')) << QChar('\n');
+    }
+
+    return output;
+}
+
+void Graph_Browser_Dialog::on_export_tsv_clicked()
+{
+    if (!m_table || m_table->rowCount() == 0) {
+        QMessageBox::information(this, QStringLiteral("Exporter TSV"),
+                                 QStringLiteral("Aucun résultat à exporter."));
+        return;
+    }
+
+    const QString file_path =
+        QFileDialog::getSaveFileName(this, QStringLiteral("Exporter les résultats en TSV"),
+                                     QStringLiteral("graphes.tsv"),
+                                     QStringLiteral("TSV (*.tsv);;Texte (*.txt)"));
+    if (file_path.isEmpty()) return;
+
+    QFile file(file_path);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QMessageBox::warning(
+            this, QStringLiteral("Exporter TSV"),
+            QStringLiteral("Impossible d'écrire le fichier :\n%1").arg(file.errorString()));
+        return;
+    }
+
+    const QByteArray bytes = build_results_tsv().toUtf8();
+    if (file.write(bytes) != bytes.size()) {
+        QMessageBox::warning(this, QStringLiteral("Exporter TSV"),
+                             QStringLiteral("Écriture incomplète du fichier TSV."));
+        return;
+    }
+
+    m_status_label->setText(QStringLiteral("TSV exporté : %1").arg(file_path));
+}
+
 /**
  * \brief Slot to export the currently selected graph's SVG preview to a file.
  */
@@ -550,35 +618,6 @@ void Graph_Browser_Dialog::on_export_svg_clicked()
     }
 
     m_status_label->setText(QStringLiteral("SVG exporté : %1").arg(file_path));
-}
-
-/**
- * \brief Slot to display a modal dialog with an enlarged SVG preview of the selected graph.
- */
-void Graph_Browser_Dialog::on_enlarge_preview_clicked()
-{
-    if (m_selected_svg_bytes.isEmpty()) return;
-
-    auto* dialog = new QDialog(this);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->setWindowTitle(QStringLiteral("Aperçu agrandi"));
-    dialog->resize(900, 700);
-
-    auto* layout = new QVBoxLayout(dialog);
-    auto* scene = new QGraphicsScene(dialog);
-    auto* view = new QGraphicsView(scene, dialog);
-    view->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-    view->setDragMode(QGraphicsView::ScrollHandDrag);
-    layout->addWidget(view);
-
-    const QPixmap preview = render_svg_preview(m_selected_svg_bytes, QSize(2400, 1800));
-    if (!preview.isNull()) {
-        scene->addPixmap(preview);
-        scene->setSceneRect(preview.rect());
-        view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
-    }
-
-    dialog->show();
 }
 
 /**
@@ -680,7 +719,6 @@ void Graph_Browser_Dialog::clear_details_panel()
     set_preview_svg(QByteArray());
     m_copy_details_button->setEnabled(false);
     m_export_svg_button->setEnabled(false);
-    m_enlarge_preview_button->setEnabled(false);
 }
 
 /**
