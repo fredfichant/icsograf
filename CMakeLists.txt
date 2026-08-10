@@ -13,7 +13,7 @@ set(PROJECT_HOMEPAGE_URL "https://webknot.web.app/")
 set(REPO "https://github.com/fredfichant/icsograf")
 set(REPO_GIT "https://github.com/fredfichant/icsograf.git")
 set(BUG_URL "")
-set(ICON_RELPATH "img/icon-big.svg")
+set(ICON_RELPATH "img/icon.svg")
 set(COPY_YEARS "2026-2036")
 set(DATA_INSTALL "share/${PROJECT_SLUG}/${PROJECT_SLUG}")
 

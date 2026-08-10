@@ -52,7 +52,7 @@ Main_Window::Main_Window(QWidget* parent)
 {
     setupUi(this);
     setStatusBar(m_statusBar = new StatusBar(this));
-    setWindowIcon(QIcon(resource_manager().program.data("img/icon-small.svg")));
+    setWindowIcon(QIcon(resource_manager().program.data("img/icon.svg")));
 
     setWindowTitle(resource_manager().program.name());
 
@@ -479,7 +479,23 @@ void Main_Window::handleResetViewTriggered() { view->reset_view(); }
 
 void Main_Window::handleReportBugsTriggered() { QDesktopServices::openUrl(QUrl(BUG_URL)); }
 
-void Main_Window::handleManualTriggered() { QDesktopServices::openUrl(QUrl(DOC_URL)); }
+void Main_Window::handleManualTriggered()
+{
+    const QString manual_path = resource_manager().program.data("help/manual.html");
+    if (manual_path.isEmpty()) {
+        QMessageBox::warning(this, tr("Manual unavailable"),
+                             tr("The local user manual could not be found in the application "
+                                "data directories."));
+        return;
+    }
+
+    const QUrl manual_url = QUrl::fromLocalFile(manual_path);
+    if (!QDesktopServices::openUrl(manual_url)) {
+        QMessageBox::warning(this, tr("Manual unavailable"),
+                             tr("Unable to open the local user manual:\n%1")
+                                 .arg(QDir::toNativeSeparators(manual_path)));
+    }
+}
 
 void Main_Window::handleRefreshPathTriggered() { view->update_knot(); }
 
@@ -522,7 +538,7 @@ void Main_Window::update_recent_files()
     else {
         for (QString savefile : resource_manager().settings.recent_files()) {
             QAction* a = menu_Open_Recent->addAction(
-                QIcon(resource_manager().program.data("img/icon-small.svg")), savefile);
+                QIcon(resource_manager().program.data("img/icon.svg")), savefile);
             connect(a, SIGNAL(triggered()), this, SLOT(click_recent_file()));
         }
     }

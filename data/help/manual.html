@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manuel d'utilisation - icsograf</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f8fc;
+      --panel: #ffffff;
+      --text: #13253a;
+      --muted: #4a6077;
+      --line: #c9d8e8;
+      --accent: #1c5d99;
+      --accent-soft: #eaf2fb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(180deg, #edf4fb 0%, var(--bg) 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+
+    header,
+    nav,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(28, 93, 153, 0.08);
+    }
+
+    header {
+      padding: 28px;
+      margin-bottom: 20px;
+      background:
+        radial-gradient(circle at top right, rgba(28, 93, 153, 0.08), transparent 34%),
+        var(--panel);
+    }
+
+    h1,
+    h2 {
+      line-height: 1.2;
+      margin: 0 0 14px;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      color: var(--accent);
+    }
+
+    p,
+    li {
+      font-size: 1rem;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      max-width: 52rem;
+    }
+
+    nav {
+      padding: 22px 28px;
+      margin-bottom: 20px;
+    }
+
+    nav ol {
+      margin: 12px 0 0;
+      padding-left: 20px;
+      columns: 2;
+      column-gap: 28px;
+    }
+
+    nav li {
+      margin-bottom: 8px;
+      break-inside: avoid;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    section {
+      padding: 24px 28px;
+      margin-bottom: 18px;
+    }
+
+    .tip {
+      border-left: 4px solid var(--accent);
+      background: var(--accent-soft);
+      padding: 12px 14px;
+      border-radius: 8px;
+      color: var(--text);
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      background: #eef4fa;
+      border: 1px solid #d8e4f1;
+      border-radius: 6px;
+      padding: 1px 5px;
+    }
+
+    ul,
+    ol {
+      padding-left: 20px;
+    }
+
+    footer {
+      color: var(--muted);
+      font-size: 0.95rem;
+      text-align: center;
+      margin-top: 26px;
+    }
+
+    @media (max-width: 720px) {
+      main {
+        padding: 20px 14px 40px;
+      }
+
+      header,
+      nav,
+      section {
+        border-radius: 12px;
+      }
+
+      nav ol {
+        columns: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Manuel d'utilisation de icsograf</h1>
+      <p class="lead">
+        Ce manuel donne une vue d'ensemble des gestes de base pour créer, modifier,
+        enregistrer et exporter vos graphes avec icsograf, sans connexion internet.
+      </p>
+    </header>
+
+    <nav aria-labelledby="toc-title">
+      <h2 id="toc-title">Sommaire</h2>
+      <ol>
+        <li><a href="#presentation">Présentation</a></li>
+        <li><a href="#demarrage">Premiers pas</a></li>
+        <li><a href="#creation">Créer un nouveau graphe</a></li>
+        <li><a href="#edition">Ajouter et modifier des éléments</a></li>
+        <li><a href="#navigation">Naviguer dans la vue</a></li>
+        <li><a href="#fichiers">Enregistrer et rouvrir un graphe</a></li>
+        <li><a href="#export">Exporter le résultat</a></li>
+        <li><a href="#bibliotheque">Utiliser la bibliothèque de graphes</a></li>
+        <li><a href="#conseils">Conseils et dépannage</a></li>
+      </ol>
+    </nav>
+
+    <section id="presentation">
+      <h2>Présentation</h2>
+      <p>
+        icsograf est une application de création et d'édition de graphes nœudiens.
+        Elle permet de construire une structure, d'ajuster son rendu, puis d'exporter
+        le résultat vers des formats comme le SVG ou des images raster.
+      </p>
+      <p class="tip">
+        Si vous découvrez l'application, commencez par créer une structure simple,
+        puis testez l'export SVG pour valider votre flux de travail.
+      </p>
+    </section>
+
+    <section id="demarrage">
+      <h2>Premiers pas</h2>
+      <ul>
+        <li>Au lancement, un onglet de travail est créé automatiquement.</li>
+        <li>Les outils principaux sont accessibles via les menus, les docks et les barres d'outils.</li>
+        <li>La zone centrale affiche le graphe courant et sert d'espace d'édition.</li>
+      </ul>
+      <p>
+        Si certains panneaux ne sont pas visibles, vérifiez les docks et la configuration
+        de l'interface avant de conclure qu'une fonction est absente.
+      </p>
+    </section>
+
+    <section id="creation">
+      <h2>Créer un nouveau graphe</h2>
+      <ol>
+        <li>Créez un nouveau document depuis le menu Fichier ou un nouvel onglet.</li>
+        <li>Ajoutez les premiers nœuds dans la scène.</li>
+        <li>Reliez-les avec les outils d'arêtes disponibles.</li>
+        <li>Observez le rendu et affinez progressivement la structure.</li>
+      </ol>
+      <p>
+        Travaillez par petites étapes. Il est souvent plus simple de construire un graphe
+        minimal correct, puis de le complexifier.
+      </p>
+    </section>
+
+    <section id="edition">
+      <h2>Ajouter et modifier des éléments</h2>
+      <p>
+        L'édition repose sur la sélection d'éléments dans la vue et sur les outils actifs.
+        Selon le contexte, vous pouvez déplacer des nœuds, changer le type d'une arête,
+        ajuster des paramètres de style ou modifier des propriétés du graphe.
+      </p>
+      <ul>
+        <li>Sélectionnez d'abord l'élément à modifier.</li>
+        <li>Utilisez les docks de propriétés pour les réglages fins.</li>
+        <li>Vérifiez régulièrement le rendu global après chaque modification importante.</li>
+      </ul>
+    </section>
+
+    <section id="navigation">
+      <h2>Naviguer dans la vue</h2>
+      <p>
+        La zone de dessin peut être explorée en zoomant, en dézoomant et en recentrant la vue.
+        Ces actions sont utiles dès que le graphe devient dense ou étendu.
+      </p>
+      <ul>
+        <li>Utilisez les commandes de zoom pour inspecter les détails.</li>
+        <li>Réinitialisez le zoom si vous perdez votre repère global.</li>
+        <li>Recentrez la vue pour revenir rapidement à un cadrage propre.</li>
+      </ul>
+    </section>
+
+    <section id="fichiers">
+      <h2>Enregistrer et rouvrir un graphe</h2>
+      <p>
+        Enregistrez régulièrement votre travail pendant l'édition. L'application gère
+        l'ouverture de fichiers existants et la création de nouveaux onglets.
+      </p>
+      <ul>
+        <li>Utilisez <code>Enregistrer</code> pour mettre à jour le fichier courant.</li>
+        <li>Utilisez <code>Enregistrer sous</code> pour créer une nouvelle variante.</li>
+        <li>Rouvrez un graphe existant depuis le menu Fichier pour poursuivre un travail antérieur.</li>
+      </ul>
+    </section>
+
+    <section id="export">
+      <h2>Exporter le résultat</h2>
+      <p>
+        icsograf permet d'exporter le graphe en SVG et, selon les fonctions utilisées,
+        dans des formats image adaptés à une diffusion ou une analyse externe.
+      </p>
+      <ul>
+        <li>Préférez le SVG pour conserver un format vectoriel.</li>
+        <li>Utilisez l'export image pour les aperçus rapides ou certains usages bureautiques.</li>
+        <li>Contrôlez l'anti-aliasing et les options graphiques si le rendu exporté ne vous convient pas.</li>
+      </ul>
+    </section>
+
+    <section id="bibliotheque">
+      <h2>Utiliser la bibliothèque de graphes</h2>
+      <p>
+        La bibliothèque de graphes permet de rechercher des graphes enregistrés, d'en
+        prévisualiser le contenu, d'ouvrir un élément existant et d'exporter certaines données.
+      </p>
+      <ul>
+        <li>Utilisez les filtres pour restreindre la liste des résultats.</li>
+        <li>Sélectionnez une ligne pour voir ses détails et son aperçu.</li>
+        <li>Servez-vous de l'export TSV si vous voulez analyser les résultats dans un tableur.</li>
+      </ul>
+    </section>
+
+    <section id="conseils">
+      <h2>Conseils et dépannage</h2>
+      <ul>
+        <li>Si le rendu semble incohérent, essayez de rafraîchir le chemin ou de revoir les propriétés du graphe.</li>
+        <li>Si un export échoue, vérifiez le chemin de sortie et le format choisi.</li>
+        <li>Si un panneau manque, vérifiez les docks et l'état de l'interface.</li>
+        <li>Si vous expérimentez, enregistrez souvent pour conserver des points de retour.</li>
+      </ul>
+      <p class="tip">
+        Ce manuel est une première version. Il couvre surtout les workflows principaux
+        et pourra être enrichi à mesure que l'interface évolue.
+      </p>
+    </section>
+
+    <footer>
+      Manuel local embarqué avec icsograf.
+    </footer>
+  </main>
+</body>
+</html>
