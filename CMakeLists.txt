@@ -64,15 +64,22 @@ add_custom_target(copy_data ALL
             ${CMAKE_BINARY_DIR}/data
 )
 
-# Data
-install(DIRECTORY data/ DESTINATION ${DATA_INSTALL})
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/icsograf.desktop.in
-               ${CMAKE_CURRENT_BINARY_DIR}/icsograf.desktop)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/icsograf.desktop DESTINATION "share/applications")
-install(FILES data/img/icon2.png DESTINATION share/icons/hicolor/64x64/apps/
-        RENAME ${PROJECT_SLUG}.png)
-install(FILES data/img/icon2.svg DESTINATION share/icons/hicolor/scalable/apps/
-        RENAME ${PROJECT_SLUG}.svg)
+if(APPLE)
+    # The application searches for assets next to Contents/MacOS.
+    install(DIRECTORY data/ DESTINATION ${PROJECT_SLUG}.app/Contents/data)
+elseif(WIN32)
+    # The executable is in bin and searches for ../data.
+    install(DIRECTORY data/ DESTINATION data)
+else()
+    install(DIRECTORY data/ DESTINATION ${DATA_INSTALL})
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/icsograf.desktop.in
+                   ${CMAKE_CURRENT_BINARY_DIR}/icsograf.desktop)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/icsograf.desktop DESTINATION "share/applications")
+    install(FILES data/img/icon2.png DESTINATION share/icons/hicolor/64x64/apps/
+            RENAME ${PROJECT_SLUG}.png)
+    install(FILES data/img/icon2.svg DESTINATION share/icons/hicolor/scalable/apps/
+            RENAME ${PROJECT_SLUG}.svg)
+endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/man/icsograf.1.in
                ${CMAKE_CURRENT_BINARY_DIR}/icsograf.1)
@@ -102,18 +109,17 @@ set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
 # ========== Configuration spécifique par plateforme ==========
 
-# macOS (DragDrop)
+# macOS (Drag and Drop DMG)
 if(APPLE)
-    set(CPACK_GENERATOR "DragDrop")
+    set(CPACK_GENERATOR "DragNDrop")
     set(CPACK_DMG_VOLUME_NAME "${CPACK_PACKAGE_NAME}")
-    set(CPACK_DMG_DS_STORE_SETUP_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/.DS_Store")
 endif()
 
 # Windows (WIX Installer)
 if(WIN32)
     set(CPACK_GENERATOR "WIX")
-    set(CPACK_WIX_UPGRADE_GUID "PUT-YOUR-GUID-HERE")
-    set(CPACK_WIX_PRODUCT_ICON "${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.ico")
+    set(CPACK_WIX_UPGRADE_GUID "A9BF3F7B-7918-4D84-8E5A-9D80F4E608CE")
+    set(CPACK_WIX_PRODUCT_ICON "${CMAKE_CURRENT_SOURCE_DIR}/data/img/icon.ico")
 endif()
 
 # Linux (DEB, RPM, TGZ)
@@ -123,15 +129,21 @@ if(UNIX AND NOT APPLE)
     # Configuration DEB
     set(CPACK_DEBIAN_PACKAGE_MAINTAINER "frédéric fichant <fredfichant@gmail.com>")
     set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/fredfichant/icsograf")
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5widgets5, libqt5svg5, libqt5printsupport5, libqt5sql5-sqlite")
     
     # Configuration RPM
     set(CPACK_RPM_PACKAGE_RELEASE "1")
     set(CPACK_RPM_PACKAGE_LICENSE "MIT")
 endif()
 
+if(APPLE OR WIN32)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/deploy_qt.cmake.in
+                   ${CMAKE_CURRENT_BINARY_DIR}/deploy_qt.cmake @ONLY)
+    install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/deploy_qt.cmake)
+endif()
+
 # Configuration commune
 set(CPACK_PACKAGE_CHECKSUM SHA256)
-set(CPACK_STRIP_FILES TRUE)
+set(CPACK_STRIP_FILES FALSE)
 
 include(CPack)

@@ -31,6 +31,7 @@ set(SOURCES
   dialogs/export_image_dialog.cpp
   dialogs/dock/dock_grid.cpp
   dialogs/dock/dock_properties.cpp
+  dialogs/dock/dock_symmetries.cpp
   dialogs/cusp_style_dialog.cpp
   dialogs/dialog_confirm_close.cpp
   dialogs/icon_dock_style.cpp
@@ -45,6 +46,8 @@ set(SOURCES
   graph/node.cpp
   graph/graph.cpp
   graph/graph_analyzer.cpp
+  graph/graph_symmetry_analyzer.cpp
+  graph/symmetry_overlay.cpp
   graph/graph_renderer.cpp
   graph/edge.cpp
   graph/edge_type.cpp
@@ -113,6 +116,10 @@ add_executable(${PROJECT_SLUG}
   resources.qrc
 )
 
+if(APPLE)
+  set_target_properties(${PROJECT_SLUG} PROPERTIES MACOSX_BUNDLE TRUE)
+endif()
+
 # --- Includes (portable) ---
 target_include_directories(${PROJECT_SLUG}
   PRIVATE
@@ -147,4 +154,8 @@ target_compile_options(${PROJECT_SLUG}
 )
 
 # --- Install ---
-install(TARGETS ${PROJECT_SLUG} DESTINATION bin)
+if(APPLE)
+  install(TARGETS ${PROJECT_SLUG} BUNDLE DESTINATION .)
+else()
+  install(TARGETS ${PROJECT_SLUG} RUNTIME DESTINATION bin)
+endif()

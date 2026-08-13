@@ -1,0 +1,15 @@
+# Run during cmake --install (and therefore CPack) to bundle Qt runtime files.
+if(APPLE)
+    find_program(MACDEPLOYQT_EXECUTABLE macdeployqt REQUIRED)
+    execute_process(
+        COMMAND "${MACDEPLOYQT_EXECUTABLE}" "${CMAKE_INSTALL_PREFIX}/@PROJECT_SLUG@.app" -always-overwrite
+        COMMAND_ERROR_IS_FATAL ANY
+    )
+elseif(WIN32)
+    find_program(WINDEPLOYQT_EXECUTABLE windeployqt REQUIRED)
+    execute_process(
+        COMMAND "${WINDEPLOYQT_EXECUTABLE}" --release --compiler-runtime --no-translations
+                "${CMAKE_INSTALL_PREFIX}/bin/@PROJECT_SLUG@.exe"
+        COMMAND_ERROR_IS_FATAL ANY
+    )
+endif()

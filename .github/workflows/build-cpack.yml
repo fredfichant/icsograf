@@ -2,10 +2,14 @@ name: Build with CPack
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ master, develop ]
+    tags: [ 'v*' ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -15,19 +19,16 @@ jobs:
           # Configuration macOS
           - os: macos-latest
             cmake-preset: default
-            cpack-generator: "DragDrop"
             artifact-name: "app-macos"
             
           # Configuration Windows
           - os: windows-latest
             cmake-preset: default
-            cpack-generator: "WIX"
             artifact-name: "app-windows"
             
           # Configuration Linux
           - os: ubuntu-latest
             cmake-preset: default
-            cpack-generator: "DEB;RPM;TGZ"
             artifact-name: "app-linux"
 
     runs-on: ${{ matrix.os }}
@@ -41,7 +42,7 @@ jobs:
       - name: Install dependencies (Windows)
         if: runner.os == 'Windows'
         run: |
-          choco install cmake ninja -y
+          choco install cmake ninja wixtoolset -y
           
       - name: Install dependencies (macOS)
         if: runner.os == 'macOS'
@@ -52,7 +53,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build build-essential
+          sudo apt-get install -y cmake ninja-build build-essential rpm
 
       - name: Install Qt 5 (Linux)
         if: runner.os == 'Linux'
@@ -95,14 +96,19 @@ jobs:
       - name: Create packages with CPack
         working-directory: build
         run: |
-          cpack -G "${{ matrix.cpack-generator }}" -C Release
+          cpack -C Release
 
       # Upload des artefacts
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}
-          path: build/_CPack_Packages/
+          path: |
+            build/*.dmg
+            build/*.msi
+            build/*.deb
+            build/*.rpm
+            build/*.tar.gz
           retention-days: 30
 
   release:
@@ -112,7 +118,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           path: artifacts
 
