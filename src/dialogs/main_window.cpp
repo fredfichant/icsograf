@@ -39,6 +39,7 @@
 #include <QDoubleSpinBox>
 
 #include "dock/dock_properties.hpp"
+#include "dock/dock_symmetries.hpp"
 #include "dock_grid.hpp"
 #include "commands.hpp"
 #include "knot_view.hpp"
@@ -48,6 +49,7 @@ Main_Window::Main_Window(QWidget* parent)
       m_statusBar(nullptr),
       view(nullptr),
       dock_properties(nullptr),
+      dock_symmetries(nullptr),
       m_fileManager(std::make_unique<KnotFileManager>(this, this))  // Initialize here
 {
     setupUi(this);
@@ -243,6 +245,10 @@ void Main_Window::init_docks()
     addDockWidget(Qt::RightDockWidgetArea, dock_properties);
     tabifyDockWidget(dock_grid, dock_properties);
 
+    dock_symmetries = new Dock_Symmetries(this);
+    addDockWidget(Qt::RightDockWidgetArea, dock_symmetries);
+    tabifyDockWidget(dock_properties, dock_symmetries);
+
     connect(&undo_group, SIGNAL(cleanChanged(bool)), SLOT(set_clean_icon(bool)));
     connect(&undo_group, SIGNAL(undoTextChanged(QString)), SLOT(set_undo_text(QString)));
     connect(&undo_group, SIGNAL(redoTextChanged(QString)), SLOT(set_redo_text(QString)));
@@ -330,6 +336,9 @@ void Main_Window::connect_view(Knot_View* v)
 
     // graph properties dock
     dock_properties->set_properties(*v->graph().properties());
+    dock_symmetries->set_graph(v->graph());
+    connect(v, &Knot_View::graph_changed, dock_symmetries, &Dock_Symmetries::refresh,
+            Qt::UniqueConnection);
 
     // export
     dialog_export_image->set_view(v);
@@ -452,6 +461,7 @@ void Main_Window::close_tab(int i, bool confirm_if_changed)
 
         if (kv == view) {
             disconnect_view(kv);
+            dock_symmetries->clear_graph();
             view = nullptr;
         }
 

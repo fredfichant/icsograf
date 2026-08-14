@@ -174,6 +174,7 @@
         <li><a href="#fichiers">Enregistrer et rouvrir un graphe</a></li>
         <li><a href="#export">Exporter le résultat</a></li>
         <li><a href="#bibliotheque">Utiliser la bibliothèque de graphes</a></li>
+        <li><a href="#symetries">Analyser les symétries</a></li>
         <li><a href="#conseils">Conseils et dépannage</a></li>
       </ol>
     </nav>
@@ -282,6 +283,56 @@
         <li>Sélectionnez une ligne pour voir ses détails et son aperçu.</li>
         <li>Servez-vous de l'export TSV si vous voulez analyser les résultats dans un tableur.</li>
       </ul>
+    </section>
+
+    <section id="symetries">
+      <h2>Analyser les symétries</h2>
+      <p>
+        Ouvrez le dock <code>Symmetries</code> depuis le menu <code>Affichage</code>,
+        puis cliquez sur <code>Analyze</code>. L'analyse ne modifie pas votre graphe :
+        elle ajoute seulement un calque temporaire pour vous aider à le lire.
+      </p>
+      <h3>Automorphismes : l'idée en termes simples</h3>
+      <p>
+        Un <strong>automorphisme</strong> est une façon de renommer ou de permuter les
+        nœuds sans changer le graphe. Après cette permutation, chaque liaison relie encore
+        les mêmes types de nœuds et possède les mêmes caractéristiques visibles. Autrement
+        dit, la structure est restée la même, même si certains numéros de nœuds ont changé.
+      </p>
+      <p>
+        Par exemple, les quatre sommets d'un carré simple peuvent être échangés par une
+        rotation ou un miroir : aucun sommet ne joue alors un rôle structurel particulier.
+        En revanche, modifier la couleur, le type, le style ou le nombre de brins d'une
+        arête peut supprimer certaines de ces permutations. icsograf tient compte de ces
+        propriétés visibles, pas seulement des connexions.
+      </p>
+      <h3>Lire le calque</h3>
+      <ul>
+        <li>
+          Les <strong>lignes rouges pointillées</strong> sont des axes de réflexion
+          réellement présents dans le dessin actuel.
+        </li>
+        <li>
+          Les <strong>halos colorés</strong> entourent les nœuds d'une même
+          <em>orbite</em>. Une orbite est un groupe de nœuds que l'on peut échanger par au
+          moins un automorphisme ; ils ont donc le même rôle structurel selon les critères
+          de l'analyse.
+        </li>
+        <li>
+          Les couleurs bleu, orange et vert servent uniquement à distinguer visuellement
+          des orbites différentes. Elles ne représentent ni un type de nœud, ni une qualité,
+          ni une priorité ; elles peuvent être réutilisées lorsqu'il y a beaucoup d'orbites.
+        </li>
+        <li>
+          Le numéro près d'un halo est le numéro du nœud dans l'ordre courant du graphe.
+          Il correspond aux numéros listés entre accolades dans le dock.
+        </li>
+      </ul>
+      <p class="tip">
+        Une symétrie structurelle peut exister même si le dessin ne semble pas symétrique.
+        Les axes rouges décrivent seulement les symétries géométriques visibles ; les halos
+        décrivent les équivalences dans la structure du graphe.
+      </p>
     </section>
 
     <section id="conseils">

@@ -33,6 +33,7 @@ class Main_Window : public QMainWindow, private Ui::Main_Window
     std::unique_ptr<Export_Image_Dialog> dialog_export_image;
     Dock_Grid* dock_grid;                    ///< Grid conf dock
     class Dock_Properties* dock_properties;  ///< Properties dock
+    class Dock_Symmetries* dock_symmetries;
     std::unique_ptr<KnotFileManager> m_fileManager;
     QAction* m_action_save_graph_library = nullptr;
     QAction* m_action_open_graph_library = nullptr;

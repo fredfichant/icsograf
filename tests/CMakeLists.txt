@@ -8,6 +8,7 @@ set(TEST_CORE_SOURCES
   ${CMAKE_SOURCE_DIR}/src/graph/edge.cpp
   ${CMAKE_SOURCE_DIR}/src/graph/graph.cpp
   ${CMAKE_SOURCE_DIR}/src/graph/graph_analyzer.cpp
+  ${CMAKE_SOURCE_DIR}/src/graph/graph_symmetry_analyzer.cpp
   ${CMAKE_SOURCE_DIR}/src/graph/graph_renderer.cpp
   ${CMAKE_SOURCE_DIR}/src/graph/edge_type.cpp
   ${CMAKE_SOURCE_DIR}/src/graph/edge_type_utils.cpp
@@ -176,6 +177,7 @@ add_icsograf_test(test_graph_properties_multistrand_weights ${CMAKE_CURRENT_SOUR
 add_icsograf_test(test_graph_span_formula ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_span_formula.cpp)
 add_icsograf_test(test_graph_non_reducible ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_non_reducible.cpp)
 add_icsograf_test(test_graph_validation ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_validation.cpp)
+add_icsograf_test(test_graph_symmetry ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_symmetry.cpp)
 add_icsograf_db_test(test_graph_repository ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_repository.cpp)
 add_icsograf_db_ui_test(test_graph_browser_dialog_details ${CMAKE_CURRENT_SOURCE_DIR}/test_graph_browser_dialog_details.cpp)
 add_icsograf_db_tool(inspect_edge_distribution ${CMAKE_CURRENT_SOURCE_DIR}/inspect_edge_distribution.cpp)

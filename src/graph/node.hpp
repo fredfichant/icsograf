@@ -47,6 +47,7 @@ class Node : public Graph_Item
      * \return Reference to the Node_Style object
      */
     Node_Style& style() { return m_style; }
+    const Node_Style& style() const { return m_style; }
 
     /**
      * \brief Sets style overrides for this node
