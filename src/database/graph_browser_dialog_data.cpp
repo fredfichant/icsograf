@@ -418,14 +418,14 @@ void Graph_Browser_Dialog::update_details_panel()
 
         if (edge_tables.empty()) {
             m_invariants_warning_label->hide();
-            m_invariants_tables_layout->addWidget(new QLabel(QStringLiteral("Aucune table disponible"),
+            m_invariants_tables_layout->addWidget(new QLabel(QStringLiteral("aucune table disponible"),
                                                              m_invariants_tables_widget));
         } else {
             const int displayed_count =
                 std::min<int>(edge_tables.size(), kMaxDisplayedEdgeDistributionTables);
             if (edge_tables.size() > kMaxDisplayedEdgeDistributionTables) {
                 m_invariants_warning_label->setText(
-                    QStringLiteral("Seules les %1 premières solutions linéaires sont affichées "
+                    QStringLiteral("seules les %1 premières solutions linéaires sont affichées "
                                    "(%2 solutions au total).")
                         .arg(kMaxDisplayedEdgeDistributionTables)
                         .arg(edge_tables.size()));
@@ -522,7 +522,7 @@ void Graph_Browser_Dialog::on_copy_details_clicked()
     for (const Graph_Record& rec : m_rows) {
         if (rec.id != id) continue;
         QGuiApplication::clipboard()->setText(build_details_text(rec));
-        m_status_label->setText(QStringLiteral("Détails copiés dans le presse-papiers"));
+        m_status_label->setText(QStringLiteral("détails copiés dans le presse-papiers"));
         return;
     }
 }
@@ -558,8 +558,8 @@ QString Graph_Browser_Dialog::build_results_tsv() const
 void Graph_Browser_Dialog::on_export_tsv_clicked()
 {
     if (!m_table || m_table->rowCount() == 0) {
-        QMessageBox::information(this, QStringLiteral("Exporter TSV"),
-                                 QStringLiteral("Aucun résultat à exporter."));
+        QMessageBox::information(this, QStringLiteral("exporter TSV"),
+                                 QStringLiteral("aucun résultat à exporter."));
         return;
     }
 
@@ -572,14 +572,14 @@ void Graph_Browser_Dialog::on_export_tsv_clicked()
     QFile file(file_path);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(
-            this, QStringLiteral("Exporter TSV"),
-            QStringLiteral("Impossible d'écrire le fichier :\n%1").arg(file.errorString()));
+            this, QStringLiteral("exporter TSV"),
+            QStringLiteral("impossible d'écrire le fichier :\n%1").arg(file.errorString()));
         return;
     }
 
     const QByteArray bytes = build_results_tsv().toUtf8();
     if (file.write(bytes) != bytes.size()) {
-        QMessageBox::warning(this, QStringLiteral("Exporter TSV"),
+        QMessageBox::warning(this, QStringLiteral("exporter TSV"),
                              QStringLiteral("Écriture incomplète du fichier TSV."));
         return;
     }
@@ -593,26 +593,26 @@ void Graph_Browser_Dialog::on_export_tsv_clicked()
 void Graph_Browser_Dialog::on_export_svg_clicked()
 {
     if (m_selected_svg_bytes.isEmpty()) {
-        QMessageBox::information(this, QStringLiteral("Exporter SVG"),
-                                 QStringLiteral("Aucun aperçu SVG disponible."));
+        QMessageBox::information(this, QStringLiteral("exporter SVG"),
+                                 QStringLiteral("aucun aperçu SVG disponible."));
         return;
     }
 
     QString suggested_name = QStringLiteral("graphe_%1.svg").arg(m_selected_id);
     const QString file_path = QFileDialog::getSaveFileName(
-        this, QStringLiteral("Exporter le SVG"), suggested_name, QStringLiteral("SVG (*.svg)"));
+        this, QStringLiteral("exporter le SVG"), suggested_name, QStringLiteral("SVG (*.svg)"));
     if (file_path.isEmpty()) return;
 
     QFile file(file_path);
     if (!file.open(QIODevice::WriteOnly)) {
         QMessageBox::warning(
-            this, QStringLiteral("Exporter SVG"),
-            QStringLiteral("Impossible d'écrire le fichier :\n%1").arg(file.errorString()));
+            this, QStringLiteral("exporter SVG"),
+            QStringLiteral("impossible d'écrire le fichier :\n%1").arg(file.errorString()));
         return;
     }
 
     if (file.write(m_selected_svg_bytes) != m_selected_svg_bytes.size()) {
-        QMessageBox::warning(this, QStringLiteral("Exporter SVG"),
+        QMessageBox::warning(this, QStringLiteral("exporter SVG"),
                              QStringLiteral("Écriture incomplète du fichier SVG."));
         return;
     }
@@ -626,8 +626,8 @@ void Graph_Browser_Dialog::on_export_svg_clicked()
 void Graph_Browser_Dialog::on_open_clicked()
 {
     if (selected_graph_id() < 0) {
-        QMessageBox::warning(this, QStringLiteral("Sélection"),
-                             QStringLiteral("Aucun graphe sélectionné."));
+        QMessageBox::warning(this, QStringLiteral("sélection"),
+                             QStringLiteral("aucun graphe sélectionné."));
         return;
     }
 
@@ -643,15 +643,15 @@ void Graph_Browser_Dialog::on_delete_clicked()
     if (id < 0) return;
 
     const auto answer =
-        QMessageBox::question(this, QStringLiteral("Suppression"),
-                              QStringLiteral("Supprimer définitivement le graphe sélectionné ?"));
+        QMessageBox::question(this, QStringLiteral("suppression"),
+                              QStringLiteral("supprimer définitivement le graphe sélectionné ?"));
 
     if (answer != QMessageBox::Yes) return;
 
     QString error;
     if (!m_repo.delete_graph(id, &error)) {
-        QMessageBox::warning(this, QStringLiteral("Suppression"),
-                             QStringLiteral("Échec de la suppression :\n%1").arg(error));
+        QMessageBox::warning(this, QStringLiteral("suppression"),
+                             QStringLiteral("échec de la suppression :\n%1").arg(error));
         return;
     }
 
@@ -696,7 +696,7 @@ bool Graph_Browser_Dialog::load_selected_graph(Graph& graph, QList<Node*>& out_n
 void Graph_Browser_Dialog::clear_details_panel()
 {
     m_selected_svg_bytes.clear();
-    m_details_title->setText(QStringLiteral("Aucun graphe sélectionné"));
+    m_details_title->setText(QStringLiteral("aucun graphe sélectionné"));
     set_metadata_value(m_details_id, QString());
     set_metadata_value(m_details_created, QString());
     set_metadata_value(m_details_short_signature, QString());
@@ -740,7 +740,7 @@ void Graph_Browser_Dialog::set_preview_svg(const QByteArray& svg_bytes)
 {
     m_preview_scene->clear();
     if (svg_bytes.isEmpty()) {
-        m_preview_scene->addText(QStringLiteral("Aperçu indisponible"));
+        m_preview_scene->addText(QStringLiteral("aperçu indisponible"));
         m_preview_scene->setSceneRect(m_preview_scene->itemsBoundingRect());
         return;
     }
@@ -765,18 +765,18 @@ void Graph_Browser_Dialog::set_preview_svg(const QByteArray& svg_bytes)
 QString Graph_Browser_Dialog::build_details_text(const Graph_Record& rec) const
 {
     QString text;
-    text += QStringLiteral("Titre: %1\n").arg(rec.title);
+    text += QStringLiteral("titre: %1\n").arg(rec.title);
     text += QStringLiteral("ID: %1\n").arg(rec.id);
-    text += QStringLiteral("Créé le: %1\n").arg(rec.created_at);
-    text += QStringLiteral("Signature courte: %1\n").arg(short_signature(rec.topology_hash));
-    text += QStringLiteral("Longueur JSON: %1 octets\n").arg(rec.graph_json.size());
-    text += QStringLiteral("Ronds (R): %1\n").arg(rec.group_count);
-    text += QStringLiteral("Arêtes (C): %1\n").arg(rec.edge_count);
-    text += QStringLiteral("Sommets (S): %1\n").arg(rec.node_count);
-    text += QStringLiteral("Faces (F): %1\n").arg(rec.face_count);
+    text += QStringLiteral("créé le: %1\n").arg(rec.created_at);
+    text += QStringLiteral("signature courte: %1\n").arg(short_signature(rec.topology_hash));
+    text += QStringLiteral("longueur JSON: %1 octets\n").arg(rec.graph_json.size());
+    text += QStringLiteral("ronds (R): %1\n").arg(rec.group_count);
+    text += QStringLiteral("croisements (C): %1\n").arg(rec.edge_count);
+    text += QStringLiteral("sommets (S): %1\n").arg(rec.node_count);
+    text += QStringLiteral("faces (F): %1\n").arg(rec.face_count);
     text += QStringLiteral("∆T: %1\n").arg(compute_delta_t_string(m_repo, rec));
-    text += QStringLiteral("Portance: %1\n").arg(rec.span_formula);
-    text += QStringLiteral("Non réductible: %1\n")
+    text += QStringLiteral("portance: %1\n").arg(rec.span_formula);
+    text += QStringLiteral("non réductible: %1\n")
                 .arg(rec.is_non_reducible ? QStringLiteral("oui") : QStringLiteral("non"));
 
     text += QStringLiteral("\ntable d'état\n");
@@ -788,7 +788,7 @@ QString Graph_Browser_Dialog::build_details_text(const Graph_Record& rec) const
                 .arg(QString::number(rec.w0).leftJustified(4, QChar(' ')),
                      QString::number(rec.p0));
 
-    text += QStringLiteral("\nDistributions\n");
+    text += QStringLiteral("\ndistributions\n");
 
     const QList<int> keys = sorted_distribution_keys(rec);
     for (int degree : keys) {

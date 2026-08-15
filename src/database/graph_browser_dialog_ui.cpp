@@ -36,37 +36,37 @@ void Graph_Browser_Dialog::build_ui()
     filters_layout->setSpacing(12);
 
     m_title_edit = new QLineEdit(this);
-    m_title_edit->setPlaceholderText(QStringLiteral("Recherche dans le titre"));
+    m_title_edit->setPlaceholderText(QStringLiteral("recherche dans le titre"));
 
     m_node_count_spin = new QSpinBox(this);
     m_node_count_spin->setRange(-1, 1000);
     m_node_count_spin->setValue(-1);
-    m_node_count_spin->setSpecialValueText(QStringLiteral("Tous"));
+    m_node_count_spin->setSpecialValueText(QStringLiteral("tous"));
 
     m_edge_count_spin = new QSpinBox(this);
     m_edge_count_spin->setRange(-1, 1000);
     m_edge_count_spin->setValue(-1);
-    m_edge_count_spin->setSpecialValueText(QStringLiteral("Tous"));
+    m_edge_count_spin->setSpecialValueText(QStringLiteral("tous"));
 
     m_group_count_spin = new QSpinBox(this);
     m_group_count_spin->setRange(-1, 1000);
     m_group_count_spin->setValue(-1);
-    m_group_count_spin->setSpecialValueText(QStringLiteral("Tous"));
+    m_group_count_spin->setSpecialValueText(QStringLiteral("tous"));
 
     m_face_count_spin = new QSpinBox(this);
     m_face_count_spin->setRange(-1, 1000);
     m_face_count_spin->setValue(-1);
-    m_face_count_spin->setSpecialValueText(QStringLiteral("Tous"));
+    m_face_count_spin->setSpecialValueText(QStringLiteral("tous"));
 
     m_delta_t_spin = new QSpinBox(this);
     m_delta_t_spin->setRange(-1, 1000);
     m_delta_t_spin->setValue(-1);
-    m_delta_t_spin->setSpecialValueText(QStringLiteral("Tous"));
+    m_delta_t_spin->setSpecialValueText(QStringLiteral("tous"));
 
     m_non_reducible_combo = new QComboBox(this);
-    m_non_reducible_combo->addItem(QStringLiteral("Tous"), -1);
-    m_non_reducible_combo->addItem(QStringLiteral("Oui"), 1);
-    m_non_reducible_combo->addItem(QStringLiteral("Non"), 0);
+    m_non_reducible_combo->addItem(QStringLiteral("tous"), -1);
+    m_non_reducible_combo->addItem(QStringLiteral("oui"), 1);
+    m_non_reducible_combo->addItem(QStringLiteral("non"), 0);
 
     auto create_filter_block = [filters_card](const QString& label_text, QWidget* field) {
         auto* layout = new QVBoxLayout();
@@ -83,20 +83,20 @@ void Graph_Browser_Dialog::build_ui()
 
     auto* fields_layout = new QHBoxLayout();
     fields_layout->setSpacing(12);
-    fields_layout->addLayout(create_filter_block(QStringLiteral("Titre"), m_title_edit), 2);
-    fields_layout->addLayout(create_filter_block(QStringLiteral("Sommets (S)"), m_node_count_spin));
-    fields_layout->addLayout(create_filter_block(QStringLiteral("Arêtes (C)"), m_edge_count_spin));
-    fields_layout->addLayout(create_filter_block(QStringLiteral("Ronds (R)"), m_group_count_spin));
-    fields_layout->addLayout(create_filter_block(QStringLiteral("Faces (F)"), m_face_count_spin));
+    fields_layout->addLayout(create_filter_block(QStringLiteral("titre"), m_title_edit), 2);
+    fields_layout->addLayout(create_filter_block(QStringLiteral("sommets (S)"), m_node_count_spin));
+    fields_layout->addLayout(create_filter_block(QStringLiteral("croisements (C)"), m_edge_count_spin));
+    fields_layout->addLayout(create_filter_block(QStringLiteral("ronds (R)"), m_group_count_spin));
+    fields_layout->addLayout(create_filter_block(QStringLiteral("faces (F)"), m_face_count_spin));
     fields_layout->addLayout(create_filter_block(QStringLiteral("∆T"), m_delta_t_spin));
     
 
     filters_layout->addLayout(fields_layout, 1);
 
     auto* buttons_layout = new QVBoxLayout();
-    m_search_button = new QPushButton(QStringLiteral("Rechercher"), this);
-    m_reset_button = new QPushButton(QStringLiteral("Réinitialiser"), this);
-    m_export_tsv_button = new QPushButton(QStringLiteral("Exporter TSV"), this);
+    m_search_button = new QPushButton(QStringLiteral("rechercher"), this);
+    m_reset_button = new QPushButton(QStringLiteral("réinitialiser"), this);
+    m_export_tsv_button = new QPushButton(QStringLiteral("exporter TSV"), this);
     buttons_layout->addWidget(m_search_button);
     buttons_layout->addWidget(m_reset_button);
     buttons_layout->addWidget(m_export_tsv_button);
@@ -138,7 +138,7 @@ void Graph_Browser_Dialog::build_ui()
     details_layout->setContentsMargins(16, 16, 16, 16);
     details_layout->setSpacing(12);
 
-    m_details_title = new QLabel(QStringLiteral("Aucun graphe sélectionné"), details_container);
+    m_details_title = new QLabel(QStringLiteral("aucun graphe sélectionné"), details_container);
     m_details_title->setObjectName(QStringLiteral("detailsTitle"));
     m_details_title->setWordWrap(true);
     details_layout->addWidget(m_details_title);
@@ -174,19 +174,19 @@ void Graph_Browser_Dialog::build_ui()
     m_details_pa = create_value_label(QStringLiteral("detailsPaValue"));
 
     metadata_layout->addRow(QStringLiteral("ID :"), m_details_id);
-    metadata_layout->addRow(QStringLiteral("Créé le :"), m_details_created);
-    metadata_layout->addRow(QStringLiteral("Signature courte :"), m_details_short_signature);
-    metadata_layout->addRow(QStringLiteral("Longueur JSON :"), m_details_json_length);
-    metadata_layout->addRow(QStringLiteral("Ronds (R) :"), m_details_group_count);
-    metadata_layout->addRow(QStringLiteral("Arêtes (C) :"), m_details_edge_count);
-    metadata_layout->addRow(QStringLiteral("Sommets (S) :"), m_details_node_count);
-    metadata_layout->addRow(QStringLiteral("Faces (F) :"), m_details_face_count);
+    metadata_layout->addRow(QStringLiteral("créé le :"), m_details_created);
+    metadata_layout->addRow(QStringLiteral("signature courte :"), m_details_short_signature);
+    metadata_layout->addRow(QStringLiteral("longueur JSON :"), m_details_json_length);
+    metadata_layout->addRow(QStringLiteral("ronds (R) :"), m_details_group_count);
+    metadata_layout->addRow(QStringLiteral("croisements (C) :"), m_details_edge_count);
+    metadata_layout->addRow(QStringLiteral("sommets (S) :"), m_details_node_count);
+    metadata_layout->addRow(QStringLiteral("faces (F) :"), m_details_face_count);
     metadata_layout->addRow(QStringLiteral("∆T :"), m_details_delta_t);
-    metadata_layout->addRow(QStringLiteral("Portance :"), m_details_span);
-    metadata_layout->addRow(QStringLiteral("Non réductible :"), m_details_non_reducible);
+    metadata_layout->addRow(QStringLiteral("portance :"), m_details_span);
+    metadata_layout->addRow(QStringLiteral("non réductible :"), m_details_non_reducible);
     details_layout->addWidget(metadata_card);
 
-    auto* invariants_label = new QLabel(QStringLiteral("Invariants"), details_container);
+    auto* invariants_label = new QLabel(QStringLiteral("invariants"), details_container);
     invariants_label->setObjectName(QStringLiteral("detailsSectionTitle"));
     details_layout->addWidget(invariants_label);
 
@@ -203,7 +203,7 @@ void Graph_Browser_Dialog::build_ui()
     m_invariants_tables_layout->setSpacing(8);
     details_layout->addWidget(m_invariants_tables_widget);
 
-    auto* dist_label = new QLabel(QStringLiteral("Distributions"), details_container);
+    auto* dist_label = new QLabel(QStringLiteral("distributions"), details_container);
     dist_label->setObjectName(QStringLiteral("detailsSectionTitle"));
     details_layout->addWidget(dist_label);
 
@@ -211,7 +211,7 @@ void Graph_Browser_Dialog::build_ui()
     m_distribution_table->setObjectName(QStringLiteral("detailsDistributionTable"));
     m_distribution_table->setRowCount(2);
     m_distribution_table->setVerticalHeaderLabels(
-        QStringList() << QStringLiteral("Sommets") << QStringLiteral("Faces"));
+        QStringList() << QStringLiteral("sommets") << QStringLiteral("faces"));
     m_distribution_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_distribution_table->setSelectionMode(QAbstractItemView::NoSelection);
     m_distribution_table->setAlternatingRowColors(true);
@@ -227,7 +227,7 @@ void Graph_Browser_Dialog::build_ui()
     m_distribution_table->setMinimumHeight(210);
     details_layout->addWidget(m_distribution_table);
 
-    auto* preview_label = new QLabel(QStringLiteral("Aperçu"), details_container);
+    auto* preview_label = new QLabel(QStringLiteral("aperçu"), details_container);
     preview_label->setObjectName(QStringLiteral("detailsSectionTitle"));
     details_layout->addWidget(preview_label);
 
@@ -241,8 +241,8 @@ void Graph_Browser_Dialog::build_ui()
     details_layout->addWidget(m_preview_view);
 
     auto* detail_buttons_layout = new QHBoxLayout();
-    m_copy_details_button = new QPushButton(QStringLiteral("Copier les détails"), details_container);
-    m_export_svg_button = new QPushButton(QStringLiteral("Exporter SVG"), details_container);
+    m_copy_details_button = new QPushButton(QStringLiteral("copier les détails"), details_container);
+    m_export_svg_button = new QPushButton(QStringLiteral("exporter SVG"), details_container);
     m_copy_details_button->setObjectName(QStringLiteral("copyDetailsButton"));
     m_export_svg_button->setObjectName(QStringLiteral("exportSvgButton"));
     detail_buttons_layout->addWidget(m_copy_details_button);
@@ -418,7 +418,7 @@ void Graph_Browser_Dialog::on_reset_clicked()
     m_face_count_spin->setValue(-1);
     m_delta_t_spin->setValue(-1);
     m_non_reducible_combo->setCurrentIndex(0);
-    m_status_label->setText(QStringLiteral("Filtres réinitialisés"));
+    m_status_label->setText(QStringLiteral("filtres réinitialisés"));
     refresh_results();
 }
 
