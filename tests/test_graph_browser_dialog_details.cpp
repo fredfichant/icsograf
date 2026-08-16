@@ -197,7 +197,7 @@ int main(int argc, char** argv)
     QPushButton* export_tsv_button = nullptr;
     const QList<QPushButton*> buttons = dialog.findChildren<QPushButton*>();
     for (QPushButton* button : buttons) {
-        if (button->text() == QStringLiteral("Exporter TSV")) {
+        if (button->text() == QStringLiteral("exporter TSV")) {
             export_tsv_button = button;
             break;
         }

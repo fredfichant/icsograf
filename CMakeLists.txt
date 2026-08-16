@@ -109,11 +109,18 @@ set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
 # ========== Configuration spécifique par plateforme ==========
 
-# macOS (Drag and Drop DMG)
+
 if(APPLE)
-    set(CPACK_GENERATOR "DragNDrop")
-    set(CPACK_DMG_VOLUME_NAME "${CPACK_PACKAGE_NAME}")
+    # Installer les ressources dans le dossier Resources du .app (convention macOS)
+    install(DIRECTORY data/ DESTINATION ${PROJECT_SLUG}.app/Contents/Resources)
+
+    # Installer le bundle si la cible est construite en tant que MACOSX_BUNDLE.
+    # Remarque : la cible exécutable doit être créée en MACOSX_BUNDLE dans src/CMakeLists.txt :
+    #   add_executable(icsograf MACOSX_BUNDLE ... )
+    # Si la cible s'appelle 'icsograf', cette ligne installera la .app à la racine de l'install tree :
+    install(TARGETS icsograf BUNDLE DESTINATION . OPTIONAL)
 endif()
+
 
 # Windows (WIX Installer)
 if(WIN32)

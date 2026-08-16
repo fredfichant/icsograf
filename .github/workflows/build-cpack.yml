@@ -1,130 +1,101 @@
-name: Build with CPack
+name: Build and Publish Release
 
 on:
   push:
-    branches: [ master, develop ]
-    tags: [ 'v*' ]
-  pull_request:
-    branches: [ master ]
-  workflow_dispatch:
+    tags:
+      - 'v*.*.*'
 
-permissions:
-  contents: write
+concurrency:
+  group: build-and-release-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        include:
-          # Configuration macOS
-          - os: macos-latest
-            cmake-preset: default
-            artifact-name: "app-macos"
-            
-          # Configuration Windows
-          - os: windows-latest
-            cmake-preset: default
-            artifact-name: "app-windows"
-            
-          # Configuration Linux
-          - os: ubuntu-latest
-            cmake-preset: default
-            artifact-name: "app-linux"
-
-    runs-on: ${{ matrix.os }}
-    
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    env:
+      BUILD_DIR: build
+      CMAKE_PREFIX_PATH: ""
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # Installation des dépendances
-      - name: Install dependencies (Windows)
+      - name: Set up build tools (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          if [ "$(uname)" = "Darwin" ]; then
+            brew update
+            brew install cmake
+            brew install qt@5 || true
+            if [ -d "/opt/homebrew/opt/qt@5" ]; then
+              echo "CMAKE_PREFIX_PATH=/opt/homebrew/opt/qt@5" >> $GITHUB_ENV
+            else
+              echo "CMAKE_PREFIX_PATH=/usr/local/opt/qt@5" >> $GITHUB_ENV
+            fi
+          else
+            sudo apt-get update
+            sudo apt-get install -y build-essential cmake qtbase5-dev qttools5-dev qttools5-dev-tools libqt5svg5-dev libqt5printsupport5 libqt5sql5-sqlite
+            echo "CMAKE_PREFIX_PATH=" >> $GITHUB_ENV
+          fi
+
+      - name: Set up Qt on Windows (Chocolatey)
         if: runner.os == 'Windows'
+        shell: powershell
         run: |
-          choco install cmake ninja wixtoolset -y
-          
-      - name: Install dependencies (macOS)
-        if: runner.os == 'macOS'
+          choco install -y "qt5" || choco install -y "qt" || echo "choco install failed; please configure Qt on the runner or use a self-hosted runner with Qt installed"
+          echo "CMAKE_PREFIX_PATH=C:\\Qt\\5.15.2\\msvc2019_64" >> $env:GITHUB_ENV
+
+      - name: Configure (CMake)
         run: |
-          brew install cmake ninja
-          
-      - name: Install dependencies (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake ninja-build build-essential rpm
+          cmake -S . -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
 
-      - name: Install Qt 5 (Linux)
-        if: runner.os == 'Linux'
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: '5.15.2'
-          arch: gcc_64
-          modules: 'qttools'
-          cache: true
-
-      - name: Install Qt 5 (macOS)
-        if: runner.os == 'macOS'
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: '5.15.2'
-          arch: clang_64
-          modules: 'qttools'
-          cache: true
-
-      - name: Install Qt 5 (Windows)
-        if: runner.os == 'Windows'
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: '5.15.2'
-          arch: win64_msvc2019_64
-          modules: 'qttools'
-          cache: true
-
-      # Configuration CMake
-      - name: Configure CMake
-        run: |
-          cmake --preset ${{ matrix.cmake-preset }} -B build -S .
-
-      # Compilation
       - name: Build
         run: |
-          cmake --build build --config Release
+          cmake --build $BUILD_DIR --config Release -- -j$(nproc || echo 2)
+        shell: bash
 
-      # Création des packages avec CPack
-      - name: Create packages with CPack
-        working-directory: build
+      - name: Package with CPack
+        working-directory: ${{ env.BUILD_DIR }}
         run: |
-          cpack -C Release
+          if [ "${{ runner.os }}" = "macOS" ]; then
+            cpack -G DragNDrop || cpack || true
+          elif [ "${{ runner.os }}" = "Windows" ]; then
+            cpack -G ZIP || true
+          else
+            cpack || true
+          fi
 
-      # Upload des artefacts
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact-name }}
+          name: build-${{ matrix.os }}
           path: |
-            build/*.dmg
-            build/*.msi
-            build/*.deb
-            build/*.rpm
-            build/*.tar.gz
-          retention-days: 30
+            ${{ env.BUILD_DIR }}/*.dmg
+            ${{ env.BUILD_DIR }}/*.zip
+            ${{ env.BUILD_DIR }}/*.deb
+            ${{ env.BUILD_DIR }}/*.rpm
+            ${{ env.BUILD_DIR }}/*.tgz
+            ${{ env.BUILD_DIR }}/*.msi
+            ${{ env.BUILD_DIR }}/*.tar.gz
+            ${{ env.BUILD_DIR }}/*.AppImage
+            ${{ env.BUILD_DIR }}/*.pkg
 
   release:
-    name: Create Release
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
-    
     steps:
-      - uses: actions/download-artifact@v4
+      - name: Download artifacts (all OS builds)
+        uses: actions/download-artifact@v4
         with:
-          path: artifacts
+          path: release-artifacts
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+      - name: Create GitHub Release and upload assets
+        uses: ncipollo/release-action@v1
         with:
-          files: artifacts/**/*
+          tag: ${{ github.ref }}
+          name: Release ${{ github.ref }}
+          artifacts: "release-artifacts/**"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
