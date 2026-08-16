@@ -24,28 +24,61 @@ jobs:
 
       - name: Set up build tools (Linux/macOS)
         if: runner.os != 'Windows'
+        shell: bash
         run: |
+          set -e
+          set -x
           if [ "$(uname)" = "Darwin" ]; then
-            brew update
-            brew install cmake
-            brew install qt@5 || true
-            if [ -d "/opt/homebrew/opt/qt@5" ]; then
+            brew update || true
+            brew install cmake || true
+            # Try qt@5, fallback to qt (may be Qt6)
+            if brew info qt@5 >/dev/null 2>&1; then
+              brew install qt@5 || true
               echo "CMAKE_PREFIX_PATH=/opt/homebrew/opt/qt@5" >> $GITHUB_ENV
+            elif brew info qt >/dev/null 2>&1; then
+              brew install qt || true
+              echo "CMAKE_PREFIX_PATH=$(brew --prefix qt)" >> $GITHUB_ENV
             else
-              echo "CMAKE_PREFIX_PATH=/usr/local/opt/qt@5" >> $GITHUB_ENV
+              echo "Warning: qt not found via brew. CI may fail if Qt is required."
+              echo "CMAKE_PREFIX_PATH=" >> $GITHUB_ENV
             fi
           else
-            sudo apt-get update
-            sudo apt-get install -y build-essential cmake qtbase5-dev qttools5-dev qttools5-dev-tools libqt5svg5-dev libqt5printsupport5 libqt5sql5-sqlite
+            export DEBIAN_FRONTEND=noninteractive
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends build-essential cmake \
+              qtbase5-dev qttools5-dev qttools5-dev-tools libqt5svg5-dev \
+              libqt5printsupport5 libqt5sql5-sqlite || {
+                echo "apt-get install failed; retrying once"
+                sleep 5
+                sudo apt-get install -y --no-install-recommends build-essential cmake \
+                  qtbase5-dev qttools5-dev qttools5-dev-tools libqt5svg5-dev \
+                  libqt5printsupport5 libqt5sql5-sqlite
+              }
             echo "CMAKE_PREFIX_PATH=" >> $GITHUB_ENV
           fi
 
       - name: Set up Qt on Windows (Chocolatey)
         if: runner.os == 'Windows'
-        shell: bash
+        shell: powershell
         run: |
-          choco install -y "qt5" || choco install -y "qt" || echo "choco install failed; please configure Qt on the runner or use a self-hosted runner with Qt installed"
-          echo "CMAKE_PREFIX_PATH=C:\\Qt\\5.15.2\\msvc2019_64" >> $GITHUB_ENV
+          # Vérifier que choco existe
+          if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+            Write-Host 'Chocolatey non trouvé sur le runner. Utilisez un runner self-hosted avec Qt installé ou installez Qt manuellement.'
+          } else {
+            try {
+              Write-Host 'Tentative d-installation: choco install qt5'
+              choco install qt5 -y
+            } catch {
+              Write-Host 'Installation qt5 échouée, tentative d-installation de qt'
+              try {
+                choco install qt -y
+              } catch {
+                Write-Host 'choco install échoué; configurez Qt sur le runner ou utilisez un runner self-hosted avec Qt installé'
+              }
+            }
+          }
+          # Définir CMAKE_PREFIX_PATH pour CMake (adapter le chemin si nécessaire)
+          Add-Content -Path $Env:GITHUB_ENV -Value 'CMAKE_PREFIX_PATH=C:\Qt\5.15.2\msvc2019_64'
 
       - name: Configure (CMake)
         run: |
