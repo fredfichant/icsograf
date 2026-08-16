@@ -25,3 +25,4 @@ snapcraft.yaml
 knotter_*.snap
 src/library
 build_verify
+.DS_Store
