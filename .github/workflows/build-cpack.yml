@@ -42,10 +42,10 @@ jobs:
 
       - name: Set up Qt on Windows (Chocolatey)
         if: runner.os == 'Windows'
-        shell: powershell
+        shell: bash
         run: |
           choco install -y "qt5" || choco install -y "qt" || echo "choco install failed; please configure Qt on the runner or use a self-hosted runner with Qt installed"
-          echo "CMAKE_PREFIX_PATH=C:\\Qt\\5.15.2\\msvc2019_64" >> $env:GITHUB_ENV
+          echo "CMAKE_PREFIX_PATH=C:\\Qt\\5.15.2\\msvc2019_64" >> $GITHUB_ENV
 
       - name: Configure (CMake)
         run: |
