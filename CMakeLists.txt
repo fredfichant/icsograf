@@ -1,4 +1,3 @@
-
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project(icsograf VERSION 1.0.0 LANGUAGES CXX)
 set(PROJECT_SLUG "icsograf")
@@ -65,8 +64,13 @@ add_custom_target(copy_data ALL
 )
 
 if(APPLE)
-    # The application searches for assets next to Contents/MacOS.
-    install(DIRECTORY data/ DESTINATION ${PROJECT_SLUG}.app/Contents/data)
+    # Use standard macOS bundle layout: resources must go into Contents/Resources
+    # rather than Contents/data. The executable is inside Contents/MacOS.
+    install(DIRECTORY data/ DESTINATION ${PROJECT_SLUG}.app/Contents/Resources)
+
+    # Note: the application target is configured as a BUNDLE in src/CMakeLists.txt
+    # (set_target_properties(... MACOSX_BUNDLE TRUE) and install(TARGETS ... BUNDLE DESTINATION .)).
+    # With this layout CPack DragNDrop will include a proper .app bundle.
 elseif(WIN32)
     # The executable is in bin and searches for ../data.
     install(DIRECTORY data/ DESTINATION data)
