@@ -1,28 +1,113 @@
-*.so
-*.o
-test/
-src/generated/*.cpp
-src/generated/*.h
-*.pro.user*
-*.desktop
-*.tar.gz
-*.tar.gz.md5
-data/plugins/*.sh
-package/*
-Makefile
-Doxyfile
+# Build directories
 build/
 build_debug/
 build-release/
 build_clean/
+build_verify/
 bin/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+*.cmake
+CTestTestfile.cmake
+
+# Compiled objects
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.a
+*.lib
+*.exe
+
+# Qt and UI files
+*.pro.user*
+*.pro.user
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+*.qm
+*.Desktop
+
+# Generated files
+src/generated/*.cpp
+src/generated/*.h
+icsograf_info.hpp
+Doxyfile
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.AppleDouble
+.LSOverride
+*.sublime-*
+.project
+.cproject
+.settings/
+
+# Documentation
 docs/
-misc/
-/legacy
-configured_directories.sh
-push.sh
+docs/generated/
+doxygen_warnings.txt
+
+# Temporary and packaging files
+*.tar.gz
+*.tar.gz.md5
+*.zip
+*.dmg
+*.deb
+*.rpm
+*.msi
+*.AppImage
+*.pkg
+*.tgz
+_CPack_Packages/
+
+# CMake package directories
+package/*
+!package/
+
+# Snapcraft
 snapcraft.yaml
 knotter_*.snap
+
+# Plugin and build scripts
+data/plugins/*.sh
+configured_directories.sh
+push.sh
+
+# Dependencies and library
 src/library
-build_verify
+/legacy
+
+# Windows-specific
+*.pdb
+*.ilk
+*.rc
+thumbs.db
+Thumbs.db
+
+# macOS-specific
 .DS_Store
+.AppleDouble
+.LSOverride
+*.dSYM/
+
+# Linux-specific
+*.so.*
+
+# Test artifacts
+test/
+*.log
+Testing/
+
+# Local overrides (Qt Creator specific)
+CMakeLists.txt.user
+CMakeLists.txt.user.*
+CMakePresets.json
+CMakeUserPresets.json
